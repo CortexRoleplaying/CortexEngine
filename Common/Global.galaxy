@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 
 // Cortex Subversion revision
-int libcrtx_version_revision = 0;
+int libcrtx_version_revision = $Revision$;
 
 // Version in form major.minor.bugfix.hotfix
 // ex: "0.10.1a" when concatenated
