@@ -23,11 +23,12 @@ unitgroup libcrtx_utility_getselectedunits()
 	while(count)
 	{
 		u = UnitGroupUnit(g, count);
-		if( UnitGetOwner(u) != EventPlayer() && 
+		if( (UnitGetOwner(u) != EventPlayer() && 
 		    PlayerType(UnitGetOwner(u)) != c_playerTypeNone &&
 		    PlayerType(UnitGetOwner(u)) != c_playerTypeComputer &&
  	            PlayerType(UnitGetOwner(u)) != c_playerTypeHostile &&
-		    PlayerType(UnitGetOwner(u)) != c_playerTypeNeutral)
+		    PlayerType(UnitGetOwner(u)) != c_playerTypeNeutral) ||
+		    UnitGetType(u) == libcrtx_spawnertype )
 		{
 			UnitGroupRemove(g, u);
 		}	
