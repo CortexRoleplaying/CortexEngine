@@ -17,13 +17,13 @@ int libcrtx_version_revision = 4;
 
 // Version in form major.minor.bugfix.hotfix
 // ex: "0.10.1a" when concatenated
-int libcrtx_version_major = 0;
-int libcrtx_version_minor = 0;
-int libcrtx_version_bugfix = 1;
-string libcrtx_version_hotfix = "";
+const int libcrtx_version_major = 0;
+const int libcrtx_version_minor = 0;
+const int libcrtx_version_bugfix = 1;
+const string libcrtx_version_hotfix = "";
 
 // Max players supported by SC2.
-int libcrtx_max_players = 12;
+const int libcrtx_max_players = 12;
 
 // Human-readable version string will read for example:
 // Cortex (0.10.1a r123)

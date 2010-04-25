@@ -1,0 +1,28 @@
+// Cortex SC2 Roleplaying Engine
+// Copyright (C) 2009-2010 <http://www.cortexrp.com/>
+//
+// $Id$
+// 
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; version 2 of the License.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// This file is for data shared over multiple commands
+
+// The fully-qualified internal unittype name for the spawner. 
+// See libcrtx_set_spawner().
+string libcrtx_spawnertype = "";
+
+struct SpawnCommandInstance
+{
+	string unitType;
+	int count;
+	int player;
+};
+
+SpawnCommandInstance[libcrtx_max_players] libcrtx_command_spawn_instances;

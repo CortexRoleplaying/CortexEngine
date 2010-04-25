@@ -39,5 +39,5 @@ void libcrtx_command_create(string lp_cmd, string lp_func)
 	libcrtx_command_array[libcrtx_command_num_commands].func = TriggerCreate(lp_func);
 	libcrtx_command_num_commands = libcrtx_command_num_commands + 1;
 
-	libcrtx_debug("registered command" + lp_cmd + " -> " + lp_func);
+	libcrtx_debug("registered command: " + lp_cmd + " -> " + lp_func);
 }

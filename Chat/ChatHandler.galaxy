@@ -55,9 +55,9 @@ if( libcrtx_chat_commandtrigger != "" && StringSub(lp_message, 1, triggerLength)
 
 	{
 
-		sub = StringSub(lp_message, triggerLength+1, StringLength(libcrtx_command_array[currentCmd].command)+triggerLength+1);
+		sub = StringSub(lp_message, triggerLength+1, StringLength(libcrtx_command_array[currentCmd].command)+triggerLength);
 
-		//libcrtx_debug("Searching: " + sub);
+		libcrtx_debug("Searching: '" + sub + "'");
 		if( StringEqual(libcrtx_command_array[currentCmd].command, sub, false) )
 		{
 

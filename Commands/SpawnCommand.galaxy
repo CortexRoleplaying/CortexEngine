@@ -1,0 +1,110 @@
+// Cortex SC2 Roleplaying Engine
+// Copyright (C) 2009-2010 <http://www.cortexrp.com/>
+//
+// $Id$
+// 
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; version 2 of the License.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+void libcrtx_command_spawn_resetinstance()
+{
+	libcrtx_command_spawn_instances[EventPlayer()].unitType = "";
+	libcrtx_command_spawn_instances[EventPlayer()].count = 0;
+	libcrtx_command_spawn_instances[EventPlayer()].player = EventPlayer();
+}
+
+bool libcrtx_command_spawn_parse(string lp_message)
+{
+	string colour; // spelling this british-way since color is a reserved word
+	int misc;
+	string val;
+	bool doneSpawnType = false;
+	int currentParameter = 2;
+
+	libcrtx_debug("libcrtx_command_spawn_parse(" + lp_message + ")");
+	libcrtx_debug("param 2 is " + StringWord(lp_message, currentParameter) );
+	while(StringWord(lp_message, currentParameter) != "")
+	{
+		val = StringWord(lp_message, currentParameter);
+		if( StringToInt(val) != 0 ) // integer - spawncount only
+		{
+			// reset when we have a new integer!
+			libcrtx_command_spawn_resetinstance();
+			libcrtx_command_spawn_instances[EventPlayer()].count = StringToInt(val);
+			libcrtx_debug("caught integer");
+		}
+		else if( StringSub(val, 1, 1) == "@") // we're redirecting ownership
+		{
+			misc = StringLength(val);
+			// expected param: @red, @blue, @hostile, etc.
+			colour = StringSub(val, 2, misc);
+			// TODO: map colors to player numbers.
+			if( colour == "hostile" )
+			{
+				libcrtx_command_spawn_instances[EventPlayer()].player = 15; // player 15 is hostile.
+			}
+			libcrtx_debug("caught ownership redirect");
+		}
+		else // the only remainder isssssss, spawn type!
+		{
+			if(doneSpawnType)
+			{
+				// using the command wrong.
+				return false;
+			}
+
+			doneSpawnType = true;
+			libcrtx_command_spawn_instances[EventPlayer()].unitType = UnitTypeFromString(val);
+			libcrtx_debug("caught spawn type");
+		}
+		
+		
+		currentParameter = currentParameter + 1;
+	}
+
+	return true;
+}
+
+void libcrtx_command_spawn_execute()
+{
+	unit u;
+	unitgroup g = UnitGroup(libcrtx_spawnertype, EventPlayer(), RegionEntireMap(), null, 1);
+	u = UnitGroupUnit(g, 1);
+	if( u == null )
+	{
+		libcrtx_debug("can't find spawner!");
+		return;
+	}
+	
+	libcrtx_debug("creating " + IntToString(libcrtx_command_spawn_instances[EventPlayer()].count) + " " + libcrtx_command_spawn_instances[EventPlayer()].unitType);
+	UnitCreate( libcrtx_command_spawn_instances[EventPlayer()].count, libcrtx_command_spawn_instances[EventPlayer()].unitType, 0, libcrtx_command_spawn_instances[EventPlayer()].player, UnitGetPosition(u), 270.0);
+}
+
+bool libcrtx_command_spawn(bool testConds, bool runActions)
+{
+	string message;
+
+	libcrtx_debug("libcrtx_command_spawn()");
+
+	if( !runActions ) {
+		return true;
+	}
+
+	message = EventChatMessage(false);
+	if( libcrtx_command_spawn_parse(message) )
+	{
+		libcrtx_command_spawn_execute();
+	}
+	else
+	{
+		libcrtx_debug("invalid syntax.");
+	}
+
+	return true;
+}

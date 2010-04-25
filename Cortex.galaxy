@@ -14,8 +14,6 @@
 
 include "Cortex/Common/Global.galaxy"
 include "Cortex/Common/Debug.galaxy"
-include "Cortex/Commands/CommandPrototype.galaxy"
-include "Cortex/Commands/InfoCommand.galaxy"
 include "Cortex/Commands/Commands.galaxy"
 include "Cortex/Chat/Chat.galaxy"
 include "Cortex/Chat/ChatHandler.galaxy"
