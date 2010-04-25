@@ -1,0 +1,43 @@
+// Cortex SC2 Roleplaying Engine
+// Copyright (C) 2009-2010 <http://www.cortexrp.com/>
+//
+// $Id
+// 
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; version 2 of the License.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// The maximum # of commands the core supports.
+const int libcrtx_command_max_commands = 1024;
+// The number of commands registered with Cortex.
+int libcrtx_command_num_commands = 0;
+
+
+struct CommandPrototype
+
+{
+
+	string command;
+
+	trigger func;
+
+};
+
+CommandPrototype[libcrtx_command_max_commands] libcrtx_command_array;
+
+// Registers a command with the Cortex engine.
+
+void libcrtx_command_create(string lp_cmd, string lp_func) 
+{
+	libcrtx_command_array[libcrtx_command_num_commands].command = lp_cmd;
+
+	libcrtx_command_array[libcrtx_command_num_commands].func = TriggerCreate(lp_func);
+	libcrtx_command_num_commands = libcrtx_command_num_commands + 1;
+
+	libcrtx_debug("registered command" + lp_cmd + " -> " + lp_func);
+}

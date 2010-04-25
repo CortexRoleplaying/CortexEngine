@@ -1,0 +1,30 @@
+// Cortex SC2 Roleplaying Engine
+// Copyright (C) 2009-2010 <http://www.cortexrp.com/>
+//
+// $Id
+// 
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; version 2 of the License.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+include "Cortex/Common/Global.galaxy"
+include "Cortex/Common/Debug.galaxy"
+include "Cortex/Commands/CommandPrototype.galaxy"
+include "Cortex/Commands/InfoCommand.galaxy"
+include "Cortex/Commands/Commands.galaxy"
+include "Cortex/Chat/Chat.galaxy"
+include "Cortex/Chat/ChatHandler.galaxy"
+
+void libcrtx_InitLib()
+{
+	libcrtx_set_debug_mode(true); // must be changed for release.
+
+	libcrtx_debug("cortex_init()");
+	libcrtx_commands_init();
+	libcrtx_chat_init();
+}

@@ -1,0 +1,96 @@
+// Cortex SC2 Roleplaying Engine
+// Copyright (C) 2009-2010 <http://www.cortexrp.com/>
+//
+// $Id
+// 
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; version 2 of the License.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+void libcrtx_chat_init()
+{
+	int i = 1;
+
+	// Create trigger for player chat messages
+	trigger t = TriggerCreate("libcrtx_chat_receivedevent");
+
+	// Register chat msg events
+	while( i <= libcrtx_max_players )
+	{
+		TriggerAddEventChatMessage(t, i, "", false);
+	}
+}
+
+int libcrtx_chat_parsechat(int lp_player, string lp_message)
+
+{ 
+
+	int currentCmd = 0;
+
+	string sub = "";
+	bool commandFound = false;
+	int triggerLength = StringLength( libcrtx_chat_commandtrigger );
+
+
+	libcrtx_debug("libcrtx_chat_parsechat()");
+
+	
+if( libcrtx_chat_commandtrigger != "" && StringSub(lp_message, 1, triggerLength) != libcrtx_chat_commandtrigger ) // not a command at all.
+	
+	{
+		
+		libcrtx_debug("not a command.");
+
+		return libcrtx_chat_command_error_ok;
+	
+	}
+
+
+	while(currentCmd < libcrtx_command_num_commands )
+
+	{
+
+		sub = StringSub(lp_message, triggerLength+1, StringLength(libcrtx_command_array[currentCmd].command)+triggerLength+1);
+
+		//libcrtx_debug("Searching: " + sub);
+		if( StringEqual(libcrtx_command_array[currentCmd].command, sub, false) )
+		{
+
+			// matching command
+
+			TriggerExecute(libcrtx_command_array[currentCmd].func, false, false);
+
+			commandFound = true;
+			break;
+
+		}
+
+		currentCmd = currentCmd + 1;
+
+	}
+
+
+	
+return libcrtx_chat_command_error_ok;
+
+}
+
+
+bool libcrtx_chat_receivedevent(bool testConds, bool runActions)
+{
+	int triggerPlayer = EventPlayer();
+	string chatMsg = EventChatMessage(false);
+
+	if(!runActions)
+	{
+		return true;
+	}
+
+	libcrtx_chat_parsechat( triggerPlayer, chatMsg );
+	return true;			
+}

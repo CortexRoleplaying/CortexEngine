@@ -1,0 +1,39 @@
+// Cortex SC2 Roleplaying Engine
+// Copyright (C) 2009-2010 <http://www.cortexrp.com/>
+//
+// $Id
+// 
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; version 2 of the License.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// Cortex Subversion revision
+int libcrtx_version_revision = 0;
+
+// Version in form major.minor.bugfix.hotfix
+// ex: "0.10.1a" when concatenated
+int libcrtx_version_major = 0;
+int libcrtx_version_minor = 0;
+int libcrtx_version_bugfix = 1;
+string libcrtx_version_hotfix = "";
+
+// Max players supported by SC2.
+int libcrtx_max_players = 12;
+
+// Human-readable version string will read for example:
+// Cortex (0.10.1a r123)
+string libcrtx_get_versionstring()
+{
+	return "Cortex (" +
+		IntToString(libcrtx_version_major) + "." +
+		IntToString(libcrtx_version_minor) + "." + 
+		IntToString(libcrtx_version_bugfix) + 
+		libcrtx_version_hotfix +
+		" r" + IntToString(libcrtx_version_revision) +
+		")";
+}
