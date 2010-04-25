@@ -12,10 +12,6 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-// Command Prefix
-
-string libcrtx_chat_commandtrigger = "";
-
 
 // Command Execution Error Codes
 
@@ -24,12 +20,3 @@ const int libcrtx_chat_command_error_ok = 0;
 const int libcrtx_chat_command_error_syntax = 1;
 
 const int libcrtx_chat_command_error_internal = 2;
-
-
-
-void libcrtx_set_command_trigger(string lp_commandTrigger) 
-{
-
-	libcrtx_chat_commandtrigger = lp_commandTrigger;
-
-}

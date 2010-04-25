@@ -28,8 +28,8 @@ bool libcrtx_command_spawn_parse(string lp_message)
 	bool doneSpawnType = false;
 	int currentParameter = 2;
 
-	libcrtx_debug("libcrtx_command_spawn_parse(" + lp_message + ")");
-	libcrtx_debug("param 2 is " + StringWord(lp_message, currentParameter) );
+	//libcrtx_debug("libcrtx_command_spawn_parse(" + lp_message + ")");
+	//libcrtx_debug("param 2 is " + StringWord(lp_message, currentParameter) );
 	while(StringWord(lp_message, currentParameter) != "")
 	{
 		if( first ) {
@@ -42,7 +42,7 @@ bool libcrtx_command_spawn_parse(string lp_message)
 		{
 			// reset when we have a new integer!
 			libcrtx_command_spawn_instances[EventPlayer()].count = StringToInt(val);
-			libcrtx_debug("caught integer");
+			//libcrtx_debug("caught integer");
 		}
 		else if( StringSub(val, 1, 1) == "@") // we're redirecting ownership
 		{
@@ -61,7 +61,7 @@ bool libcrtx_command_spawn_parse(string lp_message)
 					libcrtx_command_spawn_instances[EventPlayer()].player = misc;
 				}
 			}
-			libcrtx_debug("caught ownership redirect");
+			//libcrtx_debug("caught ownership redirect");
 		}
 		else // the only remainder isssssss, spawn type!
 		{
@@ -73,7 +73,7 @@ bool libcrtx_command_spawn_parse(string lp_message)
 
 			doneSpawnType = true;
 			libcrtx_command_spawn_instances[EventPlayer()].unitType = UnitTypeFromString(val);
-			libcrtx_debug("caught spawn type");
+			//libcrtx_debug("caught spawn type");
 		}
 		
 		
@@ -99,7 +99,7 @@ void libcrtx_command_spawn_execute()
 		return;
 	}
 	
-	libcrtx_debug("creating " + IntToString(libcrtx_command_spawn_instances[EventPlayer()].count) + " " + libcrtx_command_spawn_instances[EventPlayer()].unitType);
+	//libcrtx_debug("creating " + IntToString(libcrtx_command_spawn_instances[EventPlayer()].count) + " " + libcrtx_command_spawn_instances[EventPlayer()].unitType);
 	UnitCreate( libcrtx_command_spawn_instances[EventPlayer()].count, libcrtx_command_spawn_instances[EventPlayer()].unitType, 0, libcrtx_command_spawn_instances[EventPlayer()].player, UnitGetPosition(u), 270.0);
 }
 
@@ -107,7 +107,7 @@ bool libcrtx_command_spawn(bool testConds, bool runActions)
 {
 	string message;
 
-	libcrtx_debug("libcrtx_command_spawn()");
+	//libcrtx_debug("libcrtx_command_spawn()");
 
 	if( !runActions ) {
 		return true;
@@ -120,7 +120,7 @@ bool libcrtx_command_spawn(bool testConds, bool runActions)
 	}
 	else
 	{
-		libcrtx_debug("invalid syntax.");
+		//libcrtx_debug("invalid syntax.");
 	}
 
 	return true;

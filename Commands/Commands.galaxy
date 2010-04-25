@@ -39,10 +39,10 @@ void libcrtx_commands_init()
 	// link the commands to their functions.
 	libcrtx_command_create("info", 	"libcrtx_command_info");
 
-	libcrtx_command_create("spawn", "libcrtx_command_spawn");
-	libcrtx_command_create("kill", 	"libcrtx_command_kill");
-	libcrtx_command_create("remove", "libcrtx_command_remove");
-	libcrtx_command_create("scale", "libcrtx_command_scale");
-	libcrtx_command_create("say",	"libcrtx_command_say");
-	libcrtx_command_create("setname", "libcrtx_command_setname");
+	libcrtx_command_create("@spawn", "libcrtx_command_spawn");
+	libcrtx_command_create("@kill", 	"libcrtx_command_kill");
+	libcrtx_command_create("@remove", "libcrtx_command_remove");
+	libcrtx_command_create("@scale", "libcrtx_command_scale");
+	libcrtx_command_create("@say",	"libcrtx_command_say");
+	libcrtx_command_create("@setname", "libcrtx_command_setname");
 }

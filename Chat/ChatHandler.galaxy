@@ -34,30 +34,18 @@ int libcrtx_chat_parsechat(int lp_player, string lp_message)
 
 	string sub = "";
 	bool commandFound = false;
-	int triggerLength = StringLength( libcrtx_chat_commandtrigger );
 
 
 	libcrtx_debug("libcrtx_chat_parsechat()");
-
-	
-if( libcrtx_chat_commandtrigger != "" && StringSub(lp_message, 1, triggerLength) != libcrtx_chat_commandtrigger ) // not a command at all.
-	
-	{
-		
-		libcrtx_debug("not a command.");
-
-		return libcrtx_chat_command_error_ok;
-	
-	}
 
 
 	while(currentCmd < libcrtx_command_num_commands )
 
 	{
 
-		sub = StringSub(lp_message, triggerLength+1, StringLength(libcrtx_command_array[currentCmd].command)+triggerLength);
+		sub = StringSub(lp_message, 1, StringLength(libcrtx_command_array[currentCmd].command));
 
-		libcrtx_debug("Searching: '" + sub + "'");
+		//libcrtx_debug("Searching: '" + sub + "'");
 		if( StringEqual(libcrtx_command_array[currentCmd].command, sub, false) )
 		{
 
