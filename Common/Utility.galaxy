@@ -1,0 +1,120 @@
+// Cortex SC2 Roleplaying Engine
+// Copyright (C) 2009-2010 <http://www.cortexrp.com/>
+//
+// $Id$
+// 
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; version 2 of the License.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// This will only return the units that are owned by the current player
+// OR, they are hostile/neutral units.
+unitgroup libcrtx_utility_getselectedunits()
+{
+	unit u;
+	int count;
+	unitgroup g = UnitGroupSelected(EventPlayer());
+	count = UnitGroupCount(g, c_unitCountAlive);
+	while(count)
+	{
+		u = UnitGroupUnit(g, count);
+		if( UnitGetOwner(u) != EventPlayer() && 
+		    PlayerType(UnitGetOwner(u)) != c_playerTypeNone &&
+		    PlayerType(UnitGetOwner(u)) != c_playerTypeComputer &&
+ 	            PlayerType(UnitGetOwner(u)) != c_playerTypeHostile &&
+		    PlayerType(UnitGetOwner(u)) != c_playerTypeNeutral)
+		{
+			UnitGroupRemove(g, u);
+		}	
+		count = count - 1;
+	}
+
+	return g;
+}
+
+// This function takes a colour described as a string and returns the player id of that colour.
+int libcrtx_utility_getplayerfromcolor(string colour)
+{
+	if( colour == "white" ) {
+		return 0;
+	} else if( colour == "red" ) {
+		return 1;
+	} else if( colour == "blue") {
+		return 2;
+	} else if( colour == "lightblue" ) {
+		return 3;
+	} else if( colour == "purple" ) {
+		return 4;
+	} else if( colour == "yellow" ) {
+		return 5;
+	} else if( colour == "orange" ) {
+		return 6;
+	} else if( colour == "green" ) {
+		return 7;
+	} else if( colour == "pink" ) {
+		return 8;
+	} else if( colour == "grey" ) {
+		return 9;
+	} else if( colour == "gray" ) { // oh, typos
+		return 9; 
+	} else if( colour == "teal" ) {
+		return 10;
+	} else if( colour == "darkgreen" ) {
+		return 11;
+	} else if( colour == "brown" ) {
+		return 12;
+	} else if( colour == "lightgrey" ) {
+		return 13;
+	} else if( colour == "lightgray" ) {
+		return 13;
+	} else if( colour == "darkgrey" ) {
+		return 14; 
+	} else if( colour == "darkgray" ) {
+		return 14; 
+	} else if( colour == "black" ) {
+		return 15;
+	}
+
+	return -1;
+}
+
+int libcrtx_minInt(int a, int b)
+{
+	if( a > b ) {
+		return b;
+	} else {
+		return a;
+	}
+}
+
+fixed libcrtx_minFixed(fixed a, fixed b)
+{
+	if( a > b ) {
+		return b;
+	} else {
+		return a;
+	}
+}
+
+int libcrtx_maxInt(int a, int b)
+{
+	if( a > b ) {
+		return a;
+	} else {
+		return b;
+	}
+}
+
+fixed libcrtx_maxFixed(fixed a, fixed b)
+{
+	if( a > b ) {
+		return a;
+	} else {
+		return b;
+	}
+}
