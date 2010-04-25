@@ -37,3 +37,12 @@ string libcrtx_get_versionstring()
 		" r" + IntToString(libcrtx_version_revision) +
 		")";
 }
+
+// The fully-qualified internal unittype name for the spawner. 
+// See libcrtx_set_spawner().
+string libcrtx_spawnertype = "";
+
+// Footer includes due to required things being in this file. :(
+include "Cortex/Common/Debug.galaxy"
+include "Cortex/Common/Utility.galaxy"
+include "Cortex/Common/Settings.galaxy"

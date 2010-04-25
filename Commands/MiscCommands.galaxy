@@ -1,0 +1,57 @@
+// Cortex SC2 Roleplaying Engine
+// Copyright (C) 2009-2010 <http://www.cortexrp.com/>
+//
+// $Id: InfoCommand.galaxy 2 2010-04-25 01:35:09Z TheBlackMage $
+// 
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; version 2 of the License.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+bool libcrtx_command_kill(bool testConds, bool runActions) {
+	unitgroup g = libcrtx_utility_getselectedunits();
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		UnitKill( UnitGroupLoopCurrent() );
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}
+
+bool libcrtx_command_remove(bool testConds, bool runActions) {
+	unitgroup g = libcrtx_utility_getselectedunits();
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		UnitRemove( UnitGroupLoopCurrent() );
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}
+
+bool libcrtx_command_scale(bool testConds, bool runActions) {
+	fixed scale;
+	unitgroup g = libcrtx_utility_getselectedunits();
+	scale = StringToFixed(StringWord(EventChatMessage(false), 2));
+	// Verify bounds.
+	scale = libcrtx_minFixed( libcrtx_setting_getfixed(libcrtx_setting_fixed_maxscale), scale );
+	scale = libcrtx_maxFixed( libcrtx_setting_getfixed(libcrtx_setting_fixed_minscale), scale );
+
+	// Translate to Blizzard SC2 system.
+	scale = scale * 100;
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		UnitSetScale( UnitGroupLoopCurrent(), scale, scale, scale );
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;	
+}

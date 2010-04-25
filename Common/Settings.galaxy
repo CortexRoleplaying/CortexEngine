@@ -1,0 +1,58 @@
+// Cortex SC2 Roleplaying Engine
+// Copyright (C) 2009-2010 <http://www.cortexrp.com/>
+//
+// $Id$
+// 
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; version 2 of the License.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+const int libcrtx_max_settings = 128;
+
+// Settings storage
+int[libcrtx_max_settings] libcrtx_settings_int;
+string[libcrtx_max_settings] libcrtx_settings_string;
+fixed[libcrtx_max_settings] libcrtx_settings_fixed;
+
+
+// SETTINGS LISTING
+const int libcrtx_setting_int_maxspawncount = 0; // The maximum # of units you can spawn at once.
+const int libcrtx_setting_fixed_maxscale    = 1; // The largest you can make a unit's scale.
+const int libcrtx_setting_fixed_minscale    = 2; // The smallest you can make a unit's scale.
+
+void libcrtx_setting_setint(int key, int val)
+{
+	libcrtx_settings_int[key] = val;	
+}
+
+int libcrtx_setting_getint(int key)
+{
+	return libcrtx_settings_int[key];
+}
+
+void libcrtx_setting_setstring(int key, string val)
+{
+	libcrtx_settings_string[key] = val;	
+}
+
+string libcrtx_setting_getstring(int key)
+{
+	return libcrtx_settings_string[key];
+}
+
+void libcrtx_setting_setfixed(int key, fixed val)
+{
+	libcrtx_settings_fixed[key] = val;	
+}
+
+fixed libcrtx_setting_getfixed(int key)
+{
+	return libcrtx_settings_fixed[key];
+}
+
+include "Cortex/Common/DefaultSettings.galaxy"

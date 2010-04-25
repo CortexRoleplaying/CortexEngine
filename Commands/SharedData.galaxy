@@ -14,10 +14,6 @@
 
 // This file is for data shared over multiple commands
 
-// The fully-qualified internal unittype name for the spawner. 
-// See libcrtx_set_spawner().
-string libcrtx_spawnertype = "";
-
 struct SpawnCommandInstance
 {
 	string unitType;

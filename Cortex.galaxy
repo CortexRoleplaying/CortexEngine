@@ -13,7 +13,6 @@
 // GNU General Public License for more details.
 
 include "Cortex/Common/Global.galaxy"
-include "Cortex/Common/Debug.galaxy"
 include "Cortex/Commands/Commands.galaxy"
 include "Cortex/Chat/Chat.galaxy"
 include "Cortex/Chat/ChatHandler.galaxy"
@@ -23,6 +22,7 @@ void libcrtx_InitLib()
 	libcrtx_set_debug_mode(true); // must be changed for release.
 
 	libcrtx_debug("cortex_init()");
+	libcrtx_settings_initdefault();
 	libcrtx_commands_init();
 	libcrtx_chat_init();
 }

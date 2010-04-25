@@ -15,12 +15,13 @@
 void libcrtx_command_spawn_resetinstance()
 {
 	libcrtx_command_spawn_instances[EventPlayer()].unitType = "";
-	libcrtx_command_spawn_instances[EventPlayer()].count = 0;
+	libcrtx_command_spawn_instances[EventPlayer()].count = 1;
 	libcrtx_command_spawn_instances[EventPlayer()].player = EventPlayer();
 }
 
 bool libcrtx_command_spawn_parse(string lp_message)
 {
+	bool first = true;
 	string colour; // spelling this british-way since color is a reserved word
 	int misc;
 	string val;
@@ -31,11 +32,15 @@ bool libcrtx_command_spawn_parse(string lp_message)
 	libcrtx_debug("param 2 is " + StringWord(lp_message, currentParameter) );
 	while(StringWord(lp_message, currentParameter) != "")
 	{
+		if( first ) {
+			first = false;
+			libcrtx_command_spawn_resetinstance();
+		}
+
 		val = StringWord(lp_message, currentParameter);
 		if( StringToInt(val) != 0 ) // integer - spawncount only
 		{
 			// reset when we have a new integer!
-			libcrtx_command_spawn_resetinstance();
 			libcrtx_command_spawn_instances[EventPlayer()].count = StringToInt(val);
 			libcrtx_debug("caught integer");
 		}
@@ -48,6 +53,13 @@ bool libcrtx_command_spawn_parse(string lp_message)
 			if( colour == "hostile" )
 			{
 				libcrtx_command_spawn_instances[EventPlayer()].player = 15; // player 15 is hostile.
+			}
+			else
+			{
+				misc = libcrtx_utility_getplayerfromcolor(colour);
+				if( misc != -1 ) {
+					libcrtx_command_spawn_instances[EventPlayer()].player = misc;
+				}
 			}
 			libcrtx_debug("caught ownership redirect");
 		}
@@ -74,7 +86,12 @@ bool libcrtx_command_spawn_parse(string lp_message)
 void libcrtx_command_spawn_execute()
 {
 	unit u;
-	unitgroup g = UnitGroup(libcrtx_spawnertype, EventPlayer(), RegionEntireMap(), null, 1);
+	unitgroup g;
+	if( libcrtx_command_spawn_instances[EventPlayer()].count == 0 ) {
+		return; // count == 0, don't bother.
+	}
+
+	g = UnitGroup(libcrtx_spawnertype, EventPlayer(), RegionEntireMap(), null, 1);
 	u = UnitGroupUnit(g, 1);
 	if( u == null )
 	{
