@@ -1,0 +1,107 @@
+// Cortex SC2 Roleplaying Engine
+// Copyright (C) 2009-2010 <http://www.cortexrp.com/>
+//
+// $Id$
+// 
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; version 2 of the License.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+void libcrtx_assign_name_to_unit(unit u, string name)
+{
+	bank b;
+	UnitSetCustomValue(u, libcrtx_unit_custom_value_guid, IntToFixed(libcrtx_command_chat_guid_counter));
+	b = libcrtx_player_banks[EventPlayer()];
+	if( b == null )
+	{
+		// create a new bank!
+		b = BankLoad(libcrtx_bank_prefix + "chatsystem", EventPlayer());
+		libcrtx_player_banks[EventPlayer()] = b;
+	}
+
+	BankValueSetFromString(b, "chat", IntToString( libcrtx_command_chat_guid_counter ), name );
+	libcrtx_command_chat_guid_counter = libcrtx_command_chat_guid_counter + 1;
+}
+
+// Sadly, the return type must be text because blizzard has no TextToString() wtf?
+text libcrtx_get_name_from_unit(unit u)
+{
+	string s;
+	bank b = libcrtx_player_banks[EventPlayer()];
+	if( b == null )
+	{
+		return UnitTypeGetName( UnitGetType(u) ); 
+	}
+
+	// Convert to int, then to string so we don't end up with "832.00" which isn't the same as "832" in a string.
+	s = BankValueGetAsString( b, "chat", IntToString(FixedToInt( UnitGetCustomValue(u, libcrtx_unit_custom_value_guid)) ) );
+	if( s == "" ) // no name.
+	{
+		return UnitTypeGetName( UnitGetType(u) ); 
+	}
+
+	return StringToText(s);
+}
+
+bool libcrtx_command_say(bool checkConds, bool runActions)
+{
+	string s;
+	unit u;
+	text unitName;
+	text misc;
+	unitgroup g = libcrtx_utility_getselectedunits();
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		u = UnitGroupLoopCurrent();
+		unitName = libcrtx_get_name_from_unit(u);
+		unitName = TextWithColor(unitName, ColorFromIndex((PlayerGetColorIndex(EventPlayer(), false)), c_teamColorDiffuse));
+		
+		s = EventChatMessage(false);
+		s = StringSub( s, StringFind(s, " ", c_stringCase)+1, StringLength(s)); // The remainder of the chat message.
+		s = ": " + s;
+		misc = unitName + StringToText(s);
+		
+		UIDisplayMessage(PlayerGroupAll(), c_messageAreaChat, misc);
+
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+
+
+	return true;
+}
+
+
+bool libcrtx_command_setname(bool checkConds, bool runActions)
+{
+	string s;
+	unit u;
+	unitgroup g;
+
+	s = EventChatMessage(false);
+	s = StringSub( s, StringFind(s, " ", c_stringCase)+1, StringLength(s)); // The remainder of the chat message.	
+	if( s == "" ) { // don't want people with null names hiding their chat color.
+		return true;
+	}
+	
+	g = libcrtx_utility_getselectedunits();
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		u = UnitGroupLoopCurrent();
+
+		libcrtx_assign_name_to_unit(u, s);
+
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+
+
+	return true;
+}

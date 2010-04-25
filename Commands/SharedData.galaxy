@@ -22,3 +22,7 @@ struct SpawnCommandInstance
 };
 
 SpawnCommandInstance[libcrtx_max_players] libcrtx_command_spawn_instances;
+
+int libcrtx_command_chat_guid_counter = 1;
+
+bank[libcrtx_max_players] libcrtx_player_banks;

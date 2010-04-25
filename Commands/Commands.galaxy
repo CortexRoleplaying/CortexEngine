@@ -17,6 +17,7 @@ include "Cortex/Commands/CommandPrototype.galaxy"
 include "Cortex/Commands/InfoCommand.galaxy"
 include "Cortex/Commands/SpawnCommand.galaxy"
 include "Cortex/Commands/MiscCommands.galaxy"
+include "Cortex/Commands/ChatCommands.galaxy"
 
 void libcrtx_set_spawner(string lp_unittype)
 {
@@ -42,4 +43,6 @@ void libcrtx_commands_init()
 	libcrtx_command_create("kill", 	"libcrtx_command_kill");
 	libcrtx_command_create("remove", "libcrtx_command_remove");
 	libcrtx_command_create("scale", "libcrtx_command_scale");
+	libcrtx_command_create("say",	"libcrtx_command_say");
+	libcrtx_command_create("setname", "libcrtx_command_setname");
 }

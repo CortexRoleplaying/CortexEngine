@@ -25,6 +25,12 @@ const string libcrtx_version_hotfix = "";
 // Max players supported by SC2.
 const int libcrtx_max_players = 12;
 
+// Custom value indeces
+const int libcrtx_unit_custom_value_guid = 0;
+
+// Prefix for all banks.
+const string libcrtx_bank_prefix = "libcrtx_bank_";
+
 // Human-readable version string will read for example:
 // Cortex (0.10.1a r123)
 string libcrtx_get_versionstring()
