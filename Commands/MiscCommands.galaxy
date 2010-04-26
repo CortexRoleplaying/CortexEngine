@@ -167,6 +167,7 @@ bool libcrtx_command_unpause(bool testConds, bool runActions) {
 
 
 bool libcrtx_command_movable(bool testConds, bool runActions) {
+	string msg;
 	bool enable;
 	bool query;
 	string nextParam;
@@ -187,9 +188,9 @@ bool libcrtx_command_movable(bool testConds, bool runActions) {
 	{
 		if( query ) {
 			if( UnitTestState( UnitGroupLoopCurrent(), c_unitStateMoveSuppressed ) ) {
-				UIDisplayMessage( PlayerGroupSingle(EventPlayer()), c_messageAreaChat, StringToText("This unit is not moveable.") );
+				libcrtx_write( PlayerGroupSingle(EventPlayer()), "This unit is not movable.");
 			} else {
-				UIDisplayMessage( PlayerGroupSingle(EventPlayer()), c_messageAreaChat, StringToText("This unit is moveable.") );
+				libcrtx_write( PlayerGroupSingle(EventPlayer()), "This unit is movable.");
 			}
 		} else {
 			UnitSetState( UnitGroupLoopCurrent(), c_unitStateMoveSuppressed, enable );

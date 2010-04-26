@@ -26,7 +26,7 @@ void libcrtx_chat_init()
 	}
 }
 
-int libcrtx_chat_parsechat(int lp_player, string lp_message)
+bool libcrtx_chat_parsechat(int lp_player, string lp_message)
 
 { 
 
@@ -63,14 +63,14 @@ int libcrtx_chat_parsechat(int lp_player, string lp_message)
 	}
 
 
-	
-return libcrtx_chat_command_error_ok;
-
+	return commandFound;
 }
-
 
 bool libcrtx_chat_receivedevent(bool testConds, bool runActions)
 {
+	text t;
+	string s;
+	bool isCmd = false;
 	int triggerPlayer = EventPlayer();
 	string chatMsg = EventChatMessage(false);
 
@@ -79,6 +79,20 @@ bool libcrtx_chat_receivedevent(bool testConds, bool runActions)
 		return true;
 	}
 
-	libcrtx_chat_parsechat( triggerPlayer, chatMsg );
+	isCmd = libcrtx_chat_parsechat( triggerPlayer, chatMsg );
+
+	// Clear everyone's chat of the filth. FILTH I SAY.
+	UIClearMessages( PlayerGroupAll(), c_messageAreaChat );
+
+	if( !isCmd )
+	{
+		t = PlayerName( EventPlayer() ) + StringToText(" (OOC)");
+		t = TextWithColor(t, ColorFromIndex((PlayerGetColorIndex(EventPlayer(), false)), c_teamColorDiffuse));
+		s = ": " + EventChatMessage(false);
+		t = t + StringToText(s);
+		// And now we write the pretty OOC chat!
+		libcrtx_writetext(PlayerGroupAll(), t);
+		
+	}
 	return true;			
 }

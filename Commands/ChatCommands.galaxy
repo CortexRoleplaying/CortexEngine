@@ -67,7 +67,7 @@ bool libcrtx_command_say(bool checkConds, bool runActions)
 		s = ": " + s;
 		misc = unitName + StringToText(s);
 		
-		UIDisplayMessage(PlayerGroupAll(), c_messageAreaChat, misc);
+		libcrtx_writetext(PlayerGroupAll(), misc);
 
 		UnitGroupLoopStep();
 	}

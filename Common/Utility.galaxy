@@ -133,3 +133,14 @@ string libcrtx_color_to_string(color c)
 	       IntToString(Color255FromFixed(ColorGetComponent(c, c_colorComponentGreen))) + "," +
                IntToString(Color255FromFixed(ColorGetComponent(c, c_colorComponentBlue)));
 }
+
+// hacky code because blizzard sucked at implementing chat stuff. :(
+void libcrtx_write(playergroup p, string s)
+{
+	UIDisplayMessage( p, c_messageAreaDebug, StringToText("                        " + s) );
+}
+
+void libcrtx_writetext(playergroup p, text t)
+{
+	UIDisplayMessage( p, c_messageAreaDebug, StringToText("                        ") + t );
+}

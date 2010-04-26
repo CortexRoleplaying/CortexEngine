@@ -27,5 +27,5 @@ void libcrtx_debug(string lp_msg)
 		return;
 	}
 
-	UIDisplayMessage(PlayerGroupAll(), c_messageAreaChat, StringToText(lp_msg));
+	UIDisplayMessage(PlayerGroupAll(), c_messageAreaDebug, StringToText(lp_msg) );
 }
