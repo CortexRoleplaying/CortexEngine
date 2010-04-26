@@ -45,4 +45,11 @@ void libcrtx_commands_init()
 	libcrtx_command_create("@scale", "libcrtx_command_scale");
 	libcrtx_command_create("@say",	"libcrtx_command_say");
 	libcrtx_command_create("@setname", "libcrtx_command_setname");
+	libcrtx_command_create("@give",	"libcrtx_command_give");
+	libcrtx_command_create("@givecolor", "libcrtx_command_givecolor");
+	libcrtx_command_create("@invulnerable", "libcrtx_command_invulnerable");
+	libcrtx_command_create("@vulnerable", "libcrtx_command_vulnerable");
+	libcrtx_command_create("@pause", "libcrtx_command_pause");
+	libcrtx_command_create("@unpause", "libcrtx_command_unpause");
+	libcrtx_command_create("@move", "libcrtx_command_movable");
 }

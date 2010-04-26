@@ -55,3 +55,148 @@ bool libcrtx_command_scale(bool testConds, bool runActions) {
 	UnitGroupLoopEnd();
 	return true;	
 }
+
+bool libcrtx_command_give(bool testConds, bool runActions) {
+	int newOwner;
+	string nextParam;
+	unitgroup g = libcrtx_utility_getselectedunits();
+	nextParam = StringWord( EventChatMessage(false), 2 );
+	newOwner = libcrtx_utility_getplayerfromcolor(nextParam);
+	if(newOwner == -1) { // invalid entry by user
+		return true;
+	}
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		UnitSetOwner( UnitGroupLoopCurrent(), newOwner, true );
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}
+
+bool libcrtx_command_givecolor(bool testConds, bool runActions) {
+	int newOwner;
+	string nextParam;
+	unitgroup g = libcrtx_utility_getselectedunits();
+	nextParam = StringWord( EventChatMessage(false), 2 );
+	newOwner = libcrtx_utility_getplayerfromcolor(nextParam);
+	if(newOwner == -1) { // invalid entry by user
+		return true;
+	}
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		UnitSetOwner( UnitGroupLoopCurrent(), newOwner, false );
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}
+
+bool libcrtx_command_color(bool testConds, bool runActions) {
+	int newColour;
+	string nextParam;
+	unitgroup g = libcrtx_utility_getselectedunits();
+	nextParam = StringWord( EventChatMessage(false), 2 );
+	newColour = libcrtx_utility_getplayerfromcolor(nextParam);
+	if(newColour == -1) { // invalid entry by user
+		return true;
+	}
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		UnitSetTeamColorIndex( UnitGroupLoopCurrent(), newColour );
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}
+
+bool libcrtx_command_invulnerable(bool testConds, bool runActions) {
+	unitgroup g = libcrtx_utility_getselectedunits();
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		UnitSetState( UnitGroupLoopCurrent(), c_unitStateInvulnerable, true );
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}
+
+
+bool libcrtx_command_vulnerable(bool testConds, bool runActions) {
+	unitgroup g = libcrtx_utility_getselectedunits();
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		UnitSetState( UnitGroupLoopCurrent(), c_unitStateInvulnerable, false );
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}
+
+bool libcrtx_command_pause(bool testConds, bool runActions) {
+	unitgroup g = libcrtx_utility_getselectedunits();
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		UnitSetState( UnitGroupLoopCurrent(), c_unitStatePaused, true );
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}
+
+bool libcrtx_command_unpause(bool testConds, bool runActions) {
+	unitgroup g = libcrtx_utility_getselectedunits();
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		UnitSetState( UnitGroupLoopCurrent(), c_unitStatePaused, false );
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}
+
+
+bool libcrtx_command_movable(bool testConds, bool runActions) {
+	bool enable;
+	bool query;
+	string nextParam;
+	unitgroup g = libcrtx_utility_getselectedunits();
+	query = false;
+	nextParam = StringWord( EventChatMessage(false), 2 );
+	if( nextParam == "on" ) {
+		enable = true;
+	} else if( nextParam == "off" ) {
+		enable = false; 
+	} else {
+		// print whether it is or isn't.
+		query = true;
+	}
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		if( query ) {
+			if( UnitTestState( UnitGroupLoopCurrent(), c_unitStateMoveSuppressed ) ) {
+				UIDisplayMessage( PlayerGroupSingle(EventPlayer()), c_messageAreaChat, StringToText("This unit is not moveable.") );
+			} else {
+				UIDisplayMessage( PlayerGroupSingle(EventPlayer()), c_messageAreaChat, StringToText("This unit is moveable.") );
+			}
+		} else {
+			UnitSetState( UnitGroupLoopCurrent(), c_unitStateMoveSuppressed, enable );
+		}
+
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}
