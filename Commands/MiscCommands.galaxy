@@ -38,18 +38,44 @@ bool libcrtx_command_remove(bool testConds, bool runActions) {
 
 bool libcrtx_command_scale(bool testConds, bool runActions) {
 	fixed scale;
+
+	fixed scaleX;
+	fixed scaleY;
+	fixed scaleZ;
+
 	unitgroup g = libcrtx_utility_getselectedunits();
 	scale = StringToFixed(StringWord(EventChatMessage(false), 2));
+	scaleX = scale;
+	scaleY = StringToFixed(StringWord(EventChatMessage(false), 3));
+	scaleZ = StringToFixed(StringWord(EventChatMessage(false), 4));
+
+	if( scaleY == 0.0 ) {
+		scaleY = scaleX;
+	}
+
+	if( scaleZ == 0.0 ) {
+		scaleZ = scaleX;
+	}
+
 	// Verify bounds.
-	scale = libcrtx_minFixed( libcrtx_setting_getfixed(libcrtx_setting_fixed_maxscale), scale );
-	scale = libcrtx_maxFixed( libcrtx_setting_getfixed(libcrtx_setting_fixed_minscale), scale );
+	scaleX = libcrtx_minFixed( libcrtx_setting_getfixed(libcrtx_setting_fixed_maxscale), scale );
+	scaleX = libcrtx_maxFixed( libcrtx_setting_getfixed(libcrtx_setting_fixed_minscale), scale );
+
+	scaleY = libcrtx_minFixed( libcrtx_setting_getfixed(libcrtx_setting_fixed_maxscale), scale );
+	scaleY = libcrtx_maxFixed( libcrtx_setting_getfixed(libcrtx_setting_fixed_minscale), scale );
+
+	scaleZ = libcrtx_minFixed( libcrtx_setting_getfixed(libcrtx_setting_fixed_maxscale), scale );
+	scaleZ = libcrtx_maxFixed( libcrtx_setting_getfixed(libcrtx_setting_fixed_minscale), scale );
 
 	// Translate to Blizzard SC2 system.
-	scale = scale * 100;
+	scaleX = scaleX * 100.0;
+	scaleY = scaleY * 100.0;
+	scaleZ = scaleZ * 100.0;
+
 	UnitGroupLoopBegin(g);
 	while(!UnitGroupLoopDone())
 	{
-		UnitSetScale( UnitGroupLoopCurrent(), scale, scale, scale );
+		UnitSetScale( UnitGroupLoopCurrent(), scaleX, scaleY, scaleZ );
 		UnitGroupLoopStep();
 	}
 	UnitGroupLoopEnd();
