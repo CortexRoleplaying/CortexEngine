@@ -125,6 +125,13 @@ int libcrtx_boundsInt(int src, int min, int max)
 	return ret;
 }
 
+fixed libcrtx_boundsFixed(fixed src, fixed min, fixed max)
+{
+	fixed ret = libcrtx_minFixed( src, max );
+	ret = libcrtx_maxFixed( src, min );
+	return ret;
+}
+
 string libcrtx_color_to_string(color c)
 {
         return IntToString(Color255FromFixed(ColorGetComponent(c, c_colorComponentRed))) + "," +

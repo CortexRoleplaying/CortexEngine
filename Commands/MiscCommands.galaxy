@@ -207,10 +207,12 @@ bool libcrtx_command_tint(bool testConds, bool runActions) {
 	string paramOne;
 	string paramTwo;
 	string paramThree;
+	string paramFour;
 
 	int red;
 	int green;
 	int blue;
+	fixed alpha;
 
 	string amsg;
 	actorscope ascope;
@@ -221,15 +223,22 @@ bool libcrtx_command_tint(bool testConds, bool runActions) {
 	paramOne = StringWord( EventChatMessage(false), 2 );
 	paramTwo = StringWord( EventChatMessage(false), 3 );
 	paramThree = StringWord( EventChatMessage(false), 4 );
+	paramFour = StringWord( EventChatMessage(false), 5 );
 
 	red = libcrtx_boundsInt(StringToInt(paramOne), 0, 255);
 	green = libcrtx_boundsInt(StringToInt(paramTwo), 0, 255);
 	blue = libcrtx_boundsInt(StringToInt(paramThree), 0, 255);
+	alpha = libcrtx_boundsFixed(StringToFixed(paramFour), 0.0, 1.0);
+
+	if( paramFour == "" ) { // Unspecified, default to 1.0
+		alpha = 1.0;
+	}
 
 	UnitGroupLoopBegin(g);
 	while(!UnitGroupLoopDone())
 	{
 		ActorSend(libNtve_gf_MainActorofUnit(UnitGroupLoopCurrent()), "SetTintColor " + IntToString(red) + "," + IntToString(green) + "," + IntToString(blue));
+		ActorSend(libNtve_gf_MainActorofUnit(UnitGroupLoopCurrent()), "SetOpacity " + FixedToString(alpha, c_fixedPrecisionAny) + "," + "0");
 		UnitGroupLoopStep();
 	}
 	UnitGroupLoopEnd();
