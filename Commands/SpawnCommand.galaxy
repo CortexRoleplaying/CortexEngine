@@ -72,7 +72,11 @@ bool libcrtx_command_spawn_parse(string lp_message)
 			}
 
 			doneSpawnType = true;
-			libcrtx_command_spawn_instances[EventPlayer()].unitType = UnitTypeFromString(val);
+			if( UnitTypeFromString(val) == UnitTypeFromString( libcrtx_spawnertype ) ) {
+				return false;
+			} else {
+				libcrtx_command_spawn_instances[EventPlayer()].unitType = UnitTypeFromString(val); 
+			}
 			//libcrtx_debug("caught spawn type");
 		}
 		
