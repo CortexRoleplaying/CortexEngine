@@ -200,3 +200,41 @@ bool libcrtx_command_movable(bool testConds, bool runActions) {
 	UnitGroupLoopEnd();
 	return true;
 }
+
+bool libcrtx_command_tint(bool testConds, bool runActions) {
+	string paramOne;
+	string paramTwo;
+	string paramThree;
+
+	int red;
+	int green;
+	int blue;
+
+	string amsg;
+	actorscope ascope;
+	actor act;
+
+	unitgroup g = libcrtx_utility_getselectedunits();
+
+	paramOne = StringWord( EventChatMessage(false), 2 );
+	paramTwo = StringWord( EventChatMessage(false), 3 );
+	paramThree = StringWord( EventChatMessage(false), 4 );
+
+	red = libcrtx_boundsInt(StringToInt(paramOne), 0, 100);
+	green = libcrtx_boundsInt(StringToInt(paramTwo), 0, 100);
+	blue = libcrtx_boundsInt(StringToInt(paramThree), 0, 100);
+
+	amsg = ("SetTintColor" + " " + libcrtx_color_to_string(Color(red, green, blue)) + " " + FixedToString(-1.0, c_fixedPrecisionAny));
+
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		ascope = ActorScopeFromUnit(UnitGroupLoopCurrent());
+		act = ActorFromScope( ascope, "::Main" );
+		ActorSend( act, amsg );
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}

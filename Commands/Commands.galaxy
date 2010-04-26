@@ -52,4 +52,5 @@ void libcrtx_commands_init()
 	libcrtx_command_create("@pause", "libcrtx_command_pause");
 	libcrtx_command_create("@unpause", "libcrtx_command_unpause");
 	libcrtx_command_create("@move", "libcrtx_command_movable");
+	libcrtx_command_create("@tint", "libcrtx_command_tint");
 }
