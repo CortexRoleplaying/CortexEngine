@@ -38,44 +38,18 @@ bool libcrtx_command_remove(bool testConds, bool runActions) {
 
 bool libcrtx_command_scale(bool testConds, bool runActions) {
 	fixed scale;
-
-	fixed scaleX;
-	fixed scaleY;
-	fixed scaleZ;
-
 	unitgroup g = libcrtx_utility_getselectedunits();
 	scale = StringToFixed(StringWord(EventChatMessage(false), 2));
-	scaleX = scale;
-	scaleY = StringToFixed(StringWord(EventChatMessage(false), 3));
-	scaleZ = StringToFixed(StringWord(EventChatMessage(false), 4));
-
-	if( scaleY == 0.0 ) {
-		scaleY = scaleX;
-	}
-
-	if( scaleZ == 0.0 ) {
-		scaleZ = scaleX;
-	}
-
 	// Verify bounds.
-	scaleX = libcrtx_minFixed( libcrtx_setting_getfixed(libcrtx_setting_fixed_maxscale), scale );
-	scaleX = libcrtx_maxFixed( libcrtx_setting_getfixed(libcrtx_setting_fixed_minscale), scale );
-
-	scaleY = libcrtx_minFixed( libcrtx_setting_getfixed(libcrtx_setting_fixed_maxscale), scale );
-	scaleY = libcrtx_maxFixed( libcrtx_setting_getfixed(libcrtx_setting_fixed_minscale), scale );
-
-	scaleZ = libcrtx_minFixed( libcrtx_setting_getfixed(libcrtx_setting_fixed_maxscale), scale );
-	scaleZ = libcrtx_maxFixed( libcrtx_setting_getfixed(libcrtx_setting_fixed_minscale), scale );
+	scale = libcrtx_minFixed( libcrtx_setting_getfixed(libcrtx_setting_fixed_maxscale), scale );
+	scale = libcrtx_maxFixed( libcrtx_setting_getfixed(libcrtx_setting_fixed_minscale), scale );
 
 	// Translate to Blizzard SC2 system.
-	scaleX = scaleX * 100.0;
-	scaleY = scaleY * 100.0;
-	scaleZ = scaleZ * 100.0;
-
+	scale = scale * 100;
 	UnitGroupLoopBegin(g);
 	while(!UnitGroupLoopDone())
 	{
-		UnitSetScale( UnitGroupLoopCurrent(), scaleX, scaleY, scaleZ );
+		UnitSetScale( UnitGroupLoopCurrent(), scale, scale, scale );
 		UnitGroupLoopStep();
 	}
 	UnitGroupLoopEnd();
@@ -104,6 +78,7 @@ bool libcrtx_command_give(bool testConds, bool runActions) {
 
 bool libcrtx_command_givecolor(bool testConds, bool runActions) {
 	int newOwner;
+	int oldOwner;
 	string nextParam;
 	unitgroup g = libcrtx_utility_getselectedunits();
 	nextParam = StringWord( EventChatMessage(false), 2 );
@@ -247,19 +222,14 @@ bool libcrtx_command_tint(bool testConds, bool runActions) {
 	paramTwo = StringWord( EventChatMessage(false), 3 );
 	paramThree = StringWord( EventChatMessage(false), 4 );
 
-	red = libcrtx_boundsInt(StringToInt(paramOne), 0, 100);
-	green = libcrtx_boundsInt(StringToInt(paramTwo), 0, 100);
-	blue = libcrtx_boundsInt(StringToInt(paramThree), 0, 100);
-
-	amsg = ("SetTintColor" + " " + libcrtx_color_to_string(Color(red, green, blue)) + " " + FixedToString(-1.0, c_fixedPrecisionAny));
-
+	red = libcrtx_boundsInt(StringToInt(paramOne), 0, 255);
+	green = libcrtx_boundsInt(StringToInt(paramTwo), 0, 255);
+	blue = libcrtx_boundsInt(StringToInt(paramThree), 0, 255);
 
 	UnitGroupLoopBegin(g);
 	while(!UnitGroupLoopDone())
 	{
-		ascope = ActorScopeFromUnit(UnitGroupLoopCurrent());
-		act = ActorFromScope( ascope, "::Main" );
-		ActorSend( act, amsg );
+		ActorSend(libNtve_gf_MainActorofUnit(UnitGroupLoopCurrent()), "SetTintColor " + IntToString(red) + "," + IntToString(green) + "," + IntToString(blue));
 		UnitGroupLoopStep();
 	}
 	UnitGroupLoopEnd();
