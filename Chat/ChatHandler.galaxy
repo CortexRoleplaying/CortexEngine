@@ -30,6 +30,7 @@ bool libcrtx_chat_parsechat(int lp_player, string lp_message)
 
 { 
 
+	int spaceIndex;
 	int currentCmd = 0;
 
 	string sub = "";
@@ -43,7 +44,14 @@ bool libcrtx_chat_parsechat(int lp_player, string lp_message)
 
 	{
 
-		sub = StringSub(lp_message, 1, StringLength(libcrtx_command_array[currentCmd].command));
+		spaceIndex = StringFind( lp_message, " ", c_stringCase );
+		if( spaceIndex == 0 ) { 
+			spaceIndex = StringLength( lp_message );
+		} else {
+			spaceIndex = spaceIndex - 1;
+		}
+
+		sub = StringSub(lp_message, 1, spaceIndex);
 
 		//libcrtx_debug("Searching: '" + sub + "'");
 		if( StringEqual(libcrtx_command_array[currentCmd].command, sub, false) )
