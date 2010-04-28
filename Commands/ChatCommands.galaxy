@@ -59,8 +59,7 @@ bool libcrtx_command_say(bool checkConds, bool runActions)
 	while(!UnitGroupLoopDone())
 	{
 		u = UnitGroupLoopCurrent();
-		unitName = libcrtx_get_name_from_unit(u);
-		unitName = TextWithColor(unitName, ColorFromIndex((PlayerGetColorIndex(EventPlayer(), false)), c_teamColorDiffuse));
+		unitName = libcrtx_utility_colortextbyplayer( EventPlayer(), libcrtx_get_name_from_unit(u));
 		
 		s = EventChatMessage(false);
 		s = StringSub( s, StringFind(s, " ", c_stringCase)+1, StringLength(s)); // The remainder of the chat message.

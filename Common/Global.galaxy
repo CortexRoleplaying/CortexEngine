@@ -13,13 +13,13 @@
 // GNU General Public License for more details.
 
 // Cortex Subversion revision
-int libcrtx_version_revision = 20;
+int libcrtx_version_revision = 21;
 
 // Version in form major.minor.bugfix.hotfix
 // ex: "0.10.1a" when concatenated
 const int libcrtx_version_major = 0;
-const int libcrtx_version_minor = 1;
-const int libcrtx_version_bugfix = 5;
+const int libcrtx_version_minor = 2;
+const int libcrtx_version_bugfix = 0;
 const string libcrtx_version_hotfix = "";
 
 // Max players supported by SC2.
@@ -52,3 +52,4 @@ string libcrtx_spawnertype = "";
 include "Cortex/Common/Debug.galaxy"
 include "Cortex/Common/Utility.galaxy"
 include "Cortex/Common/Settings.galaxy"
+include "Cortex/Common/Admin.galaxy"

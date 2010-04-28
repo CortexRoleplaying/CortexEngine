@@ -23,6 +23,7 @@ void libcrtx_chat_init()
 	while( i <= libcrtx_max_players )
 	{
 		TriggerAddEventChatMessage(t, i, "", false);
+		i = i + 1;
 	}
 }
 
@@ -38,6 +39,11 @@ bool libcrtx_chat_parsechat(int lp_player, string lp_message)
 
 
 	libcrtx_debug("libcrtx_chat_parsechat()");
+
+	// disabled players: all chat is routed to OOC.
+	if( libcrtx_admin_isplayerdisabled(lp_player) ) {
+		return false;
+	}
 
 
 	while(currentCmd < libcrtx_command_num_commands )
@@ -94,8 +100,7 @@ bool libcrtx_chat_receivedevent(bool testConds, bool runActions)
 
 	if( !isCmd )
 	{
-		t = PlayerName( EventPlayer() ) + StringToText(" (OOC)");
-		t = TextWithColor(t, ColorFromIndex((PlayerGetColorIndex(EventPlayer(), false)), c_teamColorDiffuse));
+		t = libcrtx_utility_colortextbyplayer( EventPlayer(), PlayerName( EventPlayer() ) + StringToText(" (OOC)") );
 		s = ": " + EventChatMessage(false);
 		t = t + StringToText(s);
 		// And now we write the pretty OOC chat!

@@ -25,4 +25,5 @@ void libcrtx_InitLib()
 	libcrtx_settings_initdefault();
 	libcrtx_commands_init();
 	libcrtx_chat_init();
+	libcrtx_admin_init();
 }

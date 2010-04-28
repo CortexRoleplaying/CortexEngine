@@ -82,6 +82,21 @@ int libcrtx_utility_getplayerfromcolor(string colour)
 	return -1;
 }
 
+text libcrtx_utility_colortextbyplayer(int player, text colorme)
+{
+	return TextWithColor(colorme, ColorFromIndex((PlayerGetColorIndex(player, false)), c_teamColorDiffuse));		
+}
+
+text libcrtx_utility_coloredplayername(int player)
+{
+	text pName = PlayerName(player);
+	if( PlayerStatus(player) == c_playerStatusUnused ) {
+		pName = StringToText("Unnamed");
+	}
+
+	return libcrtx_utility_colortextbyplayer(player, pName);
+}
+
 int libcrtx_minInt(int a, int b)
 {
 	if( a > b ) {

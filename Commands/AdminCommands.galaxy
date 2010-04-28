@@ -1,0 +1,108 @@
+// Cortex SC2 Roleplaying Engine
+// Copyright (C) 2009-2010 <http://www.cortexrp.com/>
+//
+// $Id$
+// 
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; version 2 of the License.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+bool libcrtx_command_ban(bool testConds, bool runActions)
+{
+	int player;
+	string val = StringWord( EventChatMessage(false), 2 );
+	player = libcrtx_utility_getplayerfromcolor( val );
+	if( player == -1 ) {
+		return true;
+	}
+
+	if( !libcrtx_admin_haspermissions( EventPlayer(), player, libcrtx_admin_permissionlevel_moderator )) {
+		return true;
+	}
+
+	GameOver( player, c_gameOverDefeat, false, false );
+	
+	libcrtx_writetext(PlayerGroupAll(), libcrtx_utility_coloredplayername(player) + StringToText(" has been banned by ") + libcrtx_utility_coloredplayername(EventPlayer()));
+	return true;
+}
+
+bool libcrtx_command_disable(bool testConds, bool runActions)
+{
+	int player;
+	string val = StringWord( EventChatMessage(false), 2 );
+	player = libcrtx_utility_getplayerfromcolor( val );
+	if( player == -1 ) {
+		return true;
+	}
+
+	if( !libcrtx_admin_haspermissions( EventPlayer(), player, libcrtx_admin_permissionlevel_moderator )) {
+		return true;
+	}
+
+	libcrtx_admin_disablecommands( player );
+	
+	libcrtx_writetext(PlayerGroupAll(), libcrtx_utility_coloredplayername(player) + StringToText(" has had his commands disabled by ") + libcrtx_utility_coloredplayername(EventPlayer()));
+	return true;	
+}
+
+bool libcrtx_command_enable(bool testConds, bool runActions)
+{
+	int player;
+	string val = StringWord( EventChatMessage(false), 2 );
+	player = libcrtx_utility_getplayerfromcolor( val );
+	if( player == -1 ) {
+		return true;
+	}
+
+	if( !libcrtx_admin_haspermissions( EventPlayer(), player, libcrtx_admin_permissionlevel_moderator )) {
+		return true;
+	}
+
+	libcrtx_admin_enablecommands( player );
+	
+	libcrtx_writetext(PlayerGroupAll(), libcrtx_utility_coloredplayername(player) + StringToText(" has had his commands enabled by ") + libcrtx_utility_coloredplayername(EventPlayer()));
+	return true;	
+}
+
+bool libcrtx_command_promote(bool testConds, bool runActions)
+{
+	int player;
+	string val = StringWord( EventChatMessage(false), 2 );
+	player = libcrtx_utility_getplayerfromcolor( val );
+	if( player == -1 ) {
+		return true;
+	}
+
+	if( !libcrtx_admin_haspermissions( EventPlayer(), player, libcrtx_admin_permissionlevel_admin )) {
+		return true;
+	}
+
+	libcrtx_admin_setpermission( player, libcrtx_admin_permissionlevel_moderator );
+	
+	libcrtx_writetext(PlayerGroupAll(), libcrtx_utility_coloredplayername(player) + StringToText(" has been promoted to moderator by ") + libcrtx_utility_coloredplayername(EventPlayer()));
+	return true;	
+}
+
+bool libcrtx_command_demote(bool testConds, bool runActions)
+{
+	int player;
+	string val = StringWord( EventChatMessage(false), 2 );
+	player = libcrtx_utility_getplayerfromcolor( val );
+	if( player == -1 ) {
+		return true;
+	}
+
+	if( !libcrtx_admin_haspermissions( EventPlayer(), player, libcrtx_admin_permissionlevel_admin )) {
+		return true;
+	}
+
+	libcrtx_admin_setpermission( player, libcrtx_admin_permissionlevel_none );
+	
+	libcrtx_writetext(PlayerGroupAll(), libcrtx_utility_coloredplayername(player) + StringToText(" has been demoted to user by ") + libcrtx_utility_coloredplayername(EventPlayer()));
+	return true;	
+}

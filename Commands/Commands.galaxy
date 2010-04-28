@@ -18,6 +18,7 @@ include "Cortex/Commands/InfoCommand.galaxy"
 include "Cortex/Commands/SpawnCommand.galaxy"
 include "Cortex/Commands/MiscCommands.galaxy"
 include "Cortex/Commands/ChatCommands.galaxy"
+include "Cortex/Commands/AdminCommands.galaxy"
 
 void libcrtx_set_spawner(string lp_unittype)
 {
@@ -54,4 +55,11 @@ void libcrtx_commands_init()
 	libcrtx_command_create("@move", "libcrtx_command_movable");
 	libcrtx_command_create("@tint", "libcrtx_command_tint");
 	libcrtx_command_create("@color", "libcrtx_command_color");
+
+	// admin commands
+	libcrtx_command_create("!ban", "libcrtx_command_ban");
+	libcrtx_command_create("!disable", "libcrtx_command_disable");
+	libcrtx_command_create("!enable", "libcrtx_command_enable");
+	libcrtx_command_create("!promote", "libcrtx_command_promote");
+	libcrtx_command_create("!demote", "libcrtx_command_demote");
 }
