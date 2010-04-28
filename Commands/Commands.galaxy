@@ -55,6 +55,7 @@ void libcrtx_commands_init()
 	libcrtx_command_create("@move", "libcrtx_command_movable");
 	libcrtx_command_create("@tint", "libcrtx_command_tint");
 	libcrtx_command_create("@color", "libcrtx_command_color");
+	libcrtx_command_create("@face", "libcrtx_command_face");
 
 	// admin commands
 	libcrtx_command_create("!ban", "libcrtx_command_ban");

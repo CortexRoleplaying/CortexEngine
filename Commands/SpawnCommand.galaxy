@@ -90,18 +90,11 @@ void libcrtx_command_spawn_execute()
 {
 	string uType;
 	unit u;
-	unitgroup g;
 	if( libcrtx_command_spawn_instances[EventPlayer()].count == 0 ) {
 		return; // count == 0, don't bother.
 	}
 
-	g = UnitGroup(libcrtx_spawnertype, EventPlayer(), RegionEntireMap(), null, 1);
-	u = UnitGroupUnit(g, 1);
-	if( u == null )
-	{
-		libcrtx_debug("can't find spawner!");
-		return;
-	}
+	u = libcrtx_utility_getspawner();
 
 	uType = UnitTypeFromString(libcrtx_command_spawn_instances[EventPlayer()].unitType);
 	if( uType == "" || uType == libcrtx_spawnertype )

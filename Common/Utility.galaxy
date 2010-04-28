@@ -97,6 +97,22 @@ text libcrtx_utility_coloredplayername(int player)
 	return libcrtx_utility_colortextbyplayer(player, pName);
 }
 
+unit libcrtx_utility_getspawner()
+{
+	unitgroup g;
+	unit u;
+
+	g = UnitGroup(libcrtx_spawnertype, EventPlayer(), RegionEntireMap(), null, 1);
+	u = UnitGroupUnit(g, 1);
+	if( u == null )
+	{
+		libcrtx_debug("can't find spawner!");
+		return null;
+	}
+
+	return u;
+}
+
 int libcrtx_minInt(int a, int b)
 {
 	if( a > b ) {
