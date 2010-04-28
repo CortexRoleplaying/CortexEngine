@@ -20,22 +20,11 @@ include "Cortex/Commands/MiscCommands.galaxy"
 include "Cortex/Commands/ChatCommands.galaxy"
 include "Cortex/Commands/AdminCommands.galaxy"
 
-void libcrtx_set_spawner(string lp_unittype)
-{
-	libcrtx_spawnertype = UnitTypeFromString(lp_unittype);
-}
-
 void libcrtx_commands_init()
 
 {
 
 	libcrtx_debug("libcrtx_commands_init()");
-
-
-	// default name: will work for most RPs. save them the trouble of using a custom call. :)
-	// since library initializations are called before map initializations, this should execute before
-	// any code that would override it in the map.
-	libcrtx_set_spawner("spawner");
 
 	// link the commands to their functions.
 	libcrtx_command_create("info", 	"libcrtx_command_info");

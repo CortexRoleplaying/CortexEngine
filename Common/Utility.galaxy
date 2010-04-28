@@ -28,7 +28,7 @@ unitgroup libcrtx_utility_getselectedunits()
 		    PlayerType(UnitGetOwner(u)) != c_playerTypeComputer &&
  	            PlayerType(UnitGetOwner(u)) != c_playerTypeHostile &&
 		    PlayerType(UnitGetOwner(u)) != c_playerTypeNeutral) ||
-		    UnitGetType(u) == libcrtx_spawnertype )
+		    UnitGetType(u) == libcrtx_getspawnertype() )
 		{
 			UnitGroupRemove(g, u);
 		}	
@@ -102,7 +102,7 @@ unit libcrtx_utility_getspawner()
 	unitgroup g;
 	unit u;
 
-	g = UnitGroup(libcrtx_spawnertype, EventPlayer(), RegionEntireMap(), null, 1);
+	g = UnitGroup(libcrtx_getspawnertype(), EventPlayer(), RegionEntireMap(), null, 1);
 	u = UnitGroupUnit(g, 1);
 	if( u == null )
 	{

@@ -13,13 +13,13 @@
 // GNU General Public License for more details.
 
 // Cortex Subversion revision
-int libcrtx_version_revision = 23;
+int libcrtx_version_revision = 24;
 
 // Version in form major.minor.bugfix.hotfix
 // ex: "0.10.1a" when concatenated
 const int libcrtx_version_major = 0;
 const int libcrtx_version_minor = 2;
-const int libcrtx_version_bugfix = 1;
+const int libcrtx_version_bugfix = 2;
 const string libcrtx_version_hotfix = "";
 
 // Max players supported by SC2.
@@ -46,7 +46,16 @@ string libcrtx_get_versionstring()
 
 // The fully-qualified internal unittype name for the spawner. 
 // See libcrtx_set_spawner().
-string libcrtx_spawnertype = "";
+static string libcrtx_spawnertype = "";
+void libcrtx_set_spawner(string lp_unittype)
+{
+	libcrtx_spawnertype = UnitTypeFromString(lp_unittype);
+}
+
+string libcrtx_getspawnertype()
+{
+	return libcrtx_spawnertype;
+}
 
 // Footer includes due to required things being in this file. :(
 include "Cortex/Common/Debug.galaxy"

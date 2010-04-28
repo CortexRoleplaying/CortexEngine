@@ -97,7 +97,7 @@ void libcrtx_command_spawn_execute()
 	u = libcrtx_utility_getspawner();
 
 	uType = UnitTypeFromString(libcrtx_command_spawn_instances[EventPlayer()].unitType);
-	if( uType == "" || uType == libcrtx_spawnertype )
+	if( uType == "" || uType == libcrtx_getspawnertype() )
 	{
 		return;
 	}
