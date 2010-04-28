@@ -1,0 +1,55 @@
+// Cortex SC2 Roleplaying Engine
+// Copyright (C) 2009-2010 <http://www.cortexrp.com/>
+//
+// $Id$
+// 
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; version 2 of the License.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+
+const int libcrtx_admin_permissionlevel_none = 0;
+const int libcrtx_admin_permissionlevel_moderator = 1;
+const int libcrtx_admin_permissionlevel_admin = 2;
+
+int[libcrtx_max_players+1] libcrtx_admin_permissionmap;
+bool[libcrtx_max_players+1] libcrtx_admin_disabledmap;
+
+void libcrtx_admin_setpermission(int player, int permissionLevel) {
+	libcrtx_admin_permissionmap[ player ] = permissionLevel;
+}
+
+bool libcrtx_admin_haspermissions(int player, int playerTarget, int permissionLevel) {
+	// do not allow mods to affect admins or other mods
+	if( libcrtx_admin_permissionmap[playerTarget] >= libcrtx_admin_permissionmap[player] ) {
+		return false;
+	}
+
+	return (libcrtx_admin_permissionmap[player] >= permissionLevel);
+}
+
+int libcrtx_admin_getpermissions(int player) {
+	return libcrtx_admin_permissionmap[player];
+}
+
+void libcrtx_admin_disablecommands(int player) {
+	libcrtx_admin_disabledmap[player] = true;
+}
+
+void libcrtx_admin_enablecommands(int player) {
+	libcrtx_admin_disabledmap[player] = false;
+}
+
+bool libcrtx_admin_isplayerdisabled(int player) {
+	return libcrtx_admin_disabledmap[player];
+}
+
+void libcrtx_admin_init()
+{
+	libcrtx_admin_setpermission(1, libcrtx_admin_permissionlevel_admin);
+}
