@@ -52,4 +52,5 @@ void libcrtx_commands_init()
 	libcrtx_command_create("!enable", "libcrtx_command_enable");
 	libcrtx_command_create("!promote", "libcrtx_command_promote");
 	libcrtx_command_create("!demote", "libcrtx_command_demote");
+	libcrtx_command_create("!remove", "libcrtx_command_adminremove");
 }
