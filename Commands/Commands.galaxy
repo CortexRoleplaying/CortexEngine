@@ -46,6 +46,7 @@ void libcrtx_commands_init()
 	libcrtx_command_create("@color", "libcrtx_command_color");
 	libcrtx_command_create("@face", "libcrtx_command_face");
 	libcrtx_command_create("@height", "libcrtx_command_height");
+	libcrtx_command_create("@addweapon", "libcrtx_command_addweapon");
 
 	// admin commands
 	libcrtx_command_create("!ban", "libcrtx_command_ban");
