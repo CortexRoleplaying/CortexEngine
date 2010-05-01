@@ -28,7 +28,6 @@ void libcrtx_chat_init()
 }
 
 bool libcrtx_chat_parsechat(int lp_player, string lp_message)
-
 { 
 
 	int spaceIndex;
@@ -45,20 +44,21 @@ bool libcrtx_chat_parsechat(int lp_player, string lp_message)
 		return false;
 	}
 
+	spaceIndex = StringFind( lp_message, " ", c_stringCase );
+	if( spaceIndex == 0 ) { 
+		spaceIndex = StringLength( lp_message );
+	} else {
+		spaceIndex = spaceIndex - 1;
+	}
+	sub = StringSub(lp_message, 1, spaceIndex);
+
+	// alias system, if we're running an alias command, stop, no need to do more.
+	if( libcrtx_command_alias_execute( sub ) ) {
+		return true;
+	}
 
 	while(currentCmd < libcrtx_command_num_commands )
-
 	{
-
-		spaceIndex = StringFind( lp_message, " ", c_stringCase );
-		if( spaceIndex == 0 ) { 
-			spaceIndex = StringLength( lp_message );
-		} else {
-			spaceIndex = spaceIndex - 1;
-		}
-
-		sub = StringSub(lp_message, 1, spaceIndex);
-
 		//libcrtx_debug("Searching: '" + sub + "'");
 		if( StringEqual(libcrtx_command_array[currentCmd].command, sub, false) )
 		{

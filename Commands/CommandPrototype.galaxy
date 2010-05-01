@@ -19,13 +19,9 @@ int libcrtx_command_num_commands = 0;
 
 
 struct CommandPrototype
-
 {
-
 	string command;
-
 	trigger func;
-
 };
 
 CommandPrototype[libcrtx_command_max_commands] libcrtx_command_array;

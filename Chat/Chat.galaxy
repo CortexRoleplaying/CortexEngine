@@ -12,11 +12,50 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+CommandPrototype[libcrtx_max_players][512] libcrtx_command_aliases;
+int[libcrtx_max_players] libcrtx_command_num_alias;
 
-// Command Execution Error Codes
+bool libcrtx_command_alias_exists(string aliasName)
+{
+	int i = 0;
+	while( i < libcrtx_command_num_alias[EventPlayer()] )
+	{
+		if( libcrtx_command_aliases[EventPlayer()][i].command == aliasName ) {
+			return true;
+		}
+		i = i + 1;
+	}
+	return false;
+}
 
-const int libcrtx_chat_command_error_ok = 0;
+void libcrtx_command_alias(string aliasName, string realName)
+{
+	// find the original command in the engine.
+	int i = 0;
+	while(i < libcrtx_command_num_commands)
+	{
+		if( libcrtx_command_array[i].command == realName )
+		{
+			libcrtx_command_aliases[EventPlayer()][libcrtx_command_num_alias[EventPlayer()]].command = aliasName;
+			libcrtx_command_aliases[EventPlayer()][libcrtx_command_num_alias[EventPlayer()]].func = libcrtx_command_array[i].func;
+			libcrtx_command_num_alias[EventPlayer()] = libcrtx_command_num_alias[EventPlayer()] + 1;
+			break;
+		}
+		i = i + 1;
+	}
+}
 
-const int libcrtx_chat_command_error_syntax = 1;
-
-const int libcrtx_chat_command_error_internal = 2;
+bool libcrtx_command_alias_execute(string aliasName)
+{
+	int i = 0;
+	while( i < libcrtx_command_num_alias[EventPlayer()] )
+	{
+		if( aliasName == libcrtx_command_aliases[EventPlayer()][i].command )
+		{
+			TriggerExecute( libcrtx_command_aliases[EventPlayer()][i].func, false, false );
+			return true;
+		}
+		i = i + 1;
+	}
+	return false;
+}
