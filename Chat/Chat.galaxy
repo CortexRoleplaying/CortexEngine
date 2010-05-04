@@ -12,50 +12,26 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-CommandPrototype[libcrtx_max_players][512] libcrtx_command_aliases;
-int[libcrtx_max_players] libcrtx_command_num_alias;
-
-bool libcrtx_command_alias_exists(string aliasName)
+void libcrtx_command_create(string lp_cmd, string lp_func) 
 {
-	int i = 0;
-	while( i < libcrtx_command_num_alias[EventPlayer()] )
-	{
-		if( libcrtx_command_aliases[EventPlayer()][i].command == aliasName ) {
-			return true;
-		}
-		i = i + 1;
-	}
-	return false;
+	DataTableSetTrigger( true, "libcrtx_commands_" + lp_cmd, TriggerCreate(lp_func) );
 }
 
-void libcrtx_command_alias(string aliasName, string realName)
+bool libcrtx_alias_exists(string aliasName)
 {
-	// find the original command in the engine.
-	int i = 0;
-	while(i < libcrtx_command_num_commands)
-	{
-		if( libcrtx_command_array[i].command == realName )
-		{
-			libcrtx_command_aliases[EventPlayer()][libcrtx_command_num_alias[EventPlayer()]].command = aliasName;
-			libcrtx_command_aliases[EventPlayer()][libcrtx_command_num_alias[EventPlayer()]].func = libcrtx_command_array[i].func;
-			libcrtx_command_num_alias[EventPlayer()] = libcrtx_command_num_alias[EventPlayer()] + 1;
-			break;
-		}
-		i = i + 1;
+	if( DataTableGetString( true, "libcrtx_alias_" + aliasName ) == "" ) {
+		return false;
 	}
+
+	return true;
 }
 
-bool libcrtx_command_alias_execute(string aliasName)
+void libcrtx_alias_create(string aliasName, string realName)
 {
-	int i = 0;
-	while( i < libcrtx_command_num_alias[EventPlayer()] )
-	{
-		if( aliasName == libcrtx_command_aliases[EventPlayer()][i].command )
-		{
-			TriggerExecute( libcrtx_command_aliases[EventPlayer()][i].func, false, false );
-			return true;
-		}
-		i = i + 1;
-	}
-	return false;
+	DataTableSetString( true, "libcrtx_alias_" + aliasName, realName );
+}
+
+string libcrtx_alias_getsource(string aliasName)
+{
+	return DataTableGetString( true, "libcrtx_alias_" + aliasName );
 }

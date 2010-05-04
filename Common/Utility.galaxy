@@ -87,6 +87,11 @@ text libcrtx_utility_colortextbyplayer(int player, text colorme)
 	return TextWithColor(colorme, ColorFromIndex((PlayerGetColorIndex(player, false)), c_teamColorDiffuse));		
 }
 
+text libcrtx_utility_colortext(text colorme, color c)
+{
+	return TextWithColor(colorme, c);
+}
+
 text libcrtx_utility_coloredplayername(int player)
 {
 	text pName = PlayerName(player);
@@ -179,4 +184,9 @@ void libcrtx_write(playergroup p, string s)
 void libcrtx_writetext(playergroup p, text t)
 {
 	UIDisplayMessage( p, c_messageAreaDebug, StringToText("                        ") + t );
+}
+
+void libcrtx_writeerror(string s)
+{
+	libcrtx_writetext( PlayerGroupSingle(EventPlayer()), libcrtx_utility_colortext(StringToText(s), Color(255,0,0)) );
 }

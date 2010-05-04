@@ -28,14 +28,12 @@ void libcrtx_chat_init()
 }
 
 bool libcrtx_chat_parsechat(int lp_player, string lp_message)
-{ 
-
+{
+	trigger t;
 	int spaceIndex;
 	int currentCmd = 0;
-
 	string sub = "";
 	bool commandFound = false;
-
 
 	libcrtx_debug("libcrtx_chat_parsechat()");
 
@@ -53,29 +51,15 @@ bool libcrtx_chat_parsechat(int lp_player, string lp_message)
 	sub = StringSub(lp_message, 1, spaceIndex);
 
 	// alias system, if we're running an alias command, stop, no need to do more.
-	if( libcrtx_command_alias_execute( sub ) ) {
-		return true;
+	if( libcrtx_alias_exists( sub ) ) {
+		sub = libcrtx_alias_getsource(sub);
 	}
 
-	while(currentCmd < libcrtx_command_num_commands )
-	{
-		//libcrtx_debug("Searching: '" + sub + "'");
-		if( StringEqual(libcrtx_command_array[currentCmd].command, sub, false) )
-		{
-
-			// matching command
-
-			TriggerExecute(libcrtx_command_array[currentCmd].func, false, false);
-
-			commandFound = true;
-			break;
-
-		}
-
-		currentCmd = currentCmd + 1;
-
+	t = DataTableGetTrigger( true, "libcrtx_commands_" + sub );
+	if( t ) {
+		TriggerExecute(t, false, false);
+		commandFound = true;
 	}
-
 
 	return commandFound;
 }

@@ -13,9 +13,9 @@
 // GNU General Public License for more details.
 
 include "Cortex/Common/Global.galaxy"
-include "Cortex/Commands/Commands.galaxy"
 include "Cortex/Chat/Chat.galaxy"
 include "Cortex/Chat/ChatHandler.galaxy"
+include "Cortex/Commands/Commands.galaxy"
 
 void libcrtx_InitLib()
 {

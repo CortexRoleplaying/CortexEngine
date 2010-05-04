@@ -13,21 +13,20 @@
 // GNU General Public License for more details.
 
 include "Cortex/Commands/SharedData.galaxy"
-include "Cortex/Commands/CommandPrototype.galaxy"
 include "Cortex/Commands/InfoCommand.galaxy"
 include "Cortex/Commands/SpawnCommand.galaxy"
 include "Cortex/Commands/MiscCommands.galaxy"
 include "Cortex/Commands/ChatCommands.galaxy"
 include "Cortex/Commands/AdminCommands.galaxy"
+include "Cortex/Commands/AliasCommands.galaxy"
 
 void libcrtx_commands_init()
-
 {
-
 	libcrtx_debug("libcrtx_commands_init()");
 
 	// link the commands to their functions.
 	libcrtx_command_create("info", 	"libcrtx_command_info");
+	libcrtx_command_create("alias", "libcrtx_command_alias");
 
 	libcrtx_command_create("@spawn", "libcrtx_command_spawn");
 	libcrtx_command_create("@kill", 	"libcrtx_command_kill");
