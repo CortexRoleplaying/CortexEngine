@@ -203,6 +203,93 @@ bool libcrtx_command_movable(bool testConds, bool runActions) {
 	return true;
 }
 
+bool libcrtx_command_life(bool testConds, bool runActions) {
+	string nextParam;
+	fixed val;
+	bool percent = false;
+	int position = 0;
+	unitgroup g = libcrtx_utility_getselectedunits();
+	nextParam = StringWord( EventChatMessage(false), 2 );
+
+	if( StringContains(nextParam, "%", c_stringAnywhere, c_stringCase) ) {
+		percent = true;
+		nextParam = StringSub(nextParam, 1, StringLength(nextParam)-1);
+	}
+
+	val = StringToFixed(nextParam);
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		if(percent) {
+			UnitSetPropertyFixed( UnitGroupLoopCurrent(), c_unitPropLifePercent, val );
+		} else {
+			UnitSetPropertyFixed( UnitGroupLoopCurrent(), c_unitPropLife, val );
+		}
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}
+
+bool libcrtx_command_energy(bool testConds, bool runActions) {
+	string nextParam;
+	fixed val;
+	bool percent = false;
+	int position = 0;
+	unitgroup g = libcrtx_utility_getselectedunits();
+	nextParam = StringWord( EventChatMessage(false), 2 );
+
+	if( StringContains(nextParam, "%", c_stringAnywhere, c_stringCase) ) {
+		percent = true;
+		nextParam = StringSub(nextParam, 1, StringLength(nextParam)-1);
+	}
+
+	val = StringToFixed(nextParam);
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		if(percent) {
+			UnitSetPropertyFixed( UnitGroupLoopCurrent(), c_unitPropEnergyPercent, val );
+		} else {
+			UnitSetPropertyFixed( UnitGroupLoopCurrent(), c_unitPropEnergy, val );
+		}
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}
+
+bool libcrtx_command_shields(bool testConds, bool runActions) {
+	string nextParam;
+	fixed val;
+	bool percent = false;
+	int position = 0;
+	unitgroup g = libcrtx_utility_getselectedunits();
+	nextParam = StringWord( EventChatMessage(false), 2 );
+
+	if( StringContains(nextParam, "%", c_stringAnywhere, c_stringCase) ) {
+		percent = true;
+		nextParam = StringSub(nextParam, 1, StringLength(nextParam)-1);
+	}
+
+	val = StringToFixed(nextParam);
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		if(percent) {
+			UnitSetPropertyFixed( UnitGroupLoopCurrent(), c_unitPropShieldsPercent, val );
+		} else {
+			UnitSetPropertyFixed( UnitGroupLoopCurrent(), c_unitPropShields, val );
+		}
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}
+
 bool libcrtx_command_tint(bool testConds, bool runActions) {
 	string paramOne;
 	string paramTwo;

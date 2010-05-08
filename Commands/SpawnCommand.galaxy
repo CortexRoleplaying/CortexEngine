@@ -96,7 +96,7 @@ void libcrtx_command_spawn_execute()
 	}
 	
 	//libcrtx_debug("creating " + IntToString(libcrtx_command_spawn_instances[EventPlayer()].count) + " " + libcrtx_command_spawn_instances[EventPlayer()].unitType);
-	UnitCreate( libcrtx_command_spawn_instances[EventPlayer()].count, uType, 0, libcrtx_command_spawn_instances[EventPlayer()].player, UnitGetPosition(u), 270.0);
+	UnitCreate( libcrtx_command_spawn_instances[EventPlayer()].count, uType, c_unitCreateIgnorePlacement, libcrtx_command_spawn_instances[EventPlayer()].player, UnitGetPosition(u), 270.0);
 }
 
 bool libcrtx_command_spawn(bool testConds, bool runActions)
