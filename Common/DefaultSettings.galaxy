@@ -20,4 +20,7 @@ void libcrtx_settings_initdefault()
 	libcrtx_setting_setint(libcrtx_setting_int_maxspawncount, 24);
 	libcrtx_setting_setfixed(libcrtx_setting_fixed_minscale, 0.05);
 	libcrtx_setting_setfixed(libcrtx_setting_fixed_maxscale, 10.0);
+
+	libcrtx_setting_setint(libcrtx_setting_int_neutralcomputer, 0);
+	libcrtx_setting_setint(libcrtx_setting_int_hostilecomputer, 15);
 }

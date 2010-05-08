@@ -50,16 +50,9 @@ bool libcrtx_command_spawn_parse(string lp_message)
 			// expected param: @red, @blue, @hostile, etc.
 			colour = StringSub(val, 2, misc);
 			// TODO: map colors to player numbers.
-			if( colour == "hostile" )
-			{
-				libcrtx_command_spawn_instances[EventPlayer()].player = 15; // player 15 is hostile.
-			}
-			else
-			{
-				misc = libcrtx_utility_getplayerfromcolor(colour);
-				if( misc != -1 ) {
-					libcrtx_command_spawn_instances[EventPlayer()].player = misc;
-				}
+			misc = libcrtx_utility_getplayerfromcolor(colour);
+			if( misc != -1 ) {
+				libcrtx_command_spawn_instances[EventPlayer()].player = misc;
 			}
 			//libcrtx_debug("caught ownership redirect");
 		}

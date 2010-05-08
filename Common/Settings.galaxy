@@ -24,6 +24,8 @@ fixed[libcrtx_max_settings] libcrtx_settings_fixed;
 const int libcrtx_setting_int_maxspawncount = 0; // The maximum # of units you can spawn at once.
 const int libcrtx_setting_fixed_maxscale    = 1; // The largest you can make a unit's scale.
 const int libcrtx_setting_fixed_minscale    = 2; // The smallest you can make a unit's scale.
+const int libcrtx_setting_int_neutralcomputer = 3;
+const int libcrtx_setting_int_hostilecomputer = 4;
 
 void libcrtx_setting_setint(int key, int val)
 {
