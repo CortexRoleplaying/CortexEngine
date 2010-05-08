@@ -12,6 +12,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+bank[libcrtx_max_players] libcrtx_alias_banks;
+
 void libcrtx_command_create(string lp_cmd, string lp_func) 
 {
 	DataTableSetTrigger( true, "libcrtx_commands_" + lp_cmd, TriggerCreate(lp_func) );
@@ -19,19 +21,70 @@ void libcrtx_command_create(string lp_cmd, string lp_func)
 
 bool libcrtx_alias_exists(string aliasName)
 {
-	if( DataTableGetString( true, "libcrtx_alias_" + aliasName ) == "" ) {
-		return false;
+	bank b;
+	string s;
+	
+	if( libcrtx_alias_banks[EventPlayer()] ) {
+		s = BankValueGetAsString( libcrtx_alias_banks[EventPlayer()], "aliases", aliasName );
+		if( s == "" ) {
+			return false;
+		}
+		return true;
+	} else {
+		b = BankLoad( libcrtx_bank_prefix + "aliases", EventPlayer() );
+		libcrtx_alias_banks[EventPlayer()] = b;
+		s = BankValueGetAsString( libcrtx_alias_banks[EventPlayer()], "aliases", aliasName );
+		if( s == "" ) {
+			return false;
+		}
+		return true;
+	}
+}
+
+// lists all aliases in comma and space-deliminted format
+string libcrtx_alias_list()
+{
+	int count;
+	string current;
+	string rvalue;
+
+	count = BankKeyCount( libcrtx_alias_banks[EventPlayer()], "aliases" );
+	if( count == 0 ) {
+		return "You have no aliases.";
 	}
 
-	return true;
+	while(count > 0) {
+		current = BankKeyName( libcrtx_alias_banks[EventPlayer()], "aliases", count-1 );
+		rvalue = rvalue + current;
+		
+		if( count != 1 ) { // Last one doesn't need a comma
+			rvalue = rvalue + ", ";
+		}
+
+		count = count - 1;
+	}
+
+	return rvalue;
+}
+
+void libcrtx_alias_destroyall()
+{
+	BankSectionRemove( libcrtx_alias_banks[EventPlayer()], "aliases" );
+}
+
+void libcrtx_alias_destroy(string aliasName)
+{
+	BankKeyRemove( libcrtx_alias_banks[EventPlayer()], "aliases", aliasName );
 }
 
 void libcrtx_alias_create(string aliasName, string realName)
 {
-	DataTableSetString( true, "libcrtx_alias_" + aliasName, realName );
+	// bank will be created since alias create is a command that must be checked in advance.
+	BankValueSetFromString( libcrtx_alias_banks[EventPlayer()], "aliases", aliasName, realName );
+	BankSave( libcrtx_alias_banks[EventPlayer()] );
 }
 
 string libcrtx_alias_getsource(string aliasName)
 {
-	return DataTableGetString( true, "libcrtx_alias_" + aliasName );
+	return BankValueGetAsString( libcrtx_alias_banks[EventPlayer()], "aliases", aliasName );
 }

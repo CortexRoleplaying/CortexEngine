@@ -32,6 +32,22 @@ bool libcrtx_command_alias(bool checkConds, bool runActions)
 
 		libcrtx_alias_create( parameter, parameterTwo );
 		return true;
+	} else if ( subCommand == "remove" ) {
+		// destroy an alias! oh noes.
+		parameter = StringWord( EventChatMessage(false), 3); // the alias to remove.
+
+		if( libcrtx_alias_exists(parameter) ) {
+			libcrtx_writelocalsuccess("Removed alias: " + parameter );
+			libcrtx_alias_destroy(parameter);
+		} else {
+			libcrtx_writelocalerror("No such alias.");
+		}
+	} else if( subCommand == "removeall" ) {
+		libcrtx_alias_destroyall();
+		libcrtx_writelocalsuccess("All aliases have been removed.");
+	} else if( subCommand == "list" ) {
+		parameterTwo = libcrtx_alias_list();
+		libcrtx_write(PlayerGroupSingle(EventPlayer()), parameterTwo);
 	}
 	return true;
 }

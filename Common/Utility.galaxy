@@ -186,7 +186,12 @@ void libcrtx_writetext(playergroup p, text t)
 	UIDisplayMessage( p, c_messageAreaDebug, StringToText("                        ") + t );
 }
 
-void libcrtx_writeerror(string s)
+void libcrtx_writelocalerror(string s)
 {
 	libcrtx_writetext( PlayerGroupSingle(EventPlayer()), libcrtx_utility_colortext(StringToText(s), Color(255,0,0)) );
+}
+
+void libcrtx_writelocalsuccess(string s)
+{
+	libcrtx_writetext( PlayerGroupSingle(EventPlayer()), libcrtx_utility_colortext(StringToText(s), Color(0,255,0)) );
 }
