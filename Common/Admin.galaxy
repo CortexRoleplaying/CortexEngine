@@ -51,5 +51,8 @@ bool libcrtx_admin_isplayerdisabled(int player) {
 
 void libcrtx_admin_init()
 {
-	libcrtx_admin_setpermission(1, libcrtx_admin_permissionlevel_admin);
+	int rootAdmin = libcrtx_setting_getint(libcrtx_setting_int_rootadminplayer);
+	if(rootAdmin != -1) {
+		libcrtx_admin_setpermission(rootAdmin, libcrtx_admin_permissionlevel_admin);
+	}
 }

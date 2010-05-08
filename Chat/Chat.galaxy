@@ -70,11 +70,13 @@ string libcrtx_alias_list()
 void libcrtx_alias_destroyall()
 {
 	BankSectionRemove( libcrtx_alias_banks[EventPlayer()], "aliases" );
+	BankSave( libcrtx_alias_banks[EventPlayer()] );
 }
 
 void libcrtx_alias_destroy(string aliasName)
 {
 	BankKeyRemove( libcrtx_alias_banks[EventPlayer()], "aliases", aliasName );
+	BankSave( libcrtx_alias_banks[EventPlayer()] );
 }
 
 void libcrtx_alias_create(string aliasName, string realName)
