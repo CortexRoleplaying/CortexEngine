@@ -17,6 +17,7 @@ void libcrtx_command_spawn_resetinstance()
 	libcrtx_command_spawn_instances[EventPlayer()].unitType = "";
 	libcrtx_command_spawn_instances[EventPlayer()].count = 1;
 	libcrtx_command_spawn_instances[EventPlayer()].player = EventPlayer();
+	libcrtx_command_spawn_instances[EventPlayer()].loc = null;
 }
 
 bool libcrtx_command_spawn_parse(string lp_message)
@@ -56,6 +57,11 @@ bool libcrtx_command_spawn_parse(string lp_message)
 			}
 			//libcrtx_debug("caught ownership redirect");
 		}
+		else if( StringSub(val, 1, 1) == "#") // we're redirecting the location
+		{
+			misc = StringLength(val);
+			libcrtx_command_spawn_instances[EventPlayer()].loc = DataTableGetRegion(true, libcrtx_command_region_buildidentifier( StringSub(val, 2, misc) ) );
+		}
 		else // the only remainder isssssss, spawn type!
 		{
 			if(doneSpawnType)
@@ -83,11 +89,17 @@ void libcrtx_command_spawn_execute()
 {
 	string uType;
 	unit u;
+	point p;
 	if( libcrtx_command_spawn_instances[EventPlayer()].count == 0 ) {
 		return; // count == 0, don't bother.
 	}
 
 	u = libcrtx_utility_getspawner();
+	p = UnitGetPosition(u);
+	if( libcrtx_command_spawn_instances[EventPlayer()].loc ) {
+		p = RegionGetCenter(libcrtx_command_spawn_instances[EventPlayer()].loc);
+	}
+	
 
 	uType = UnitTypeFromString(libcrtx_command_spawn_instances[EventPlayer()].unitType);
 	if( uType == "" || uType == libcrtx_getspawnertype() )
@@ -96,7 +108,7 @@ void libcrtx_command_spawn_execute()
 	}
 	
 	//libcrtx_debug("creating " + IntToString(libcrtx_command_spawn_instances[EventPlayer()].count) + " " + libcrtx_command_spawn_instances[EventPlayer()].unitType);
-	UnitCreate( libcrtx_command_spawn_instances[EventPlayer()].count, uType, c_unitCreateIgnorePlacement, libcrtx_command_spawn_instances[EventPlayer()].player, UnitGetPosition(u), 270.0);
+	UnitCreate( libcrtx_command_spawn_instances[EventPlayer()].count, uType, c_unitCreateIgnorePlacement, libcrtx_command_spawn_instances[EventPlayer()].player, p, 270.0);
 }
 
 bool libcrtx_command_spawn(bool testConds, bool runActions)

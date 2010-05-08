@@ -19,6 +19,7 @@ struct SpawnCommandInstance
 	string unitType;
 	int count;
 	int player;
+	region loc;
 };
 
 SpawnCommandInstance[libcrtx_max_players] libcrtx_command_spawn_instances;
@@ -26,3 +27,7 @@ SpawnCommandInstance[libcrtx_max_players] libcrtx_command_spawn_instances;
 int libcrtx_command_chat_guid_counter = 1;
 
 bank[libcrtx_max_players] libcrtx_player_banks;
+
+string libcrtx_command_region_buildidentifier(string name) {
+	return "regions_" + IntToString(EventPlayer()) + "_" + name;
+}
