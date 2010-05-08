@@ -386,12 +386,125 @@ bool libcrtx_command_addweapon(bool testConds, bool runActions) {
 	unitgroup g = libcrtx_utility_getselectedunits();
 	weapon = StringWord( EventChatMessage(false), 2 );
 	turret = StringWord( EventChatMessage(false), 3 );
+	
+	if( turret == "" ) {
+		turret = "CTurret";
+	}
 
 	UnitGroupLoopBegin(g);
 	while( !UnitGroupLoopDone() )
 	{
-		// set height
 		UnitWeaponAdd( UnitGroupLoopCurrent(), weapon, turret );
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}
+
+bool libcrtx_command_removeweapon(bool testConds, bool runActions) {
+	string weapon;
+	unitgroup g = libcrtx_utility_getselectedunits();
+	weapon = StringWord( EventChatMessage(false), 2 );
+
+	UnitGroupLoopBegin(g);
+	while( !UnitGroupLoopDone() )
+	{
+		UnitWeaponRemove( UnitGroupLoopCurrent(), weapon );
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}
+
+bool libcrtx_command_maxlife(bool testConds, bool runActions) {
+	fixed val;
+	unitgroup g = libcrtx_utility_getselectedunits();
+	val = StringToFixed(StringWord( EventChatMessage(false), 2 ));
+
+	if( val <= 0 ) { // Bad input!
+		return true;
+	}
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		UnitSetPropertyFixed( UnitGroupLoopCurrent(), c_unitPropLifeMax, val );
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}
+
+bool libcrtx_command_maxenergy(bool testConds, bool runActions) {
+	fixed val;
+	unitgroup g = libcrtx_utility_getselectedunits();
+	val = StringToFixed(StringWord( EventChatMessage(false), 2 ));
+
+	if( val <= 0 ) { // Bad input!
+		return true;
+	}
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		UnitSetPropertyFixed( UnitGroupLoopCurrent(), c_unitPropEnergyMax, val );
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}
+
+bool libcrtx_command_maxshields(bool testConds, bool runActions) {
+	fixed val;
+	unitgroup g = libcrtx_utility_getselectedunits();
+	val = StringToFixed(StringWord( EventChatMessage(false), 2 ));
+
+	if( val <= 0 ) { // Bad input!
+		return true;
+	}
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		UnitSetPropertyFixed( UnitGroupLoopCurrent(), c_unitPropShieldsMax, val );
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}
+
+bool libcrtx_command_speed(bool testConds, bool runActions) {
+	fixed val;
+	unitgroup g = libcrtx_utility_getselectedunits();
+	val = StringToFixed(StringWord( EventChatMessage(false), 2 ));
+
+	if( val <= 0 ) { // Bad input!
+		return true;
+	}
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		UnitSetPropertyFixed( UnitGroupLoopCurrent(), c_unitPropMovementSpeed, val );
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}
+
+bool libcrtx_command_kills(bool testConds, bool runActions) {
+	fixed val;
+	unitgroup g = libcrtx_utility_getselectedunits();
+	val = StringToFixed(StringWord( EventChatMessage(false), 2 ));
+
+	if( val <= 0 ) { // Bad input!
+		return true;
+	}
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		UnitSetPropertyFixed( UnitGroupLoopCurrent(), c_unitPropKills, val );
 		UnitGroupLoopStep();
 	}
 	UnitGroupLoopEnd();
