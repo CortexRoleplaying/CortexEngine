@@ -42,7 +42,8 @@ bool libcrtx_command_spawn_parse(string lp_message)
 		if( StringToInt(val) != 0 ) // integer - spawncount only
 		{
 			// reset when we have a new integer!
-			libcrtx_command_spawn_instances[EventPlayer()].count = StringToInt(val);
+			libcrtx_command_spawn_instances[EventPlayer()].count = libcrtx_boundsInt(StringToInt(val), 0, libcrtx_setting_getint(libcrtx_setting_int_maxspawncount));
+			
 			//libcrtx_debug("caught integer");
 		}
 		else if( StringSub(val, 1, 1) == "@") // we're redirecting ownership
