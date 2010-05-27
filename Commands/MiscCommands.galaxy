@@ -102,7 +102,7 @@ bool libcrtx_command_color(bool testConds, bool runActions) {
 	string nextParam;
 	unitgroup g = libcrtx_utility_getselectedunits();
 	nextParam = StringWord( EventChatMessage(false), 2 );
-	newColour = libcrtx_utility_getplayerfromcolor(nextParam);
+	newColour = libcrtx_utility_getplayerfromdefaultcolor(nextParam);
 	if(newColour == -1) { // invalid entry by user
 		return true;
 	}
