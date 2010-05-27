@@ -44,7 +44,8 @@ bool libcrtx_command_spawn_parse(string lp_message)
 			// reset when we have a new integer!
 			libcrtx_command_spawn_instances[EventPlayer()].count = libcrtx_boundsInt(StringToInt(val), 0, libcrtx_setting_getint(libcrtx_setting_int_maxspawncount));
 			
-			//libcrtx_debug("caught integer");
+			//libcrtx_debug("caught integer" + IntToString(libcrtx_command_spawn_instances[EventPlayer()].count));
+			//libcrtx_debug("max spawn count " + IntToString(libcrtx_setting_getint(libcrtx_setting_int_maxspawncount)) );
 		}
 		else if( StringSub(val, 1, 1) == "@") // we're redirecting ownership
 		{
@@ -56,7 +57,7 @@ bool libcrtx_command_spawn_parse(string lp_message)
 			if( misc != -1 ) {
 				libcrtx_command_spawn_instances[EventPlayer()].player = misc;
 			}
-			//libcrtx_debug("caught ownership redirect");
+			libcrtx_debug("caught ownership redirect " + IntToString(misc));
 		}
 		else if( StringSub(val, 1, 1) == "#") // we're redirecting the location
 		{

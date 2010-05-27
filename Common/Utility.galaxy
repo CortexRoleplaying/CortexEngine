@@ -76,10 +76,6 @@ int libcrtx_utility_getplayerfromdefaultcolor(string colour)
 		return 14; 
 	} else if( colour == "lavender" ) {
 		return 15;
-	} else if( colour == "hostile" ) {
-		return libcrtx_setting_getint(libcrtx_setting_int_hostilecomputer);
-	} else if( colour == "neutral" ) {
-		return libcrtx_setting_getint(libcrtx_setting_int_neutralcomputer);
 	}
 
 	return -1;
@@ -88,7 +84,16 @@ int libcrtx_utility_getplayerfromdefaultcolor(string colour)
 // This function takes a colour described as a string and returns the player id of that colour.
 int libcrtx_utility_getplayerfromcolor(string colour)
 {
-	int i = 15;
+	int i;
+
+	// special colors need go here, due to color re-use.
+	if( colour == "hostile" ) {
+		return libcrtx_setting_getint(libcrtx_setting_int_hostilecomputer);
+	} else if( colour == "neutral" ) {
+		return libcrtx_setting_getint(libcrtx_setting_int_neutralcomputer);
+	}
+
+	i = libcrtx_max_players - 1;
 	while( i != -1 )
 	{
 		if( PlayerGetColorIndex( i, false ) == libcrtx_utility_getplayerfromdefaultcolor(colour) ) {
@@ -175,16 +180,26 @@ fixed libcrtx_maxFixed(fixed a, fixed b)
 
 int libcrtx_boundsInt(int src, int min, int max)
 {
-	int ret = libcrtx_minInt( src, max );
-	ret = libcrtx_maxInt( src, min );
-	return ret;
+	if( src < min ) {
+		return min;
+	}
+	else if( src > max ) {
+		return max;
+	}
+	
+	return src;
 }
 
 fixed libcrtx_boundsFixed(fixed src, fixed min, fixed max)
 {
-	fixed ret = libcrtx_minFixed( src, max );
-	ret = libcrtx_maxFixed( src, min );
-	return ret;
+	if( src < min ) {
+		return min;
+	}
+	else if( src > max ) {
+		return max;
+	}
+	
+	return src;
 }
 
 string libcrtx_color_to_string(color c)
