@@ -12,20 +12,12 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-include "Cortex/Common/Global.galaxy"
-include "Cortex/Toolkit/Toolkit.galaxy"
-include "Cortex/Chat/Chat.galaxy"
-include "Cortex/Chat/ChatHandler.galaxy"
-include "Cortex/Commands/Commands.galaxy"
+// In this file:
+// setup toolkit-related stuff.
+// only one toolkit can be used by a map.
+include "Cortex/Toolkit/DefaultToolkit/WeaponToolkit.galaxy"
 
-void libcrtx_InitLib()
+void libcrtx_toolkit_default_init()
 {
-	libcrtx_set_debug_mode(true); // must be changed for release.
-
-	libcrtx_debug("cortex_init()");
-	libcrtx_settings_initdefault();
-	libcrtx_toolkit_init();
-	libcrtx_commands_init();
-	libcrtx_chat_init();
-	libcrtx_admin_init();
+	libcrtx_toolkit_default_initweapons();
 }

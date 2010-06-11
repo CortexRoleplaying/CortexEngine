@@ -12,20 +12,16 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-include "Cortex/Common/Global.galaxy"
-include "Cortex/Toolkit/Toolkit.galaxy"
-include "Cortex/Chat/Chat.galaxy"
-include "Cortex/Chat/ChatHandler.galaxy"
-include "Cortex/Commands/Commands.galaxy"
+const string libcrtx_toolkit_prefix_weapon = "toolkit_weapon_";
 
-void libcrtx_InitLib()
+void libcrtx_toolkit_addweapon(string toolKitName, string blizzardName)
 {
-	libcrtx_set_debug_mode(true); // must be changed for release.
+	string storeAs = StringCase(libcrtx_toolkit_prefix_weapon + toolKitName, false);
+	DataTableSetString( true, storeAs, blizzardName );
+}
 
-	libcrtx_debug("cortex_init()");
-	libcrtx_settings_initdefault();
-	libcrtx_toolkit_init();
-	libcrtx_commands_init();
-	libcrtx_chat_init();
-	libcrtx_admin_init();
+string libcrtx_toolkit_getweapon(string toolKitName)
+{
+	string lookup = StringCase(libcrtx_toolkit_prefix_weapon + toolKitName, false);
+	return DataTableGetString(true, lookup);
 }

@@ -390,6 +390,9 @@ bool libcrtx_command_addweapon(bool testConds, bool runActions) {
 	if( turret == "" ) {
 		turret = "CTurret";
 	}
+	
+	// use toolkit on weapon
+	weapon = libcrtx_toolkit_getweapon(weapon);
 
 	UnitGroupLoopBegin(g);
 	while( !UnitGroupLoopDone() )
@@ -406,6 +409,9 @@ bool libcrtx_command_removeweapon(bool testConds, bool runActions) {
 	unitgroup g = libcrtx_utility_getselectedunits();
 	weapon = StringWord( EventChatMessage(false), 2 );
 
+	// use toolkit on weapon
+	weapon = libcrtx_toolkit_getweapon(weapon);
+	
 	UnitGroupLoopBegin(g);
 	while( !UnitGroupLoopDone() )
 	{

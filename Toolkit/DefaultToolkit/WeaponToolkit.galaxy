@@ -1,0 +1,138 @@
+// Cortex SC2 Roleplaying Engine
+// Copyright (C) 2009-2010 <http://www.cortexrp.com/>
+//
+// $Id$
+// 
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; version 2 of the License.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// Toolkit file for weapon names
+
+void libcrtx_toolkit_default_initweapons()
+{
+	// Format: actual weapon names
+	// if duplicate exists, prepend unit's name to both (unless one is probably commonly associated w/
+	// the weapon like a Hydralisk to Needle Spines)
+	// if duplicate exists with two similar weapons on the same unit, differentiate second with Air/etc.
+	// in special circumstances, add multiple variations of the same name to avoid confusion
+	libcrtx_toolkit_addweapon("PsionicShockwave", "Archon");
+	libcrtx_toolkit_addweapon("12mmGaussCannon", "AutoTurret");
+	libcrtx_toolkit_addweapon("VolatileBurst", "BanelingUnitDummy");
+	libcrtx_toolkit_addweapon("BacklashRockets", "Banshee");
+	libcrtx_toolkit_addweapon("ATALaserBattery", "BattlecruiserA");
+	libcrtx_toolkit_addweapon("ATSLaserBattery", "BattlecruiserG");
+	libcrtx_toolkit_addweapon("BroodlingEscort", "BroodlingEscort");
+	libcrtx_toolkit_addweapon("BroodlingStrike", "BroodLord");
+	libcrtx_toolkit_addweapon("BroodlingClaws", "Broodling");
+	libcrtx_toolkit_addweapon("InterceptorBeam", "InterceptorBeam");
+	libcrtx_toolkit_addweapon("Interceptors", "CarrierInterceptor");
+	libcrtx_toolkit_addweapon("LaunchInterceptors", "Carrier");
+	libcrtx_toolkit_addweapon("ThermalLances", "Colossus");
+	libcrtx_toolkit_addweapon("ParasiteSpore", "Corruptor");
+	libcrtx_toolkit_addweapon("WarpBlades", "DarkTemplar");
+	libcrtx_toolkit_addweapon("DisruptionBeam", "Disruptor");
+	libcrtx_toolkit_addweapon("DroneClaws", "Drone");
+	libcrtx_toolkit_addweapon("C-10CanisterRifle", "Ghost");
+	libcrtx_toolkit_addweapon("HydraliskMelee", "HydraliskMelee");
+	libcrtx_toolkit_addweapon("NeedleSpines", "Hydralisk");
+	libcrtx_toolkit_addweapon("NeedleSpinesAir", "HydraliskAir");
+	libcrtx_toolkit_addweapon("PhaseDisruptors", "Immortal");
+	libcrtx_toolkit_addweapon("InfernalFlameThrower", "Hellion");
+	libcrtx_toolkit_addweapon("InfestedGaussRifle", "InfestorTerran");
+	libcrtx_toolkit_addweapon("PunisherGrenades", "Marauder");
+	libcrtx_toolkit_addweapon("GaussRifle", "Marine");
+	libcrtx_toolkit_addweapon("LongboltMissile", "MissileTurret");
+	libcrtx_toolkit_addweapon("PurifierBeams", "Mothership");
+	libcrtx_toolkit_addweapon("GlaiveWurm", "Mutalisk");
+	libcrtx_toolkit_addweapon("PhaseCannon", "PhotonCannon");
+	libcrtx_toolkit_addweapon("IonCannons", "Phoenix");
+	libcrtx_toolkit_addweapon("TwinIbiksCannon", "PlanetaryFortress");
+	libcrtx_toolkit_addweapon("PointDefenseLaser", "PointDefenseLaser");
+	libcrtx_toolkit_addweapon("ParticleBeam", "Probe");
+	libcrtx_toolkit_addweapon("AcidSpines", "AcidSpines");
+	libcrtx_toolkit_addweapon("QueenClaws", "Queen");
+	libcrtx_toolkit_addweapon("D-8", "ReaperD8");
+	libcrtx_toolkit_addweapon("P38'Scythe'GaussPistol", "Reaper");
+	libcrtx_toolkit_addweapon("P38ScytheGaussPistol", "Reaper");
+	libcrtx_toolkit_addweapon("P38", "Reaper");
+	libcrtx_toolkit_addweapon("AcidSaliva", "Roach");
+	libcrtx_toolkit_addweapon("RoachNeedleSpines", "RoachMelee");
+	libcrtx_toolkit_addweapon("FusionCutter", "SCV");
+	libcrtx_toolkit_addweapon("Sheep", "Sheep");
+	libcrtx_toolkit_addweapon("90mmCannons", "SiegeTank");
+	libcrtx_toolkit_addweapon("CrucioShockCannon", "SiegeTankSieged");
+	libcrtx_toolkit_addweapon("ImpalerTentacle", "SpineCrawler");
+	libcrtx_toolkit_addweapon("SporeCrawler", "SporeCrawler");
+	libcrtx_toolkit_addweapon("ParticleDisruptors", "Stalker");
+	libcrtx_toolkit_addweapon("JavelinMissileLaunchers", "ThorAntiAir");
+	libcrtx_toolkit_addweapon("ThorsHammer", "ThorHandGunDuo");
+	libcrtx_toolkit_addweapon("Thor'sHammer", "ThorHandGunDuo");
+	libcrtx_toolkit_addweapon("HeadAttack", "UltraliskHeadAttack");
+	libcrtx_toolkit_addweapon("KaiserBlades", "Ultralisk");
+	libcrtx_toolkit_addweapon("LanzerTorpedoes", "VikingFighter");
+	libcrtx_toolkit_addweapon("TwinGatlingCannon", "VikingAssault");
+	libcrtx_toolkit_addweapon("PrismaticBeam", "VoidRay");
+	libcrtx_toolkit_addweapon("PsiBlades", "Zealot");
+	libcrtx_toolkit_addweapon("ZerglingClaws", "Zergling");
+	
+	// and now by format UnitName/~(Air/Ground)
+	libcrtx_toolkit_addweapon("Archon", "Archon");
+	libcrtx_toolkit_addweapon("AutoTurret", "AutoTurret");
+	libcrtx_toolkit_addweapon("Baneling", "BanelingUnitDummy");
+	libcrtx_toolkit_addweapon("Banshee", "Banshee");
+	libcrtx_toolkit_addweapon("BattlecruiserAir", "BattlecruiserA");
+	libcrtx_toolkit_addweapon("BattlecruiserGround", "BattlecruiserG");
+	libcrtx_toolkit_addweapon("BroodlingEscort", "BroodlingEscort");
+	libcrtx_toolkit_addweapon("BroodLord", "BroodLord");
+	libcrtx_toolkit_addweapon("Broodling", "Broodling");
+	libcrtx_toolkit_addweapon("Interceptor", "InterceptorBeam");
+	libcrtx_toolkit_addweapon("Carrier", "CarrierInterceptor");
+	libcrtx_toolkit_addweapon("Carrier2", "Carrier");
+	libcrtx_toolkit_addweapon("Colossus", "Colossus");
+	libcrtx_toolkit_addweapon("Corruptor", "Corruptor");
+	libcrtx_toolkit_addweapon("DarkTemplar", "DarkTemplar");
+	libcrtx_toolkit_addweapon("Disruptor", "Disruptor");
+	libcrtx_toolkit_addweapon("Drone", "Drone");
+	libcrtx_toolkit_addweapon("Ghost", "Ghost");
+	libcrtx_toolkit_addweapon("HydraliskMelee", "HydraliskMelee");
+	libcrtx_toolkit_addweapon("HydraliskGround", "Hydralisk");
+	libcrtx_toolkit_addweapon("HydraliskAir", "HydraliskAir");
+	libcrtx_toolkit_addweapon("Immortal", "Immortal");
+	libcrtx_toolkit_addweapon("Hellion", "Hellion");
+	libcrtx_toolkit_addweapon("InfestedTerran", "InfestorTerran");
+	libcrtx_toolkit_addweapon("Marauder", "Marauder");
+	libcrtx_toolkit_addweapon("Marine", "Marine");
+	libcrtx_toolkit_addweapon("MissileTurret", "MissileTurret");
+	libcrtx_toolkit_addweapon("Mothership", "Mothership");
+	libcrtx_toolkit_addweapon("Mutalisk", "Mutalisk");
+	libcrtx_toolkit_addweapon("PhotonCannon", "PhotonCannon");
+	libcrtx_toolkit_addweapon("Phoenix", "Phoenix");
+	libcrtx_toolkit_addweapon("PlanetaryFortress", "PlanetaryFortress");
+	libcrtx_toolkit_addweapon("Probe", "Probe");
+	libcrtx_toolkit_addweapon("QueenAir", "AcidSpines");
+	libcrtx_toolkit_addweapon("Queen", "Queen");
+	libcrtx_toolkit_addweapon("ReaperD8", "ReaperD8");
+	libcrtx_toolkit_addweapon("Reaper", "Reaper");
+	libcrtx_toolkit_addweapon("Roach", "Roach");
+	libcrtx_toolkit_addweapon("RoachMelee", "RoachMelee");
+	libcrtx_toolkit_addweapon("SCV", "SCV");
+	libcrtx_toolkit_addweapon("SiegeTank", "SiegeTank");
+	libcrtx_toolkit_addweapon("SiegeTankSieged", "SiegeTankSieged");
+	libcrtx_toolkit_addweapon("SpineCrawler", "SpineCrawler");
+	libcrtx_toolkit_addweapon("Stalker", "Stalker");
+	libcrtx_toolkit_addweapon("ThorAir", "ThorAntiAir");
+	libcrtx_toolkit_addweapon("Thor", "ThorHandGunDuo");
+	libcrtx_toolkit_addweapon("UltraliskHeadAttack", "UltraliskHeadAttack");
+	libcrtx_toolkit_addweapon("Ultralisk", "Ultralisk");
+	libcrtx_toolkit_addweapon("VikingAir", "VikingFighter");
+	libcrtx_toolkit_addweapon("Viking", "VikingAssault");
+	libcrtx_toolkit_addweapon("VoidRay", "VoidRay");
+	libcrtx_toolkit_addweapon("Zealot", "Zealot");
+	libcrtx_toolkit_addweapon("Zergling", "Zergling");
+}
