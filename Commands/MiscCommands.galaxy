@@ -564,3 +564,73 @@ bool libcrtx_command_kills(bool testConds, bool runActions) {
 	UnitGroupLoopEnd();
 	return true;
 }
+
+bool libcrtx_command_level(bool testConds, bool runActions) {
+	int val;
+      int vval;
+
+	unitgroup g = libcrtx_utility_getselectedunits();
+
+	val = StringToInt(StringWord( EventChatMessage(false), 2 ));
+
+	if( val <= 0 || val > libcrtx_toolkit_getmaxlevel()) { // Bad input!
+		return true;
+	}
+
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		vval = val;
+
+            // game crashes otherwise. silly blizzard.
+            if( !UnitHasBehavior(UnitGroupLoopCurrent(), libcrtx_toolkit_getlevelbehavior()) ) {
+                UnitGroupLoopStep();
+                continue;
+            }
+
+            if( UnitLevel(UnitGroupLoopCurrent()) >= vval ) {
+                UnitGroupLoopStep();
+                continue;
+            }
+
+            while( UnitLevel(UnitGroupLoopCurrent()) < vval ) {
+                UnitCreateEffectUnit( UnitGroupLoopCurrent(), libcrtx_toolkit_getxpincrementbehavior(), UnitGroupLoopCurrent() );
+            }
+		UnitGroupLoopStep();
+	}
+
+	UnitGroupLoopEnd();
+	return true;
+}
+
+bool libcrtx_command_adddamage(bool testConds, bool runActions) {
+
+	int val;
+	unitgroup g = libcrtx_utility_getselectedunits();
+	val = StringToInt(StringWord( EventChatMessage(false), 2 ));
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+            if( val > 0 )
+            {
+                UnitBehaviorAdd( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(), UnitGroupLoopCurrent(), val );
+            }
+            else
+            {
+                UnitBehaviorRemove( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(), AbsI(val) );
+            }
+		UnitGroupLoopStep();
+	}
+
+	UnitGroupLoopEnd();
+	return true;
+}
+
+
+
+
+
+
+

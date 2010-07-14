@@ -12,14 +12,16 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-// In this file:
-// setup toolkit-related stuff.
-// only one toolkit can be used by a map.
-include "Cortex/Toolkit/DefaultToolkit/WeaponToolkit.galaxy"
-include "Cortex/Toolkit/DefaultToolkit/UnitToolkit.galaxy"
+// Toolkit file for weapon names
 
-void libcrtx_toolkit_default_init()
+void libcrtx_toolkit_default_initunittools()
 {
-	libcrtx_toolkit_default_initweapons();
-	libcrtx_toolkit_default_initunittools();
+    // levels
+    libcrtx_toolkit_setmaxlevel(10);
+    libcrtx_toolkit_setlevelbehavior("Levels");
+    libcrtx_toolkit_setexperiencegiverbehavior("GiveExperience");
+    libcrtx_toolkit_setxpincrementbehavior("IncrementXP100");
+
+    libcrtx_toolkit_setdamagebehavior("IncreaseDamage1");
 }
+
