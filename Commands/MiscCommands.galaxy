@@ -628,6 +628,33 @@ bool libcrtx_command_adddamage(bool testConds, bool runActions) {
 	return true;
 }
 
+bool libcrtx_command_attach(bool testConds, bool runActions) {
+	string actr;
+      string apoint;
+	unitgroup g = libcrtx_utility_getselectedunits();
+	actr = StringWord( EventChatMessage(false), 2 );
+      apoint = StringWord( EventChatMessage(false), 3 );
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+            libNtve_gf_AttachActorToUnit( UnitGroupLoopCurrent(), actr, apoint);
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
