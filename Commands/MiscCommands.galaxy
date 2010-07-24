@@ -373,7 +373,7 @@ bool libcrtx_command_tint(bool testConds, bool runActions) {
 	while(!UnitGroupLoopDone())
 	{
 		ActorSend(libNtve_gf_MainActorofUnit(UnitGroupLoopCurrent()), "SetTintColor " + IntToString(red) + "," + IntToString(green) + "," + IntToString(blue));
-		ActorSend(libNtve_gf_MainActorofUnit(UnitGroupLoopCurrent()), "SetOpacity " + FixedToString(alpha, c_fixedPrecisionAny) + "," + "0");
+		ActorSend(libNtve_gf_MainActorofUnit(UnitGroupLoopCurrent()), "SetOpacity {" + FixedToString(alpha, c_fixedPrecisionAny) + "} {" + "0 }");
 		UnitGroupLoopStep();
 	}
 	UnitGroupLoopEnd();
