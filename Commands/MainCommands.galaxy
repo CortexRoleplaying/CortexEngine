@@ -21,3 +21,34 @@ bool libcrtx_command_info(bool testConds, bool runActions) {
     libcrtx_writetext(PlayerGroupSingle(EventPlayer()), TextWithColor(StringToText("This map is powered by " + libcrtx_get_versionstring() + "."), Color(100, 0, 0)));
     return true;
 }
+
+bool libcrtx_command_minerals(bool testConds, bool runActions) {
+    int minerals;
+
+    if(!runActions) {
+	return true;
+    }
+
+    minerals = StringToInt(StringWord(EventChatMessage(false), 2));
+    if(minerals == 0) {
+	minerals = 5000;
+    }
+
+    PlayerModifyPropertyInt( EventPlayer(), c_playerPropMinerals, c_playerPropOperAdd, minerals );
+    return true;
+}
+
+bool libcrtx_command_gas(bool testConds, bool runActions) {
+    int gas;
+
+    if(!runActions) {
+	return true;
+    }
+
+    gas = StringToInt(StringWord(EventChatMessage(false), 2));
+    if(gas == 0) {
+	gas = 5000;
+    }
+    PlayerModifyPropertyInt( EventPlayer(), c_playerPropVespene, c_playerPropOperAdd, gas );
+    return true;
+}

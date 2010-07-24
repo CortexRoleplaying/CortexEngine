@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 
 include "Cortex/Commands/SharedData.galaxy"
-include "Cortex/Commands/InfoCommand.galaxy"
+include "Cortex/Commands/MainCommands.galaxy"
 include "Cortex/Commands/SpawnCommand.galaxy"
 include "Cortex/Commands/MiscCommands.galaxy"
 include "Cortex/Commands/ChatCommands.galaxy"
@@ -27,6 +27,8 @@ void libcrtx_commands_init()
 
 	// link the commands to their functions.
 	libcrtx_command_create("info", 	"libcrtx_command_info");
+      libcrtx_command_create("minerals", "libcrtx_command_minerals");
+      libcrtx_command_create("gas", "libcrtx_command_gas");
 	libcrtx_command_create("alias", "libcrtx_command_alias");
 
 	// unit commands
@@ -71,5 +73,6 @@ void libcrtx_commands_init()
 	// region commands
 	libcrtx_command_create("#create", "libcrtx_command_regioncreate");
 }
+
 
 
