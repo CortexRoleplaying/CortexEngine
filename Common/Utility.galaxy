@@ -13,27 +13,46 @@
 // GNU General Public License for more details.
 
 // This will only return the units that are owned by the current player
+
+// OR, they are hostile/neutral units.
+unitgroup libcrtx_utility_enforce_unit_permissions(unitgroup g)
+{
+    unit u;
+    int count;
+    count = UnitGroupCount(g, c_unitCountAlive);
+    while(count)
+    {
+        u = UnitGroupUnit(g, count);
+		if( (UnitGetOwner(u) != EventPlayer() && 
+
+		    PlayerType(UnitGetOwner(u)) != c_playerTypeNone &&
+
+		    PlayerType(UnitGetOwner(u)) != c_playerTypeComputer &&
+
+ 	            PlayerType(UnitGetOwner(u)) != c_playerTypeHostile &&
+
+		    PlayerType(UnitGetOwner(u)) != c_playerTypeNeutral) ||
+
+		    UnitGetType(u) == libcrtx_getspawnertype() )
+
+		{
+
+			UnitGroupRemove(g, u);
+
+		}	
+
+		count = count - 1;
+
+	}
+    return g;
+}
+
+// This will only return the units that are owned by the current player
 // OR, they are hostile/neutral units.
 unitgroup libcrtx_utility_getselectedunits()
 {
-	unit u;
-	int count;
 	unitgroup g = UnitGroupSelected(EventPlayer());
-	count = UnitGroupCount(g, c_unitCountAlive);
-	while(count)
-	{
-		u = UnitGroupUnit(g, count);
-		if( (UnitGetOwner(u) != EventPlayer() && 
-		    PlayerType(UnitGetOwner(u)) != c_playerTypeNone &&
-		    PlayerType(UnitGetOwner(u)) != c_playerTypeComputer &&
- 	            PlayerType(UnitGetOwner(u)) != c_playerTypeHostile &&
-		    PlayerType(UnitGetOwner(u)) != c_playerTypeNeutral) ||
-		    UnitGetType(u) == libcrtx_getspawnertype() )
-		{
-			UnitGroupRemove(g, u);
-		}	
-		count = count - 1;
-	}
+	g = libcrtx_utility_enforce_unit_permissions(g);
 
 	return g;
 }
@@ -229,3 +248,5 @@ void libcrtx_writelocalsuccess(string s)
 {
 	libcrtx_writetext( PlayerGroupSingle(EventPlayer()), libcrtx_utility_colortext(StringToText(s), Color(0,255,0)) );
 }
+
+

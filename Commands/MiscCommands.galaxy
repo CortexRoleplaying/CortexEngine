@@ -36,6 +36,34 @@ bool libcrtx_command_remove(bool testConds, bool runActions) {
 	return true;
 }
 
+bool libcrtx_command_removearea(bool testConds, bool runActions) {
+      unitgroup g;
+      fixed radius = StringToFixed( StringWord( EventChatMessage(false), 2 ));
+      if(radius == 0.0) {
+        radius = 5.0;
+      }
+
+	g = UnitGroup( null, c_playerAny, RegionCircle( UnitGetPosition(libcrtx_utility_getspawner()), radius), null, 0 );
+      g = libcrtx_utility_enforce_unit_permissions(g);
+
+	UnitGroupLoopBegin(g);
+
+	while(!UnitGroupLoopDone())
+
+	{
+
+		UnitRemove( UnitGroupLoopCurrent() );
+
+		UnitGroupLoopStep();
+
+	}
+
+	UnitGroupLoopEnd();
+
+	return true;
+
+}
+
 bool libcrtx_command_scale(bool testConds, bool runActions) {
 	fixed scale;
 	fixed scaleY;
@@ -639,11 +667,19 @@ bool libcrtx_command_attach(bool testConds, bool runActions) {
 	while(!UnitGroupLoopDone())
 	{
             libNtve_gf_AttachActorToUnit( UnitGroupLoopCurrent(), actr, apoint);
+            UIDisplayMessage( PlayerGroupAll(), c_messageAreaDebug, ActorScopeGetText( ActorScopeFromUnit( UnitGroupLoopCurrent() ) ));
+            UIDisplayMessage( PlayerGroupAll(), c_messageAreaDebug, ActorGetText( libNtve_gf_MainActorofUnit( UnitGroupLoopCurrent() ) ));
 		UnitGroupLoopStep();
 	}
 	UnitGroupLoopEnd();
 	return true;
 }
+
+
+
+
+
+
 
 
 
