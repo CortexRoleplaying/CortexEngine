@@ -28,7 +28,7 @@ unitgroup libcrtx_utility_enforce_unit_permissions(unitgroup g)
 		    PlayerType(UnitGetOwner(u)) != c_playerTypeComputer &&
  	            PlayerType(UnitGetOwner(u)) != c_playerTypeHostile &&
 		    PlayerType(UnitGetOwner(u)) != c_playerTypeNeutral &&
-	            !libcrtx_admin_haspermissions(EventPlayer(), UnitGetOwner(u), libcrtx_admin_permissionlevel_moderator) ||
+	            !libcrtx_admin_haspermissions(EventPlayer(), UnitGetOwner(u), libcrtx_admin_permissionlevel_moderator)) ||
 		    UnitGetType(u) == libcrtx_getspawnertype() )
 		{
 			UnitGroupRemove(g, u);
