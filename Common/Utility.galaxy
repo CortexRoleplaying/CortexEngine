@@ -24,26 +24,17 @@ unitgroup libcrtx_utility_enforce_unit_permissions(unitgroup g)
     {
         u = UnitGroupUnit(g, count);
 		if( (UnitGetOwner(u) != EventPlayer() && 
-
 		    PlayerType(UnitGetOwner(u)) != c_playerTypeNone &&
-
 		    PlayerType(UnitGetOwner(u)) != c_playerTypeComputer &&
-
  	            PlayerType(UnitGetOwner(u)) != c_playerTypeHostile &&
-
-		    PlayerType(UnitGetOwner(u)) != c_playerTypeNeutral) ||
-
+		    PlayerType(UnitGetOwner(u)) != c_playerTypeNeutral &&
+	            !libcrtx_admin_haspermissions(EventPlayer(), UnitGetOwner(u), libcrtx_admin_permissionlevel_moderator) ||
 		    UnitGetType(u) == libcrtx_getspawnertype() )
-
 		{
-
 			UnitGroupRemove(g, u);
-
 		}	
-
 		count = count - 1;
-
-	}
+    }
     return g;
 }
 
@@ -75,7 +66,7 @@ int libcrtx_utility_getplayerfromdefaultcolor(string colour)
 		return 6;
 	} else if( colour == "green" ) {
 		return 7;
-	} else if( colour == "pink" ) {
+	} else if( colour == "lightpink" ) {
 		return 8;
 	} else if( colour == "violet" ) {
 		return 9;
@@ -93,7 +84,7 @@ int libcrtx_utility_getplayerfromdefaultcolor(string colour)
 		return 14; 
 	} else if( colour == "darkgray" ) {
 		return 14; 
-	} else if( colour == "lavender" ) {
+	} else if( colour == "pink" ) {
 		return 15;
 	}
 
