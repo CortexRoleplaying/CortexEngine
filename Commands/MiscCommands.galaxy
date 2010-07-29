@@ -637,6 +637,9 @@ bool libcrtx_command_adddamage(bool testConds, bool runActions) {
 	int val;
 	unitgroup g = libcrtx_utility_getselectedunits();
 	val = StringToInt(StringWord( EventChatMessage(false), 2 ));
+	if(val > 4096) {
+	   val = 4096;
+	}
 
 	UnitGroupLoopBegin(g);
 	while(!UnitGroupLoopDone())
