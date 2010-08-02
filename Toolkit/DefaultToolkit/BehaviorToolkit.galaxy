@@ -18,4 +18,5 @@ void libcrtx_toolkit_default_initbehaviors()
 {
     // restricted behaviors
     libcrtx_toolkit_addrestrictedbehavior("RoleplayingNecessity");
+    libcrtx_toolkit_addrestrictedbehavior("Levels");
 }
