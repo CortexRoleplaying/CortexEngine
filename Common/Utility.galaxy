@@ -101,6 +101,8 @@ int libcrtx_utility_getplayerfromcolor(string colour)
 		return libcrtx_setting_getint(libcrtx_setting_int_hostilecomputer);
 	} else if( colour == "neutral" ) {
 		return libcrtx_setting_getint(libcrtx_setting_int_neutralcomputer);
+	} else if( colour == "me" ) {
+		return EventPlayer();
 	}
 
 	i = libcrtx_max_players - 1;
