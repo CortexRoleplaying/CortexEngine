@@ -65,6 +65,9 @@ void libcrtx_commands_init()
       libcrtx_command_create("@removearea", "libcrtx_command_removearea");
 	libcrtx_command_create("@removebehavior", "libcrtx_command_removebehavior");
 	libcrtx_command_create("@addbehavior", "libcrtx_command_addbehavior");
+	libcrtx_command_create("@firstperson", "libcrtx_command_firstperson");
+	libcrtx_command_create("@thirdperson", "libcrtx_command_thirdperson");
+	libcrtx_command_create("@sayoverhead", "libcrtx_command_sayoverhead");
 
 	// admin commands
 	libcrtx_command_create("!ban", "libcrtx_command_ban");

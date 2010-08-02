@@ -76,6 +76,42 @@ bool libcrtx_command_say(bool checkConds, bool runActions)
 	return true;
 }
 
+bool libcrtx_command_sayoverhead(bool checkConds, bool runActions)
+{
+	int t;
+	string s;
+	unit u;
+	text unitName;
+	text misc;
+	unitgroup g = libcrtx_utility_getselectedunits();
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		u = UnitGroupLoopCurrent();
+		
+		s = EventChatMessage(false);
+		s = StringSub( s, StringFind(s, " ", c_stringCase)+1, StringLength(s)); // The remainder of the chat message.
+		misc = libcrtx_utility_colortextbyplayer(EventPlayer(), StringToText(s));
+
+		if( UnitGetCustomValue( UnitGroupLoopCurrent(), libcrtx_unit_custom_value_texttag ) != 0.0 ) {
+			TextTagShow(  FixedToInt(UnitGetCustomValue( UnitGroupLoopCurrent(), libcrtx_unit_custom_value_texttag )), PlayerGroupAll(), false );
+		}
+		
+		t = TextTagCreate( misc, 22, UnitGetPosition( UnitGroupLoopCurrent() ), 2.0 + UnitGetHeight(UnitGroupLoopCurrent()), true, true, PlayerGroupAll() );
+		TextTagAttachToUnit( t, UnitGroupLoopCurrent(), 2.0 + UnitGetHeight(UnitGroupLoopCurrent()));
+		TextTagSetTime( t, c_textTagTimeDuration, 24 );
+		TextTagShow( t, PlayerGroupAll(), true );
+		
+		UnitSetCustomValue( UnitGroupLoopCurrent(), libcrtx_unit_custom_value_texttag, IntToFixed(t) );
+
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+
+
+	return true;
+}
+
 
 bool libcrtx_command_setname(bool checkConds, bool runActions)
 {

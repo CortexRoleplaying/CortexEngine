@@ -713,9 +713,185 @@ bool libcrtx_command_addbehavior(bool testConds, bool runActions) {
 }
 
 
+bool[libcrtx_max_players] libcrtx_command_firstperson_setup;
+bool[libcrtx_max_players] libcrtx_command_firstperson_keyW;
+bool[libcrtx_max_players] libcrtx_command_firstperson_keyA;
+bool[libcrtx_max_players] libcrtx_command_firstperson_keyS;
+bool[libcrtx_max_players] libcrtx_command_firstperson_keyD;
+unit[libcrtx_max_players] libcrtx_command_firstperson_unit;
+bool[libcrtx_max_players] libcrtx_command_firstperson_inmotion;
+point[libcrtx_max_players] libcrtx_command_firstperson_lastpos;
 
+bool libcrtx_command_firstperson_keylistener(bool testConds, bool runActions)
+{
+	if( EventKeyPressed() == c_keyW ) {
+		libcrtx_command_firstperson_keyW[EventPlayer()] = !libcrtx_command_firstperson_keyW[EventPlayer()];
+	} else if( EventKeyPressed() == c_keyA ) {
+		libcrtx_command_firstperson_keyA[EventPlayer()] = !libcrtx_command_firstperson_keyA[EventPlayer()];
+	} else if( EventKeyPressed() == c_keyS ) {
+		libcrtx_command_firstperson_keyS[EventPlayer()] = !libcrtx_command_firstperson_keyS[EventPlayer()];
+	} else if( EventKeyPressed() == c_keyD ) {
+		libcrtx_command_firstperson_keyD[EventPlayer()] = !libcrtx_command_firstperson_keyD[EventPlayer()];
+	}
 
+	if( libcrtx_command_firstperson_setup[0] == false ) {
+		libcrtx_command_firstperson_setup[0] = true;
+		TriggerExecute( TriggerCreate("libcrtx_command_firstperson_moveupdate"), false, false );
+	}
+	return true;
+}
 
+bool libcrtx_command_firstperson_moveupdate(bool testConds, bool runActions)
+{
+	fixed fDiff;
+	fixed sDiff;
+	point p;
+	int i = 1;
+	fixed itp = 0.5;
+	fixed itr = 20;
+	while(true)
+	{
+		i = 1;
+		while( i != libcrtx_max_players )
+		{
+			if( libcrtx_command_firstperson_unit[i] == null ) {
+				i = i + 1;
+				continue;
+			}
+			itp = UnitGetPropertyFixed( libcrtx_command_firstperson_unit[i], c_unitPropMovementSpeed, c_unitPropCurrent );
+			itp = itp * 0.1;
+			fDiff = 0;
+			sDiff = 0;
+			if( libcrtx_command_firstperson_keyW[i] ) {
+				fDiff = fDiff + itp;
+			}
+			if( libcrtx_command_firstperson_keyS[i] ) {
+				fDiff = fDiff - itp;
+			}
+			if( libcrtx_command_firstperson_keyA[i] ) {
+				if( libcrtx_command_firstperson_keyS[i] ) { 
+					sDiff = sDiff - itr;
+				} else {
+					sDiff = sDiff + itr;
+				}
+			}
+			if( libcrtx_command_firstperson_keyD[i] ) {
+				if( libcrtx_command_firstperson_keyS[i] ) {
+					sDiff = sDiff + itr;
+				} else {
+					sDiff = sDiff - itr;
+				}
+			}
+
+			if( fDiff != 0.0 ) {
+				if( !libcrtx_command_firstperson_inmotion[i] ) {
+					libNtve_gf_PlayAnimation( libNtve_gf_MainActorofUnit(libcrtx_command_firstperson_unit[i]), "Walk", "Walk", c_animFlagPlayForever, 1 );
+					libcrtx_command_firstperson_inmotion[i] = true;
+				}
+				p = PointWithOffsetPolar( UnitGetPosition(libcrtx_command_firstperson_unit[i]), fDiff, UnitGetFacing(libcrtx_command_firstperson_unit[i]) );
+				UnitSetPosition( libcrtx_command_firstperson_unit[i], p, true );
+			} else {
+				libcrtx_command_firstperson_inmotion[i] = false;
+				libNtve_gf_ClearAnimation( libNtve_gf_MainActorofUnit(libcrtx_command_firstperson_unit[i]), "Walk" );
+			}
+
+			if( sDiff != 0.0 ) {
+				if( fDiff != 0.0 ) {
+					UnitSetFacing( libcrtx_command_firstperson_unit[i], UnitGetFacing(libcrtx_command_firstperson_unit[i]) + sDiff, 0 );
+				} else {
+					UnitSetFacing( libcrtx_command_firstperson_unit[i], UnitGetFacing(libcrtx_command_firstperson_unit[i]) + sDiff, 0.5 );
+				}
+			}
+
+			i = i + 1;
+		}
+		Wait(0.1, c_timeReal);
+	}
+	return true;
+}
+
+bool libcrtx_command_firstperson(bool testConds, bool runActions) {
+	string r;
+	trigger t;
+	unit u;
+	unitgroup g = libcrtx_utility_getselectedunits();
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		u = UnitGroupLoopCurrent();
+		libcrtx_command_firstperson_unit[EventPlayer()] = u;
+
+		libNtve_gf_MakeUnitUncommandable( u, true );
+		
+
+		UISetMode( PlayerGroupSingle(EventPlayer()), c_uiModeLetterboxed, 1.0);
+		UISetFrameVisible( PlayerGroupSingle(EventPlayer()), c_syncFrameTypeHeroPanel, false );
+		CameraLookAtUnit(EventPlayer(), u);
+		CameraUseHeightSmoothing(EventPlayer(), true);
+		CameraUseHeightDisplacement(EventPlayer(), true);
+		CameraSetValue(EventPlayer(), c_cameraValuePitch, 20, 2.0, -1, 10);
+		CameraSetValue(EventPlayer(), c_cameraValueDistance, 3, 1.0, -1, 10);
+		CameraForceMouseRelative(EventPlayer(), true);
+		CameraSetMouseRotates( EventPlayer(), true );
+		libNtve_gf_DisplayBossBar( EventPlayer(), CatalogFieldValueGet(c_gameCatalogActor, UnitGetType(u), "UnitIcon", EventPlayer()), UnitTypeGetName( UnitGetType(u) ), 1, PlayerGroupSingle(EventPlayer()));
+		libNtve_gf_SetBossBarBoss( EventPlayer(), UnitGroupLoopCurrent(), true );
+		r = CatalogFieldValueGet(c_gameCatalogUnit, UnitGetType(u), "Race", EventPlayer());
+		if( StringEqual(r, "Terr", false) ) {
+			libNtve_gf_SetBossBarRace( EventPlayer(), 0, true );
+		} else if( StringEqual(r, "Zerg", false) ) {
+			libNtve_gf_SetBossBarRace( EventPlayer(), 2, true );
+		} else {
+			libNtve_gf_SetBossBarRace( EventPlayer(), 1, true );
+		}
+		libNtve_gf_MoveBossBar( EventPlayer(), c_anchorBottom, 0, 50);
+		libNtve_gf_ShowHideBossBar( true, EventPlayer() );
+
+		// Setup key listener
+		if( !libcrtx_command_firstperson_setup[EventPlayer()] ) {
+			libcrtx_command_firstperson_setup[EventPlayer()] = true;
+			libcrtx_command_firstperson_lastpos[EventPlayer()] = UnitGetPosition(u);
+			t = TriggerCreate("libcrtx_command_firstperson_keylistener");
+			TriggerAddEventKeyPressed( t, EventPlayer(), c_keyW, true, c_keyModifierStateIgnore, c_keyModifierStateIgnore, c_keyModifierStateIgnore );
+			TriggerAddEventKeyPressed( t, EventPlayer(), c_keyA, true, c_keyModifierStateIgnore, c_keyModifierStateIgnore, c_keyModifierStateIgnore );
+			TriggerAddEventKeyPressed( t, EventPlayer(), c_keyS, true, c_keyModifierStateIgnore, c_keyModifierStateIgnore, c_keyModifierStateIgnore );
+			TriggerAddEventKeyPressed( t, EventPlayer(), c_keyD, true, c_keyModifierStateIgnore, c_keyModifierStateIgnore, c_keyModifierStateIgnore );
+			TriggerAddEventKeyPressed( t, EventPlayer(), c_keyW, false, c_keyModifierStateIgnore, c_keyModifierStateIgnore, c_keyModifierStateIgnore );
+			TriggerAddEventKeyPressed( t, EventPlayer(), c_keyA, false, c_keyModifierStateIgnore, c_keyModifierStateIgnore, c_keyModifierStateIgnore );
+			TriggerAddEventKeyPressed( t, EventPlayer(), c_keyS, false, c_keyModifierStateIgnore, c_keyModifierStateIgnore, c_keyModifierStateIgnore );
+			TriggerAddEventKeyPressed( t, EventPlayer(), c_keyD, false, c_keyModifierStateIgnore, c_keyModifierStateIgnore, c_keyModifierStateIgnore );
+		}
+
+		UnitGroupLoopEnd();
+		
+		while(u != null) {
+			if( libcrtx_command_firstperson_inmotion[EventPlayer()] || DistanceBetweenPoints(libcrtx_command_firstperson_lastpos[EventPlayer()], UnitGetPosition(libcrtx_command_firstperson_unit[EventPlayer()])) > 0.5 ) { 
+				CameraPan( EventPlayer(), UnitGetPosition(u), 0.1, -1, 10, false );
+				libcrtx_command_firstperson_lastpos[EventPlayer()] = UnitGetPosition(libcrtx_command_firstperson_unit[EventPlayer()]);
+			}
+			Wait(0.3, c_timeReal);
+		}
+		break;
+	}
+	// No end unit loop.
+	return true;
+}
+
+bool libcrtx_command_thirdperson(bool testConds, bool runActions) {
+	unit u = libcrtx_command_firstperson_unit[EventPlayer()];
+	UISetMode( PlayerGroupSingle(EventPlayer()), c_uiModeConsole, 1.0);
+	if(u) { 
+		libNtve_gf_MakeUnitUncommandable( u, false );
+	}
+	libcrtx_command_firstperson_unit[EventPlayer()] = null;
+	CameraLookAtUnit(EventPlayer(), null);
+	CameraUseHeightSmoothing(EventPlayer(), false);
+	CameraForceMouseRelative(EventPlayer(), false);
+	CameraSetMouseRotates(EventPlayer(), false);
+	UISetFrameVisible( PlayerGroupSingle(EventPlayer()), c_syncFrameTypeHeroPanel, true );
+	libNtve_gf_ShowHideBossBar( false, EventPlayer() );
+	CameraApplyInfo( EventPlayer(), CameraInfoDefault(), 2.0, -1, 10, false );
+	return true;
+}
 
 
 
