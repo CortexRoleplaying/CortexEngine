@@ -24,4 +24,8 @@ void libcrtx_settings_initdefault()
 	libcrtx_setting_setint(libcrtx_setting_int_neutralcomputer, 0);
 	libcrtx_setting_setint(libcrtx_setting_int_hostilecomputer, 15);
 	libcrtx_setting_setint(libcrtx_setting_int_rootadminplayer, 1);
+
+	libcrtx_setting_setint(libcrtx_setting_int_maxspawnrate, 100);
+	libcrtx_setting_setint(libcrtx_setting_int_spawnperiod, 60);
+	libcrtx_setting_setint(libcrtx_setting_int_spawntimeout, 30);
 }

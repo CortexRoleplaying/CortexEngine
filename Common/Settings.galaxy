@@ -27,6 +27,9 @@ const int libcrtx_setting_fixed_minscale    = 2; // The smallest you can make a 
 const int libcrtx_setting_int_neutralcomputer = 3; // The ID of the neutral computer player
 const int libcrtx_setting_int_hostilecomputer = 4; // The ID of the hostile computer player
 const int libcrtx_setting_int_rootadminplayer = 5; // The ID of the player that will by default have admin privileges.
+const int libcrtx_setting_int_maxspawnrate = 6; // The number of units you can spawn every spawn period.
+const int libcrtx_setting_int_spawnperiod = 7; // See #6.
+const int libcrtx_setting_int_spawntimeout = 8; // How long your spawn will be disabled should you mass.
 
 void libcrtx_setting_setint(int key, int val)
 {

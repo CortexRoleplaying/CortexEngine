@@ -108,6 +108,16 @@ void libcrtx_command_spawn_execute()
 	{
 		return;
 	}
+
+	libcrtx_command_spawn_count[EventPlayer()] = libcrtx_command_spawn_count[EventPlayer()] + libcrtx_command_spawn_instances[EventPlayer()].count;
+	if( TimerGetElapsed(libNtve_gv__GameTimer[EventPlayer()]) - libcrtx_command_spawn_lastevent[EventPlayer()] > libcrtx_setting_getint(libcrtx_setting_int_spawnperiod) ) {
+		libcrtx_command_spawn_lastevent[EventPlayer()] = FixedToInt(TimerGetElapsed(libNtve_gv__GameTimer[EventPlayer()]));
+	}
+
+	// Frozen command.
+	if( libcrtx_command_spawn_frozenuntil[EventPlayer()] > TimerGetElapsed(libNtve_gv__GameTimer[EventPlayer()]) ) {
+		return;
+	}
 	
 	//libcrtx_debug("creating " + IntToString(libcrtx_command_spawn_instances[EventPlayer()].count) + " " + libcrtx_command_spawn_instances[EventPlayer()].unitType);
 	UnitCreate( libcrtx_command_spawn_instances[EventPlayer()].count, uType, c_unitCreateIgnorePlacement, libcrtx_command_spawn_instances[EventPlayer()].player, p, 270.0);
@@ -121,6 +131,21 @@ bool libcrtx_command_spawn(bool testConds, bool runActions)
 
 	if( !runActions ) {
 		return true;
+	}
+
+	// Spawn Throttle reset check
+	if( TimerGetElapsed(libNtve_gv__GameTimer[EventPlayer()]) - libcrtx_command_spawn_lastevent[EventPlayer()] > libcrtx_setting_getint(libcrtx_setting_int_spawnperiod) ) {
+		libcrtx_command_spawn_count[EventPlayer()] = 0;
+	}
+
+	// Can we still spawn units? (Spawn Throttle)
+	if( libcrtx_command_spawn_count[EventPlayer()] >= libcrtx_setting_getint(libcrtx_setting_int_maxspawnrate) || libcrtx_command_spawn_frozenuntil[EventPlayer()] > TimerGetElapsed(libNtve_gv__GameTimer[EventPlayer()])) {
+		libcrtx_writelocalerror("You cannot spawn that many units so quickly. Please wait a while, and try again.");
+		libcrtx_writetext(PlayerGroupAll(), libcrtx_utility_coloredplayername(EventPlayer()) + StringToText(" is attempting to spawn in excess of " + IntToString(libcrtx_setting_getint(libcrtx_setting_int_maxspawnrate)) + " units in " + IntToString(libcrtx_setting_getint(libcrtx_setting_int_spawnperiod)) + " seconds."));
+		if( libcrtx_command_spawn_frozenuntil[EventPlayer()] < TimerGetElapsed(libNtve_gv__GameTimer[EventPlayer()]) ) {
+			libcrtx_command_spawn_frozenuntil[EventPlayer()] = TimerGetElapsed(libNtve_gv__GameTimer[EventPlayer()]) + libcrtx_setting_getint(libcrtx_setting_int_spawntimeout);
+		}
+		// Do not halt execution, move on and allow the command to parse so it can be repeated using @spawn later.
 	}
 
 	message = EventChatMessage(false);
