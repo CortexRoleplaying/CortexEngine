@@ -104,7 +104,7 @@ void libcrtx_command_spawn_execute()
 	
 
 	uType = UnitTypeFromString(libcrtx_command_spawn_instances[EventPlayer()].unitType);
-	if( uType == "" || uType == libcrtx_getspawnertype() )
+	if( uType == "" || uType == libcrtx_getspawnertype() || libcrtx_toolkit_isrestrictedunit(uType) )
 	{
 		return;
 	}
@@ -139,7 +139,7 @@ bool libcrtx_command_spawn(bool testConds, bool runActions)
 	}
 
 	// Can we still spawn units? (Spawn Throttle)
-	if( libcrtx_command_spawn_count[EventPlayer()] >= libcrtx_setting_getint(libcrtx_setting_int_maxspawnrate) || libcrtx_command_spawn_frozenuntil[EventPlayer()] > TimerGetElapsed(libNtve_gv__GameTimer[EventPlayer()])) {
+	if( libcrtx_admin_getpermissions(EventPlayer()) < libcrtx_admin_permissionlevel_moderator && (libcrtx_command_spawn_count[EventPlayer()] >= libcrtx_setting_getint(libcrtx_setting_int_maxspawnrate) || libcrtx_command_spawn_frozenuntil[EventPlayer()] > TimerGetElapsed(libNtve_gv__GameTimer[EventPlayer()]))) {
 		libcrtx_writelocalerror("You cannot spawn that many units so quickly. Please wait a while, and try again.");
 		libcrtx_writetext(PlayerGroupAll(), libcrtx_utility_coloredplayername(EventPlayer()) + StringToText(" is attempting to spawn in excess of " + IntToString(libcrtx_setting_getint(libcrtx_setting_int_maxspawnrate)) + " units in " + IntToString(libcrtx_setting_getint(libcrtx_setting_int_spawnperiod)) + " seconds."));
 		if( libcrtx_command_spawn_frozenuntil[EventPlayer()] < TimerGetElapsed(libNtve_gv__GameTimer[EventPlayer()]) ) {

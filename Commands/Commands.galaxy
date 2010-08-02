@@ -63,6 +63,8 @@ void libcrtx_commands_init()
       libcrtx_command_create("@adddamage", "libcrtx_command_adddamage");
       libcrtx_command_create("@attach", "libcrtx_command_attach");
       libcrtx_command_create("@removearea", "libcrtx_command_removearea");
+	libcrtx_command_create("@removebehavior", "libcrtx_command_removebehavior");
+	libcrtx_command_create("@addbehavior", "libcrtx_command_addbehavior");
 
 	// admin commands
 	libcrtx_command_create("!ban", "libcrtx_command_ban");

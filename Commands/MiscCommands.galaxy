@@ -678,8 +678,39 @@ bool libcrtx_command_attach(bool testConds, bool runActions) {
 	return true;
 }
 
+bool libcrtx_command_removebehavior(bool testConds, bool runActions) {
+	string val;
+	unitgroup g = libcrtx_utility_getselectedunits();
+	val = StringWord( EventChatMessage(false), 2 );
 
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		UnitBehaviorRemove( UnitGroupLoopCurrent(), val, 1 );
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}
 
+bool libcrtx_command_addbehavior(bool testConds, bool runActions) {
+	string val;
+	unitgroup g = libcrtx_utility_getselectedunits();
+	val = StringWord( EventChatMessage(false), 2 );
+
+	if( libcrtx_toolkit_isrestrictedbehavior(val) ) {
+		return true;
+	}
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		UnitBehaviorAdd( UnitGroupLoopCurrent(), val, UnitGroupLoopCurrent(), 1 );
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}
 
 
 

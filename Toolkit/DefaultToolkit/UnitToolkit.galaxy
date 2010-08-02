@@ -25,3 +25,8 @@ void libcrtx_toolkit_default_initunittools()
     libcrtx_toolkit_setdamagebehavior("IncreaseDamage1");
 }
 
+void libcrtx_toolkit_default_initrestrictedunits()
+{
+	libcrtx_toolkit_addrestrictedunit("nukenoodle");
+}
+
