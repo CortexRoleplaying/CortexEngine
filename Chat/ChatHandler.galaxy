@@ -55,6 +55,9 @@ bool libcrtx_chat_parsechat(int lp_player, string lp_message)
 		sub = libcrtx_alias_getsource(sub);
 	}
 
+	// convert to lowercase.
+	sub = StringCase(sub, false);
+
 	t = DataTableGetTrigger( true, "libcrtx_commands_" + sub );
 	if( t ) {
 		TriggerExecute(t, false, false);
