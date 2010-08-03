@@ -15,6 +15,7 @@
 bool libcrtx_command_ban(bool testConds, bool runActions)
 {
 	int player;
+	unitgroup g;
 	string val = StringWord( EventChatMessage(false), 2 );
 	player = libcrtx_utility_getplayerfromcolor( val );
 	if( player == -1 ) {
@@ -26,6 +27,14 @@ bool libcrtx_command_ban(bool testConds, bool runActions)
 	}
 
 	GameOver( player, c_gameOverDefeat, false, false );
+	g = UnitGroup( null, player, RegionEntireMap(), UnitFilter(0, 0, 0, 0), 0 );
+	UnitGroupLoopBegin(g);
+	while( !UnitGroupLoopDone() )
+	{
+		UnitRemove( UnitGroupLoopCurrent() );
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
 	
 	libcrtx_writetext(PlayerGroupAll(), libcrtx_utility_coloredplayername(player) + StringToText(" has been banned by ") + libcrtx_utility_coloredplayername(EventPlayer()));
 	return true;
@@ -133,5 +142,45 @@ bool libcrtx_command_adminremove(bool testConds, bool runActions)
 	UnitGroupLoopEnd();
 	
 	libcrtx_writetext(PlayerGroupAll(), libcrtx_utility_coloredplayername(player) + StringToText(" has been removed by ") + libcrtx_utility_coloredplayername(EventPlayer()));
+	return true;	
+}
+
+revealer[libcrtx_max_players] libcrtx_command_seeall_revealers;
+bool libcrtx_command_seeall(bool testConds, bool runActions)
+{
+	int i = 1;
+	string state;
+	state = StringWord( EventChatMessage(false), 2 );
+	if( libcrtx_admin_getpermissions( EventPlayer() ) < libcrtx_admin_permissionlevel_moderator ) {
+		return true;
+	}
+
+	if( state == "off" ) { 
+		while( i != libcrtx_max_players ) {
+			if( libcrtx_command_seeall_revealers[i] ) {
+				VisRevealerDestroy( libcrtx_command_seeall_revealers[i] );
+				libcrtx_command_seeall_revealers[i] = null;
+			}
+			i = i + 1;
+		}
+	} else if( state == "on" ) {
+		while( i != libcrtx_max_players ) {
+			if( libcrtx_command_seeall_revealers[i] == null ) {
+				libcrtx_command_seeall_revealers[i] = VisRevealerCreate( i, RegionEntireMap() );
+			}
+			i = i + 1;
+		}
+	} else {
+		// toggle.
+		while( i != libcrtx_max_players ) {
+			if( libcrtx_command_seeall_revealers[i] == null ) {
+				libcrtx_command_seeall_revealers[i] = VisRevealerCreate( i, RegionEntireMap() );
+			} else {
+				VisRevealerDestroy( libcrtx_command_seeall_revealers[i] );
+				libcrtx_command_seeall_revealers[i] = null;
+			}
+			i = i + 1;
+		}
+	}
 	return true;	
 }

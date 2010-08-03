@@ -76,6 +76,7 @@ void libcrtx_commands_init()
 	libcrtx_command_create("!promote", "libcrtx_command_promote");
 	libcrtx_command_create("!demote", "libcrtx_command_demote");
 	libcrtx_command_create("!remove", "libcrtx_command_adminremove");
+	libcrtx_command_create("!seeall", "libcrtx_command_seeall");
 
 	// region commands
 	libcrtx_command_create("#create", "libcrtx_command_regioncreate");
