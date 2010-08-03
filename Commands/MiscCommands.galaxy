@@ -893,6 +893,30 @@ bool libcrtx_command_thirdperson(bool testConds, bool runActions) {
 	return true;
 }
 
+bool libcrtx_command_play(bool testConds, bool runActions) {
+	string val;
+	int flags = 0;
+	unitgroup g = libcrtx_utility_getselectedunits();
+	val = StringWord( EventChatMessage(false), 2 );
+	val = StringCase(StringSub(val, 1, 1), true) + StringSub(val, 2, StringLength(val));
+
+	if( StringEqual(StringWord( EventChatMessage(false), 3), "loop", false) ) {
+		flags = c_animFlagPlayForever;
+	}
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		if( StringEqual(val, "reset", false) ) {
+			libNtve_gf_ClearAnimation( libNtve_gf_MainActorofUnit(UnitGroupLoopCurrent()), "libcrtx_command_play" );
+		} else {
+			libNtve_gf_PlayAnimation( libNtve_gf_MainActorofUnit(UnitGroupLoopCurrent()), "libcrtx_command_play", val, flags, 1 );
+		}
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}
 
 
 

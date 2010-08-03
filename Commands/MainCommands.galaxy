@@ -52,3 +52,9 @@ bool libcrtx_command_gas(bool testConds, bool runActions) {
     PlayerModifyPropertyInt( EventPlayer(), c_playerPropVespene, c_playerPropOperAdd, gas );
     return true;
 }
+
+bool libcrtx_command_commands(bool testConds, bool runActions) {
+	libcrtx_write( PlayerGroupSingle(EventPlayer()), "Available commands: ");
+	libcrtx_write( PlayerGroupSingle(EventPlayer()), libcrtx_command_list);
+	return true;
+}

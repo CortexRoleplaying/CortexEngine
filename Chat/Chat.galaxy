@@ -13,10 +13,12 @@
 // GNU General Public License for more details.
 
 bank[libcrtx_max_players] libcrtx_alias_banks;
+string libcrtx_command_list;
 
 void libcrtx_command_create(string lp_cmd, string lp_func) 
 {
 	DataTableSetTrigger( true, "libcrtx_commands_" + lp_cmd, TriggerCreate(lp_func) );
+	libcrtx_command_list = libcrtx_command_list + lp_cmd + ", ";
 }
 
 bool libcrtx_alias_exists(string aliasName)
