@@ -20,9 +20,13 @@ include "Cortex/Commands/Commands.galaxy"
 
 void libcrtx_InitLib()
 {
-	libcrtx_set_debug_mode(true); // must be changed for release.
+	libcrtx_set_debug_mode(false); // must be changed for release.
 
 	libcrtx_debug("cortex_init()");
+	// init dependencies
+	libactionbar_init();
+
+	// cortex main init.
 	libcrtx_settings_initdefault();
 	libcrtx_toolkit_init();
 	libcrtx_commands_init();

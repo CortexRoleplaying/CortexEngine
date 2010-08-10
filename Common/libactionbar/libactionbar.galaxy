@@ -1,0 +1,620 @@
+// LibActionBar
+// Copyright (C) 2009-2010 <http://www.cortexrp.com/>
+//
+// $Id$
+// 
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; version 2 of the License.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// Typedefs
+struct libactionbar_ActionBarEntry {
+	abilcmd action;
+	string icon;
+	text tooltip;
+	bool needsRacialTint;
+	fixed cooldownHighest;
+};
+
+// Constants
+
+const int libactionbar_max_actions = 9;
+const int libactionbar_max_players = 16;
+const bool libactionbar_debugmode = false;
+const fixed libactionbar_update_rate = 0.5;
+
+// CostType Constants
+const int libactionbar_costtype_energy = 0;
+const int libactionbar_costtype_life = 1;
+const int libactionbar_costtype_minerals = 2;
+const int libactionbar_costtype_gas = 3;
+const int libactionbar_costtype_shields = 4;
+
+// Storage
+libactionbar_ActionBarEntry[libactionbar_max_actions][libactionbar_max_players] libactionbar_actionbars;
+unit[libactionbar_max_players] libactionbar_active_unit;
+int[libactionbar_max_players] libactionbar_dialogs;
+int[libactionbar_max_actions][libactionbar_max_players] libactionbar_dialogitems_buttons;
+int[libactionbar_max_actions][libactionbar_max_players] libactionbar_dialogitems_images;
+int[libactionbar_max_actions][libactionbar_max_players] libactionbar_dialogitems_cooldownlabels;
+
+// -- PRIVATE --------------------------------------------------------------
+// Writes debug information.
+static void libactionbar_debug(string debug)
+{
+	if( libactionbar_debugmode ) {
+		UIDisplayMessage( PlayerGroupAll(), c_messageAreaDebug, StringToText(debug) );
+	}
+}
+
+// Call to initialize the library
+void libactionbar_init()
+{
+	//libactionbar_debug("libactionbar_init()");
+	TriggerAddEventDialogControl( TriggerCreate("libactionbar_on_dialog_click"), c_playerAny, c_invalidDialogControlId, c_triggerControlEventTypeClick );
+	TriggerAddEventTimePeriodic( TriggerCreate("libactionbar_update"), libactionbar_update_rate, c_timeReal );
+}
+
+// -- PRIVATE -------------------------------------------------------------- 
+static order libactionbar_guess_order(int player, int key)
+{
+	abilcmd cmd;
+	order o;
+	unit u;
+	cmd = libactionbar_actionbars[key][player].action;
+	if( AbilityCommandGetAction( cmd ) == c_cmdActionNone ) {
+		o = Order(cmd);
+	} else if ( AbilityCommandGetAction(cmd) == c_cmdActionInstant ) {
+		o = Order(cmd);
+		if( !UnitOrderIsValid(libactionbar_active_unit[player], o) ) {
+			u = libactionbar_active_unit[player];
+			o = OrderTargetingUnit(cmd, u);
+		}
+	} else if ( AbilityCommandGetAction(cmd) == c_cmdActionTarget ) {
+		u = UnitGroupRandomUnit(UnitGroupSelected(player), c_unitCountAlive);
+		o = OrderTargetingUnit(cmd, u);
+		if( !UnitOrderIsValid(libactionbar_active_unit[player], o) ) {
+			o = OrderTargetingPoint(cmd, PointWithOffsetPolar(UnitGetPosition(libactionbar_active_unit[player]), 5.0, UnitGetFacing(libactionbar_active_unit[player])));
+		}
+	}	
+	return o;
+}
+
+// Call this when a key is pressed. This method handles "hotkeys"
+// translation into ability usage.
+// param: player - the player who pressed the key
+// param: key - the integer of the key pressed. ex: 1-9
+// pass only c_keyA - c_keyZ!
+void libactionbar_key_pressed(int player, int key) {
+	abilcmd cmd;
+	order o;
+	unit u;
+
+	//libactionbar_debug("Issuing order");
+
+	// Attempt to issue the order associated with this key slot.
+	cmd = libactionbar_actionbars[key][player].action;
+	if( libactionbar_active_unit[player] ) {
+		o = libactionbar_guess_order(player, key);
+
+		if( UnitOrderIsValid( libactionbar_active_unit[player], o ) ) {
+			UnitIssueOrder( libactionbar_active_unit[player], o, c_orderQueueReplace );
+		}
+		
+	}
+}
+
+// -- PRIVATE -------------------------------------------------------------- 
+bool libactionbar_on_dialog_click(bool runConds, bool runActions)
+{
+	// Check if it's one of ours!
+	int i = 0;
+	//libactionbar_debug("Dialog click detected.");
+	while( i != libactionbar_max_actions ) {
+		if( libactionbar_dialogitems_buttons[i][EventPlayer()] == EventDialogControl() ) {
+			// This button seems to have been clickered!
+			libactionbar_key_pressed( EventPlayer(), i );
+			return true;
+		}
+		i = i + 1;
+	}
+	return true;
+}
+
+// -- PRIVATE -------------------------------------------------------------- 
+
+static int libactionbar_count_used_bars(int player) {
+	int i = 0;
+
+	while( i != libactionbar_max_actions ) {
+		if( libactionbar_actionbars[i][player].action == null ) {
+			return i;
+		}
+		i = i + 1;
+	}
+	return i;
+}
+
+// -- PRIVATE -------------------------------------------------------------- 
+static color libactionbar_get_racial_tint(int player)
+{
+	if( PlayerRace(player) == "Zerg" ) {
+		return Color(242, 158, 86);
+	} else if( PlayerRace(player) == "Prot" ) {
+		return Color(130, 182, 255);
+	} else {
+		return Color(177, 251, 200);
+	}
+} 
+
+// -- PRIVATE -------------------------------------------------------------- 
+// method by helral
+static string libactionbar_catalog_get_type(int catalogType, string entry, string matchValue) {
+    string value;
+
+    value = CatalogEntryParent(catalogType, entry);
+    if ( StringSub(value, 1, StringLength(matchValue)) == matchValue ) {
+        return value;
+    }
+    else {
+        if(value == entry) {
+            return "Error";
+        }
+        else {
+            return libactionbar_catalog_get_type(catalogType, value, matchValue);
+        }
+    }
+}
+
+// -- PRIVATE -------------------------------------------------------------- 
+static bool libactionbar_catalog_has_field(int lp_catalogType, string lp_entry, string lp_field) {
+	return (CatalogFieldValueCount(lp_catalogType, lp_entry, lp_field, c_playerAny) > 0);
+}
+
+static bool libactionbar_catalog_abilityscope_has_cost(string ability)
+{
+	int parent = AbilityClass(ability);
+	if( parent == c_classIdCAbilMerge ) {
+		return false;
+	}
+
+	return true;
+}
+
+// -- PRIVATE -------------------------------------------------------------- 
+// w/ contributions from helral
+static fixed libactionbar_get_cooldown_for_slot(int player, int slot)
+{
+	string s;
+	string abilType;
+	string ability;
+	fixed c;
+	ability = AbilityCommandGetAbility(libactionbar_actionbars[slot][player].action);
+
+	if( !CatalogEntryIsValid(c_gameCatalogAbil, ability) ) {
+		return 0;
+	}
+
+	c = UnitAbilityGetCooldown( libactionbar_active_unit[player], ability, "Abil/" + AbilityCommandGetAbility(libactionbar_actionbars[slot][player].action ));
+	if( c != 0 ) {
+		return c;
+	}
+
+	// Does not support Cost entry.
+	if(!libactionbar_catalog_abilityscope_has_cost(ability)) { 
+		return 0;
+	}
+
+	// Check to make sure the Cost entry exists.
+	if( !libactionbar_catalog_has_field( c_gameCatalogAbil, ability, "Cost" ) ) {
+		return 0;
+	}
+
+	abilType = libactionbar_catalog_get_type(c_gameCatalogAbil,  ability, "CAbil" );
+	if (abilType == "CAbilAugment" || abilType == "CAbilBehavior"  || abilType == "CAbilMorph" || abilType == "CAbilMorphPlacement" ) {
+        	return UnitAbilityGetCooldown(libactionbar_active_unit[player], ability, CatalogFieldValueGet(c_gameCatalogAbil, ability, "Cost.Cooldown.Link", player));
+    	}
+    	else 
+	{
+        	if( abilType == "CAbilEffectTarget" || abilType == "CAbilEffect" || abilType == "CAbilEffectInstant") {
+            		return UnitAbilityGetCooldown(libactionbar_active_unit[player], ability, CatalogFieldValueGet(c_gameCatalogAbil, ability, "Cost[0].Cooldown.Link", player));
+        	}
+	}
+	return 0;
+}
+
+// Redraw the actionbar for a player (if he is active)
+void libactionbar_redraw_actionbar(int player) {
+	int usedBars;
+	int x;
+	int y;
+	int i;
+	fixed cooldown;
+	fixed pctComplete;
+	bool disabled;
+
+	// Main actor bar area
+	if( libactionbar_dialogs[player] ) {
+		i = 0;
+		while(i != libactionbar_max_actions ) {
+			if( libactionbar_dialogitems_buttons[i][player] != 0 ) {
+				DialogControlDestroy( libactionbar_dialogitems_buttons[i][player] );
+				libactionbar_dialogitems_buttons[i][player] = 0;
+			}
+			if( libactionbar_dialogitems_images[i][player] != 0 ) {
+				DialogControlDestroy( libactionbar_dialogitems_images[i][player] );
+				libactionbar_dialogitems_images[i][player] = 0;
+			}
+			if( libactionbar_dialogitems_cooldownlabels[i][player] != 0 ) {
+				DialogControlDestroy( libactionbar_dialogitems_cooldownlabels[i][player] );
+				libactionbar_dialogitems_cooldownlabels[i][player] = 0;
+			}
+			i = i + 1;
+		}
+		DialogDestroy(libactionbar_dialogs[player]);
+		libactionbar_dialogs[player] = 0; 
+	}
+
+	// Calculate new dimensions of action bar
+	// 76x76 + 8 padding on each side
+	usedBars = libactionbar_count_used_bars(player);
+	if(usedBars == 0) {
+		// Don't waste time/effort drawing for someone who won't use it.
+		return;
+	}
+
+	x = 80 * usedBars + 40;
+	y = 117;
+
+	libactionbar_dialogs[player] = DialogCreate(x, y, c_anchorBottom, 0, 0, true);
+	DialogSetVisible(libactionbar_dialogs[player], PlayerGroupSingle(player), true);
+
+	i = 0;
+	while( i < usedBars ) {
+		// First off: make buttons
+		libactionbar_dialogitems_buttons[i][player] = DialogControlCreate( libactionbar_dialogs[player], c_triggerControlTypeButton );
+		DialogControlSetSize( libactionbar_dialogitems_buttons[i][player], PlayerGroupSingle(player), 76, 76 );
+		if( i == 0 ) {
+			DialogControlSetPosition( libactionbar_dialogitems_buttons[i][player], PlayerGroupSingle(player), c_anchorLeft, 20+2, 0 );
+		} else {
+			DialogControlSetPositionRelative( libactionbar_dialogitems_buttons[i][player], PlayerGroupSingle(player), c_anchorLeft, libactionbar_dialogitems_buttons[i-1][player], c_anchorLeft, 2+76, 0);
+		}
+		libNtve_gf_SetDialogItemTooltip( libactionbar_dialogitems_buttons[i][player], libactionbar_actionbars[i][player].tooltip, PlayerGroupSingle(player) );
+		// Disable this button if necessary
+		disabled = !UnitOrderIsValid(libactionbar_active_unit[player], libactionbar_guess_order(player, i));
+		if( disabled ) {
+			DialogControlSetEnabled( libactionbar_dialogitems_buttons[i][player], PlayerGroupSingle(player), false );
+		}
+		
+		DialogControlSetVisible( libactionbar_dialogitems_buttons[i][player], PlayerGroupSingle(player), true );
+
+		// Images to make buttons look like actual command card actions.
+		libactionbar_dialogitems_images[i][player] = DialogControlCreate( libactionbar_dialogs[player], c_triggerControlTypeImage );
+		DialogControlSetSize( libactionbar_dialogitems_images[i][player], PlayerGroupSingle(player), 76, 76 );
+		libNtve_gf_SetDialogItemImage( libactionbar_dialogitems_images[i][player], libactionbar_actionbars[i][player].icon, PlayerGroupSingle(player) );
+		if( i == 0 ) {
+			DialogControlSetPosition( libactionbar_dialogitems_images[i][player], PlayerGroupSingle(player), c_anchorLeft, 20+2, 0 );
+		} else {
+			DialogControlSetPositionRelative( libactionbar_dialogitems_images[i][player], PlayerGroupSingle(player), c_anchorLeft, libactionbar_dialogitems_images[i-1][player], c_anchorLeft, 2+76, 0);
+		}
+		
+		if( !disabled && libactionbar_actionbars[i][player].needsRacialTint ) { 
+			libNtve_gf_SetDialogItemColor( libactionbar_dialogitems_images[i][player], libactionbar_get_racial_tint(player), PlayerGroupSingle(player) );
+		}
+		DialogControlSetVisible( libactionbar_dialogitems_images[i][player], PlayerGroupSingle(player), true );
+
+		// Cooldown text (if applicable)
+		cooldown = libactionbar_get_cooldown_for_slot(player, i);
+		if( cooldown > 0 ) {
+			if( libactionbar_actionbars[i][player].cooldownHighest == 0 ) {
+				libactionbar_actionbars[i][player].cooldownHighest = cooldown;
+			}
+
+			// Now we can do a fraction.
+			pctComplete = ( libactionbar_actionbars[i][player].cooldownHighest - cooldown ) / libactionbar_actionbars[i][player].cooldownHighest;
+			if( pctComplete > 1.0 ) {
+				pctComplete = 1.0;
+			}
+			libactionbar_debug("Cooldown at " + FixedToString(pctComplete, c_fixedPrecisionAny));
+			// We'll have it scale vertically so that the bar will "grow" as cooldown completes
+			
+			libactionbar_dialogitems_cooldownlabels[i][player] = DialogControlCreate( libactionbar_dialogs[player], c_triggerControlTypeImage );
+			DialogControlSetSize( libactionbar_dialogitems_cooldownlabels[i][player], PlayerGroupSingle(player), FixedToInt(76*pctComplete), 74 );
+			if( i == 0 ) {
+				DialogControlSetPosition(libactionbar_dialogitems_cooldownlabels[i][player], PlayerGroupSingle(player), c_anchorLeft, 20+2, 0 );
+			} else {
+				DialogControlSetPositionRelative( libactionbar_dialogitems_cooldownlabels[i][player], PlayerGroupSingle(player), c_anchorLeft, libactionbar_dialogitems_images[i-1][player], c_anchorLeft, 2+76, 0);
+			}
+
+			DialogControlFadeTransparency( libactionbar_dialogitems_cooldownlabels[i][player], PlayerGroupSingle(player), 0.0, 0.5 );
+			libNtve_gf_SetDialogItemBlendMode(libactionbar_dialogitems_cooldownlabels[i][player], c_triggerBlendModeMultiply, PlayerGroupSingle(player) );
+
+			// "Glow" so the user notices the ability is nearing readiness. :)
+			if( cooldown <= libactionbar_update_rate ) {
+				libNtve_gf_SetDialogItemImage( libactionbar_dialogitems_cooldownlabels[i][player], "Assets/Textures/glow_greenhaze1.dds", PlayerGroupSingle(player) );
+				DialogControlFadeTransparency( libactionbar_dialogitems_cooldownlabels[i][player], PlayerGroupSingle(player), 0.0, 0.2 );
+				libNtve_gf_SetDialogItemBlendMode(libactionbar_dialogitems_cooldownlabels[i][player], c_triggerBlendModeAdd, PlayerGroupSingle(player) );
+			}
+			libNtve_gf_SetDialogItemColor( libactionbar_dialogitems_cooldownlabels[i][player], Color(0, 255, 0), PlayerGroupSingle(player) );
+			DialogControlSetVisible( libactionbar_dialogitems_cooldownlabels[i][player], PlayerGroupSingle(player), true );
+		}
+		i = i + 1;
+	}
+}
+
+// -- PRIVATE --------------------------------------------------------------
+// Converts a string in format "ability.cmd" to abilcmd primitive
+// param: abilwithcmd - the string in the correct format. ex: "Stimpack.execute"
+static abilcmd libactionbar_get_abilcmd_from_string(string abilwithcmd, string button, int player)
+{
+	string fqAbilityName;
+	string fqCommandName;
+	string s;
+
+	int x;
+	int i;
+	int periodPos = StringFind( abilwithcmd, ",", false );
+
+	fqAbilityName = StringSub( abilwithcmd, 1, periodPos-1 );
+	fqCommandName = StringSub( abilwithcmd, periodPos+1, StringLength(abilwithcmd) );
+	
+	// Determine how many CmdButtonArray entries there are.
+	x = CatalogFieldValueCount( c_gameCatalogAbil, fqAbilityName, "CmdButtonArray", player );
+	while( i != x ) {
+		s = CatalogFieldValueGet(c_gameCatalogAbil, fqAbilityName, "CmdButtonArray[" + IntToString(i) + "].DefaultButtonFace", player );
+		if( StringEqual(s, button, false) ) {
+			return AbilityCommand(fqAbilityName, i);
+		}
+		i = i + 1;
+	}
+	return AbilityCommand(fqAbilityName, 0);
+}
+
+// -- PRIVATE --------------------------------------------------------------
+// Adds an ability to the actionbar, maybe.
+// param: player- the integer player to add to
+// param: hotkey - the integer representation of the key. ex: c_keyA
+// param: cmd - the abilcmd to execute when hotkey is pressed
+// param: tooltip - tooltip to display when mouseover the image.
+static void libactionbar_attempt_add_ability(int player, string icon, bool tintRacially, abilcmd cmd, text tooltip)
+{
+	int i = 0;
+	
+	while( i != libactionbar_max_actions) {
+		if( libactionbar_actionbars[i][player].action != null ) {
+			i = i + 1;
+			continue;
+		}
+
+		libactionbar_actionbars[i][player].action = cmd;
+		libactionbar_actionbars[i][player].icon = icon;
+		libactionbar_actionbars[i][player].needsRacialTint = tintRacially;
+		libactionbar_actionbars[i][player].tooltip = tooltip;
+		libactionbar_actionbars[i][player].cooldownHighest = 0;
+		libactionbar_redraw_actionbar(player);
+		break;
+	}
+}
+
+// -- PRIVATE --------------------------------------------------------------
+// See constants for costType valid parameters
+static fixed libactionbar_get_ability_cost(string ability, int costType, int player)
+{
+	string field;
+	string abilType;
+
+	if( !CatalogEntryIsValid(c_gameCatalogAbil, ability) ) {
+		return 0;
+	}
+
+	if( !libactionbar_catalog_abilityscope_has_cost(ability) ) {
+		return 0;
+	}
+
+	// Check if ability has any costs at all!
+	if( !libactionbar_catalog_has_field(c_gameCatalogAbil, ability, "Cost") ) {
+		return 0;
+	}
+
+	if( costType == libactionbar_costtype_minerals || costType == libactionbar_costtype_gas ) {
+		if( costType == libactionbar_costtype_minerals ) {
+			field = "Minerals";
+		} else {
+			field = "Vespene";
+		}
+
+		abilType = libactionbar_catalog_get_type(c_gameCatalogAbil,  ability, "CAbil" );
+		if (abilType == "CAbilAugment" || abilType == "CAbilBehavior"  || abilType == "CAbilMorph" || abilType == "CAbilMorphPlacement" ) {
+			if( !libactionbar_catalog_has_field(c_gameCatalogAbil, ability, "Cost.Resource") ) {
+				return 0;
+			}
+        		return StringToFixed(CatalogFieldValueGet(c_gameCatalogAbil, ability, "Cost.Resource[" + field + "]", player ));
+    		}
+    		else 
+		{
+        		if( abilType == "CAbilEffectTarget" || abilType == "CAbilEffect" || abilType == "CAbilEffectInstant") {
+				if( !libactionbar_catalog_has_field(c_gameCatalogAbil, ability, "Cost[0].Resource") ) {
+					return 0;
+				}
+        	    		return StringToFixed(CatalogFieldValueGet(c_gameCatalogAbil, ability, "Cost[0].Resource[" + field + "]", player ));
+        		}
+		}
+	}
+
+	if( costType == libactionbar_costtype_life ) {
+		field = "Life";
+	} else if( costType == libactionbar_costtype_energy ) {
+		field = "Energy";
+	} else {
+		field = "Shields";
+	}
+
+	if( !libactionbar_catalog_has_field(c_gameCatalogAbil, ability, "Cost[0].Vital") ) {
+		return 0;
+	}
+
+	return StringToFixed(CatalogFieldValueGet(c_gameCatalogAbil, ability, "Cost[0].Vital[" + field + "]", player));
+}
+
+static string libactionbar_get_race_string(int player)
+{
+	if( PlayerRace(player) == "Terr" ) {
+		return "terran";
+	} else if( PlayerRace(player) == "Zerg" ) {
+		return "zerg";
+	} else {
+		return "protoss";
+	}
+}
+
+// -- PRIVATE --------------------------------------------------------------
+// Adds an ability to the actionbar, maybe.
+// param: buttonId - the ID of the button the tooltip will be based upon.
+static text libactionbar_build_tooltip_from_button(string buttonId, string abilityId, int player)
+{
+	text ret;
+	string tooltipName;
+	fixed cost;
+	string tooltipButton = CatalogFieldValueGet(c_gameCatalogButton, buttonId, "Tooltip", c_playerAny);
+	tooltipName = CatalogFieldValueGet(c_gameCatalogButton, buttonId, "Name", c_playerAny);
+
+	ret = StringToText("<c val=\"ffcc11\">") + StringExternal(tooltipName) + StringToText("</c><n/>");
+	cost = libactionbar_get_ability_cost(abilityId, libactionbar_costtype_minerals, player);
+	if(cost) {
+		ret = ret + StringToText( "<img width=\"24\" height=\"24\" path=\"Assets/Textures/icon-mineral-" + libactionbar_get_race_string(player) + ".dds\"/> " + FixedToString(cost, c_fixedPrecisionAny));
+	}
+	cost = libactionbar_get_ability_cost(abilityId, libactionbar_costtype_gas, player);
+	if(cost) {
+		ret = ret + StringToText( "<img width=\"24\" height=\"24\" path=\"Assets/Textures/icon-gas-" + libactionbar_get_race_string(player) + ".dds\"/> " + FixedToString(cost, c_fixedPrecisionAny));
+	}
+	cost = libactionbar_get_ability_cost(abilityId, libactionbar_costtype_life, player);
+	if(cost) {
+		ret = ret + StringToText( "<img width=\"24\" height=\"24\" path=\"Assets/Textures/icon-health-" + libactionbar_get_race_string(player) + ".dds\"/> " + FixedToString(cost, c_fixedPrecisionAny));
+	}
+	cost = libactionbar_get_ability_cost(abilityId, libactionbar_costtype_energy, player);
+	if(cost) {
+		ret = ret + StringToText( "<img width=\"24\" height=\"24\" path=\"Assets/Textures/icon-energy-" + libactionbar_get_race_string(player) + ".dds\"/> " + FixedToString(cost, c_fixedPrecisionAny));
+	}
+	ret = ret + StringToText("<n/><n/>") + StringExternal(tooltipButton);
+	return ret;
+}
+
+
+// Sets the active unit for the action bar system.
+// param: player - the player we're setting up the action bar for
+// param: u - the unit that the actionbar will be representing
+void libactionbar_set_active_unit(int player, unit u) {
+	int i = 0;
+	int n;
+	string s;
+	string f;
+	abilcmd a;
+	int h;
+	bool r;
+	string b;
+	int x;
+
+	// Same unit, don't update!
+	if( libactionbar_active_unit[player] == u ) {
+		return;
+	}
+
+	libactionbar_active_unit[player] = u;
+	
+	// reset the bars.
+	while( i != libactionbar_max_actions ) {
+		libactionbar_actionbars[i][player].action = null;
+		libactionbar_actionbars[i][player].icon = "";
+		i = i + 1;
+	}
+	i = 0;
+
+	// We're removing the action bars only.
+	if( u == null ) {
+		return;
+	}
+	n = CatalogFieldValueCount( c_gameCatalogUnit, UnitGetType(u), "CardLayouts", player );
+	if(n == 0) {
+		libactionbar_redraw_actionbar(player);
+		return;
+	}
+
+	// access the catalog to determine the abilities, their cooldowns, etc.
+	// step 1: figure out how many abilities they have (if any!)
+	n = CatalogFieldValueCount( c_gameCatalogUnit, UnitGetType(u), "CardLayouts[0].LayoutButtons", player );
+	
+	if(n == 0) {
+		// All done, no actions on the command card.
+		// Redraw to remove.
+		libactionbar_redraw_actionbar(player);
+		return;
+	}
+
+	// Ok, so now we need to figure out which actions aren't the bullshit actions and transcribe them to our array.
+	// Lets iterate over the command card!
+	x = n;
+	n = 0;
+	while(n != x) {Ê
+		s = CatalogFieldValueGet(c_gameCatalogUnit, UnitGetType(u), "CardLayouts[0].LayoutButtons[" + IntToString(n) + "].Face", player );
+		if( StringEqual(s, "Move", false) || StringEqual(s, "Stop", false) || StringEqual(s, "MoveHold", false) || StringEqual(s, "Attack", false) || StringEqual(s, "MovePatrol", false) || StringEqual(s, "MoveHoldPosition", false) || StringEqual(s, "Rally", false) || StringEqual(s, "AcquireMove", false)) {
+			// We don't need any of these
+			n = n + 1;
+			continue;
+		}
+
+		// Figure out the icon now that we know it's valid.
+		f = CatalogFieldValueGet(c_gameCatalogUnit, UnitGetType(u), "CardLayouts[0].LayoutButtons[" + IntToString(n) + "].Face", player );
+		// Check if the button exists!
+		if( !CatalogEntryIsValid(c_gameCatalogButton, f) ) {
+			n = n + 1;
+			continue;
+			// Valid ability? Maybe. But if it doesn't have a button, wtf are we supposed to do?
+		}
+
+		if( CatalogFieldValueGet(c_gameCatalogButton, f, "TintRacially", player) == "1" ) {
+			r = true;
+		} else {
+			r = false;
+		}
+		// r = TintRacially attribute 
+		b = f;
+
+		f = CatalogFieldValueGet(c_gameCatalogButton, f, "Icon", player);
+		// leave f alone, f = Icon path
+		
+		// Let's grab it's AbilCmd!
+		s = CatalogFieldValueGet(c_gameCatalogUnit, UnitGetType(u), "CardLayouts[0].LayoutButtons[" + IntToString(n) + "].AbilCmd", player );
+		// s is now in format ability.command, we need to translate to abilcmd primitive.
+		if( s == "" ) {
+			n = n + 1;
+			continue;
+			// Most likely a behavior!
+		}
+
+		// look up ability and figure out index of the cmd
+		a = libactionbar_get_abilcmd_from_string(s, b, player);
+		if( a == null ) { 
+			n = n - 1;
+			continue;
+		}
+
+		libactionbar_attempt_add_ability(player, f, r, a, libactionbar_build_tooltip_from_button(b, AbilityCommandGetAbility(a), player));
+		n = n + 1;
+	}
+}
+
+// -- PRIVATE -------------------------------------------------------------- 
+bool libactionbar_update(bool check, bool run)
+{
+	int i = 0;
+	while( i != libactionbar_max_players ) {
+		libactionbar_redraw_actionbar(i);
+		i = i + 1;
+	}
+	return true;
+}

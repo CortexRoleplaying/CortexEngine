@@ -12,13 +12,16 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+// Load all Cortex dependencies
+include "Cortex/Common/libactionbar/libactionbar.galaxy"
+
 // Cortex Subversion revision
-int libcrtx_version_revision = 51;
+int libcrtx_version_revision = 66;
 
 // Version in form major.minor.bugfix.hotfix
 // ex: "0.10.1a" when concatenated
-const int libcrtx_version_major = 0;
-const int libcrtx_version_minor = 5;
+const int libcrtx_version_major = 1;
+const int libcrtx_version_minor = 1;
 const int libcrtx_version_bugfix = 0;
 const string libcrtx_version_hotfix = "";
 
