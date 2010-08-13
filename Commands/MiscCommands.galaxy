@@ -631,25 +631,102 @@ bool libcrtx_command_level(bool testConds, bool runActions) {
 }
 
 bool libcrtx_command_adddamage(bool testConds, bool runActions) {
-
+	int looperMan;
 	int val;
 	unitgroup g = libcrtx_utility_getselectedunits();
 	val = StringToInt(StringWord( EventChatMessage(false), 2 ));
-	if(val > 4096) {
-	   val = 4096;
+	if(val > 9999) {
+	   val = 9999;
+	}
+	// Temporary exit until the global command queue is set up. When that's implemented, negative values should 
+	// call the removedamage command's function, passing it the parameter through the queue. -F
+	if(val < 0) {
+		return false;
 	}
 
 	UnitGroupLoopBegin(g);
 	while(!UnitGroupLoopDone())
 	{
-            if( val > 0 )
-            {
-                UnitBehaviorAdd( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(), UnitGroupLoopCurrent(), val );
-            }
-            else
-            {
-                UnitBehaviorRemove( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(), AbsI(val) );
-            }
+		// First remove all damage bonuses and maluses, since we're now treating this as a "strictly positive setdamagebonus" command. -F
+		looperMan = 1;
+		while(looperMan < 9) {
+			UnitBehaviorRemove( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(looperMan), 9);
+			looperMan = looperMan + 1;
+		}
+		
+			// Now do the magic - keep adding the appropriate behaviors until they reach the desired total damage bonus. -F
+			looperMan = 0;
+			while(val >= 1000) {
+				UnitBehaviorAdd( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(4), UnitGroupLoopCurrent(), 1 );
+				val = val - 1000;
+				looperMan = looperMan + 1;
+			}
+			while(val >= 100) {
+				UnitBehaviorAdd( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(3), UnitGroupLoopCurrent(), 1 );
+				val = val - 100;
+				looperMan = looperMan + 1;
+			}
+			while(val >= 10) {
+				UnitBehaviorAdd( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(2), UnitGroupLoopCurrent(), 1 );
+				val = val - 10;
+				looperMan = looperMan + 1;
+			}
+			UnitBehaviorAdd( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(1), UnitGroupLoopCurrent(), val );
+			
+		UnitGroupLoopStep();
+	}
+
+	UnitGroupLoopEnd();
+	return true;
+}
+
+bool libcrtx_command_removedamage(bool testConds, bool runActions) {
+	// This command is a direct CnP of adddamage, with some values changed and comments edited to reflect.
+	// Pay particular attention to the numbers passed to libcrtx_toolkit_getdamagebehavior()
+	// when editing. -F
+	
+	int looperMan;
+	int val;
+	unitgroup g = libcrtx_utility_getselectedunits();
+	val = StringToInt(StringWord( EventChatMessage(false), 2 ));
+	if(val > 9999) {
+	   val = 9999;
+
+	// Temporary exit until the global command queue is set up. When that's implemented, negative values should 
+	// call the adddamage command's function, passing it the parameter through the queue. -F
+	if(val < 0) {
+		return false;
+	}
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		// First remove all damage bonuses and maluses, since we're now treating this as a "strictly positive setdamagemalus" command. -F
+		looperMan = 1;
+		while(looperMan < 9) {
+			UnitBehaviorRemove( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(looperMan), 9);
+			looperMan = looperMan + 1;
+		}
+		
+			// Now do the magic - keep adding the appropriate behaviors until they reach the desired total damage bonus. -F
+			looperMan = 0;
+			while(val >= 1000) {
+				UnitBehaviorAdd( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(8), UnitGroupLoopCurrent(), 1 );
+				val = val - 1000;
+				looperMan = looperMan + 1;
+			}
+			while(val >= 100) {
+				UnitBehaviorAdd( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(7), UnitGroupLoopCurrent(), 1 );
+				val = val - 100;
+				looperMan = looperMan + 1;
+			}
+			while(val >= 10) {
+				UnitBehaviorAdd( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(6), UnitGroupLoopCurrent(), 1 );
+				val = val - 10;
+				looperMan = looperMan + 1;
+			}
+			UnitBehaviorAdd( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(5), UnitGroupLoopCurrent(), val );
+			
 		UnitGroupLoopStep();
 	}
 

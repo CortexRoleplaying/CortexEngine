@@ -16,7 +16,7 @@ const string libcrtx_toolkit_prefix_restrictedbehavior = "toolkit_restrictedbeha
 
 static string libcrtx_toolkit_levelbehavior = "";
 static string libcrtx_toolkit_experiencegiverbehavior = "";
-static string libcrtx_toolkit_damagebehavior = "";
+static string[10] libcrtx_toolkit_damagebehavior;
 static int libcrtx_toolkit_maxlevel = 10;
 static string libcrtx_toolkit_xpincrementbehavior = "";
 
@@ -76,14 +76,16 @@ string libcrtx_toolkit_getexperiencegiverbehavior()
 	return libcrtx_toolkit_experiencegiverbehavior;
 }
 
-void libcrtx_toolkit_setdamagebehavior(string beh)
+// Damage behaviors are now an array with arbitrary index positions 
+// for behaviors giving different amounts of bonus. See UnitToolkit.galaxy. -F
+void libcrtx_toolkit_setdamagebehavior(string beh, int pfeh)
 {
-	libcrtx_toolkit_damagebehavior = beh;
+	libcrtx_toolkit_damagebehavior[pfeh] = beh;
 }
 
-string libcrtx_toolkit_getdamagebehavior()
+string libcrtx_toolkit_getdamagebehavior(int pfeh)
 {
-	return libcrtx_toolkit_damagebehavior;
+	return libcrtx_toolkit_damagebehavior[pfeh];
 }
 
 void libcrtx_toolkit_setmaxlevel(int i)
