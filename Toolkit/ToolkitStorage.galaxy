@@ -53,7 +53,11 @@ void libcrtx_toolkit_addweapon(string toolKitName, string blizzardName)
 string libcrtx_toolkit_getweapon(string toolKitName)
 {
 	string lookup = StringCase(libcrtx_toolkit_prefix_weapon + toolKitName, false);
-	return DataTableGetString(true, lookup);
+	string blizzardName = DataTableGetString(true, lookup);
+	if (!blizzardName) {
+		return toolKitName;
+	}
+	return blizzardName;
 }
 
 void libcrtx_toolkit_setlevelbehavior(string beh)
