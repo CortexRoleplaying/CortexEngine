@@ -106,7 +106,7 @@ int libcrtx_utility_getplayerfromcolor(string colour)
 	i = libcrtx_max_players - 1;
 	while( i != -1 )
 	{
-		if( PlayerGetColorIndex( i, false ) == libcrtx_utility_getplayerfromdefaultcolor(colour) ) {
+		if( PlayerGetColorIndex( i, false ) == libcrtx_utility_getplayerfromdefaultcolor(colour) && PlayerStatus(i) == c_playerStatusActive) {
 			return i;
 		}
 
