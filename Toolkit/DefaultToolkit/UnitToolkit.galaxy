@@ -19,8 +19,19 @@ void libcrtx_toolkit_default_initunittools()
     libcrtx_toolkit_setlevelbehavior("Levels");
     libcrtx_toolkit_setexperiencegiverbehavior("GiveExperience");
     libcrtx_toolkit_setxpincrementbehavior("IncrementXP100");
-
-    libcrtx_toolkit_setdamagebehavior("IncreaseDamage1");
+	
+	// Setting up damage behaviors with completely arbitrary index numbers.
+	// The same arbitrary numbers have to be used in the corresponding loops in 
+	// libcrtx_command_adddamage() and libcrtx_command_removedamage(). -F
+    libcrtx_toolkit_setdamagebehavior("IncreaseDamage1",1);
+	libcrtx_toolkit_setdamagebehavior("IncreaseDamage10",2);
+	libcrtx_toolkit_setdamagebehavior("IncreaseDamage100",3);
+	libcrtx_toolkit_setdamagebehavior("IncreaseDamage1000",4);
+	
+	libcrtx_toolkit_setdamagebehavior("DecreaseDamage1",5);
+	libcrtx_toolkit_setdamagebehavior("DecreaseDamage10",6);
+	libcrtx_toolkit_setdamagebehavior("DecreaseDamage100",7);
+	libcrtx_toolkit_setdamagebehavior("DecreaseDamage1000",8);
 }
 
 void libcrtx_toolkit_default_initrestrictedunits()

@@ -60,6 +60,7 @@ void libcrtx_commands_init()
 	libcrtx_command_create("@kills", "libcrtx_command_kills");
       	libcrtx_command_create("@level", "libcrtx_command_level");
       	libcrtx_command_create("@adddamage", "libcrtx_command_adddamage");
+		libcrtx_command_create("@removedamage", "libcrtx_command_removedamage");
       	libcrtx_command_create("@attach", "libcrtx_command_attach");
       	libcrtx_command_create("@removearea", "libcrtx_command_removearea");
 	libcrtx_command_create("@removebehavior", "libcrtx_command_removebehavior");
