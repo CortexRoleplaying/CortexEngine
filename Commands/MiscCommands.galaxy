@@ -467,6 +467,9 @@ bool libcrtx_command_addweapon(bool testConds, bool runActions) {
 	
 	// use toolkit on weapon
 	weapon = libcrtx_toolkit_getweapon(weapon);
+	if (!CatalogEntryIsValid(c_gameCatalogWeapon, weapon)) {
+		return true;
+	}
 
 	UnitGroupLoopBegin(g);
 	while( !UnitGroupLoopDone() )
@@ -485,6 +488,9 @@ bool libcrtx_command_removeweapon(bool testConds, bool runActions) {
 
 	// use toolkit on weapon
 	weapon = libcrtx_toolkit_getweapon(weapon);
+	if (!CatalogEntryIsValid(c_gameCatalogWeapon, weapon)) {
+		return true;
+	}
 	
 	UnitGroupLoopBegin(g);
 	while( !UnitGroupLoopDone() )
@@ -691,7 +697,7 @@ bool libcrtx_command_removedamage(bool testConds, bool runActions) {
 	val = StringToInt(StringWord( EventChatMessage(false), 2 ));
 	if(val > 9999) {
 	   val = 9999;
-
+	}
 	// Temporary exit until the global command queue is set up. When that's implemented, negative values should 
 	// call the adddamage command's function, passing it the parameter through the queue. -F
 	if(val < 0) {
