@@ -46,6 +46,50 @@ unitgroup libcrtx_utility_getselectedunits()
 	return g;
 }
 
+string libcrtx_utility_getcolorfromplayerdefault(int plr)
+{
+	if( plr == 0 ) {
+		return "white";
+	} else if( plr == 1 ) {
+		return "red";
+	} else if( plr == 2 ) {
+		return "blue";
+	} else if( plr == 3 ) {
+		return "teal";
+	} else if( plr == 4 ) {
+		return "purple";
+	} else if( plr == 5 ) {
+		return "yellow";
+	} else if( plr == 6 ) {
+		return "orange";
+	} else if( plr == 7 ) {
+		return "green";
+	} else if( plr == 8 ) {
+		return "lightpink";
+	} else if( plr == 9 ) {
+		return "violet";
+	} else if( plr == 10 ) {
+		return "lightgrey";
+	} else if( plr == 11 ) {
+		return "darkgreen";
+	} else if( plr == 12 ) {
+		return "brown";
+	} else if( plr == 13 ) {
+		return "lightgreen";
+	} else if( plr == 14 ) {
+		return "darkgrey";
+	} else if( plr == 15 ) {
+		return "pink";
+	}
+
+	return "";
+}
+
+string libcrtx_utility_getcolorfromplayer(int plr)
+{
+	return libcrtx_utility_getcolorfromplayerdefault(PlayerGetColorIndex(plr, false));
+}
+
 int libcrtx_utility_getplayerfromdefaultcolor(string colour)
 {
 	if( colour == "white" ) {
