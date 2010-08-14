@@ -56,3 +56,18 @@ bool libcrtx_command_commands(bool testConds, bool runActions) {
 	libcrtx_write( PlayerGroupSingle(EventPlayer()), libcrtx_command_list);
 	return true;
 }
+
+bool libcrtx_command_colors(bool testConds, bool runActions) {
+	text t;
+	int i = 1;
+	while( i != libcrtx_max_players ) {
+		if( PlayerStatus(i) != c_playerStatusUnused ) {
+			t = t + libcrtx_utility_coloredplayername(i);
+			t = t + StringToText(" (" + libcrtx_utility_getcolorfromplayer(i) + ")");
+			t = t + StringToText("<n/>                        ");
+		}
+		i = i + 1;
+	}
+	libcrtx_writetext( PlayerGroupAll(), t );
+	return true;
+}
