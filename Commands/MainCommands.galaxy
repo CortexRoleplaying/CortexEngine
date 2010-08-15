@@ -68,6 +68,6 @@ bool libcrtx_command_colors(bool testConds, bool runActions) {
 		}
 		i = i + 1;
 	}
-	libcrtx_writetext( PlayerGroupAll(), t );
+	libcrtx_writetext( PlayerGroupSingle(EventPlayer()), t );
 	return true;
 }
