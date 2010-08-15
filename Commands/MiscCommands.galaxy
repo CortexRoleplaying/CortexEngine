@@ -875,7 +875,6 @@ bool libcrtx_command_firstperson(bool testConds, bool runActions) {
 		CameraInfoSetValue(cam, c_cameraValuePitch, 35);
 		CameraInfoSetValue(cam, c_cameraValueDistance, 10);
 		CameraInfoSetValue(cam, c_cameraValueHeightOffset, 1 + UnitGetHeight(u));
-		CameraInfoSetValue(cam, c_cameraValueDepthOfField, 8);
 		CameraInfoSetValue(cam, c_cameraValueFarClip, 80);
 		CameraApplyInfo(EventPlayer(), cam, 2.0, -1, 10, false);
 		CameraUseHeightSmoothing(EventPlayer(), true);
