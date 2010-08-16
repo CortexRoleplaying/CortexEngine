@@ -445,8 +445,6 @@ static fixed libactionbar_get_ability_cost(string ability, int costType, int pla
 		return 0;
 	}
 
-	TriggerDebugOutput(1, StringToText(ability), true);
-
 	// Check if ability has any costs at all!
 	if( !libactionbar_catalog_has_field(c_gameCatalogAbil, ability, "Cost") ) {
 		return 0;
@@ -608,8 +606,6 @@ void libactionbar_set_active_unit(int player, unit u) {
 			n = n + 1;
 			continue;
 		}
-
-		TriggerDebugOutput(1, StringToText(s), true);
 
 		// Figure out the icon now that we know it's valid.
 		f = CatalogFieldValueGet(c_gameCatalogUnit, UnitGetType(u), "CardLayouts[0].LayoutButtons[" + IntToString(n) + "].Face", player );
