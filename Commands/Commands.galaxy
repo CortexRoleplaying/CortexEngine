@@ -30,6 +30,7 @@ void libcrtx_commands_init()
 	libcrtx_command_create("alias", "libcrtx_command_alias");
 	libcrtx_command_create("commands", "libcrtx_command_commands");
 	libcrtx_command_create("colors", "libcrtx_command_colors");
+	libcrtx_command_create("zoom", "libcrtx_command_zoom");
 
 	// unit commands
 	libcrtx_command_create("@spawn", "libcrtx_command_spawn");

@@ -71,3 +71,19 @@ bool libcrtx_command_colors(bool testConds, bool runActions) {
 	libcrtx_writetext( PlayerGroupSingle(EventPlayer()), t );
 	return true;
 }
+
+bool libcrtx_command_zoom(bool testConds, bool runActions) {
+	int height = StringToInt( StringWord(EventChatMessage(false), 2 ));
+	if( height == 0 ) {
+		// Reset
+		CameraApplyInfo( EventPlayer(), CameraInfoDefault(), 2.0, -1, 10, false );
+	} else {
+		if(height > 100) {
+			height = 100;
+		} else if( height < 0 ) {
+			height = 0;
+		}
+		CameraSetValue( EventPlayer(), c_cameraValueDistance, IntToFixed(height), 2.0, -1, 10 );
+	}
+	return true;
+}
