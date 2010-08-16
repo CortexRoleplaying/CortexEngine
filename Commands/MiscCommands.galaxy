@@ -797,6 +797,7 @@ unit[libcrtx_max_players] libcrtx_command_firstperson_unit;
 bool[libcrtx_max_players][2] libcrtx_command_firstperson_mousestatus;
 bool[libcrtx_max_players] libcrtx_command_firstperson_pending;
 bool[libcrtx_max_players] libcrtx_command_firstperson_setup;
+int[libcrtx_max_players] libcrtx_command_firstperson_dialog;
 
 bool libcrtx_command_firstperson_selectedunit(bool testConds, bool runActions)
 {
@@ -936,6 +937,12 @@ bool libcrtx_command_firstperson(bool testConds, bool runActions) {
 
 		libactionbar_set_active_unit(EventPlayer(), u);
 
+		libcrtx_command_firstperson_dialog[EventPlayer()] = DialogCreate(400, 400, c_anchorTopRight, 0, 50, true);
+		DialogControlCreateFromTemplate((DialogLastCreated()), c_triggerControlTypeImage, "MinimapPanel/MinimapPanelTemplate");
+        	DialogControlSetSize((DialogControlLastCreated()), (PlayerGroupAll()), 400, 400);
+        	DialogSetImageVisible((DialogLastCreated()), false);
+        	DialogSetVisible((DialogLastCreated()), (PlayerGroupSingle(EventPlayer())), true);
+
 		if( !libcrtx_command_firstperson_setup[EventPlayer()] ) {
 			libcrtx_command_firstperson_setup[EventPlayer()] = true;
 			TriggerAddEventMouseClicked( TriggerCreate("libcrtx_command_firstperson_mouseclick"), EventPlayer(), c_mouseButtonLeft, true);
@@ -975,6 +982,7 @@ bool libcrtx_command_thirdperson(bool testConds, bool runActions) {
 	libcrtx_command_firstperson_mousestatus[EventPlayer()][1] = false;
 	CameraForceMouseRelative(EventPlayer(), false); 
 	libactionbar_set_active_unit(EventPlayer(), null);
+	DialogDestroy(libcrtx_command_firstperson_dialog[EventPlayer()]);
 	return true;
 }
 
