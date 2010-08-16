@@ -797,6 +797,39 @@ unit[libcrtx_max_players] libcrtx_command_firstperson_unit;
 bool[libcrtx_max_players][2] libcrtx_command_firstperson_mousestatus;
 bool[libcrtx_max_players] libcrtx_command_firstperson_pending;
 bool[libcrtx_max_players] libcrtx_command_firstperson_setup;
+
+bool libcrtx_command_firstperson_selectedunit(bool testConds, bool runActions)
+{
+	unit u;
+	int bossbar;
+	string s;
+	string r;
+	if( libcrtx_command_firstperson_unit[EventPlayer()] == null ) {
+		return true;
+	}
+
+	u = EventUnit();
+	bossbar = libcrtx_generate_bossbar_id(EventPlayer(), 1);
+	if( CatalogEntryIsValid(c_gameCatalogActor, UnitGetType(u)) ) {
+		s = CatalogFieldValueGet(c_gameCatalogActor, UnitGetType(u), "UnitIcon", EventPlayer());
+	} else {
+		s = "Assets\\Textures\\btn-unit-terran-marine.dds";
+	}
+	libNtve_gf_DisplayBossBar( bossbar, s, UnitTypeGetName( UnitGetType(u) ), 1, PlayerGroupSingle(EventPlayer()));
+	libNtve_gf_SetBossBarBoss( bossbar, u, true );
+	r = CatalogFieldValueGet(c_gameCatalogUnit, UnitGetType(u), "Race", EventPlayer());
+	if( StringEqual(r, "Terr", false) ) {
+		libNtve_gf_SetBossBarRace( bossbar, 0, true );
+	} else if( StringEqual(r, "Zerg", false) ) {
+		libNtve_gf_SetBossBarRace( bossbar, 2, true );
+	} else {
+		libNtve_gf_SetBossBarRace( bossbar, 1, true );
+	}
+	libNtve_gf_MoveBossBar( bossbar, c_anchorTop, 50, 50);
+	libNtve_gf_ShowHideBossBar( true, bossbar );
+
+	return true;
+}
 bool libcrtx_command_firstperson_mouseclick(bool testConds, bool runActions)
 {
 	if( libcrtx_command_firstperson_unit[EventPlayer()] == null ) {
@@ -863,7 +896,9 @@ bool libcrtx_command_firstperson(bool testConds, bool runActions) {
 	unit u;
 	string s;
 	camerainfo cam;
+	int bossbar_origin;
 	unitgroup g = libcrtx_utility_getselectedunits();
+	bossbar_origin = libcrtx_generate_bossbar_id(EventPlayer(), 0);
 	UnitGroupLoopBegin(g);
 	while(!UnitGroupLoopDone())
 	{
@@ -886,18 +921,18 @@ bool libcrtx_command_firstperson(bool testConds, bool runActions) {
 		} else {
 			s = "Assets\\Textures\\btn-unit-terran-marine.dds";
 		}
-		libNtve_gf_DisplayBossBar( EventPlayer(), s, UnitTypeGetName( UnitGetType(u) ), 1, PlayerGroupSingle(EventPlayer()));
-		libNtve_gf_SetBossBarBoss( EventPlayer(), UnitGroupLoopCurrent(), true );
+		libNtve_gf_DisplayBossBar( bossbar_origin, s, UnitTypeGetName( UnitGetType(u) ), 1, PlayerGroupSingle(EventPlayer()));
+		libNtve_gf_SetBossBarBoss( bossbar_origin, UnitGroupLoopCurrent(), true );
 		r = CatalogFieldValueGet(c_gameCatalogUnit, UnitGetType(u), "Race", EventPlayer());
 		if( StringEqual(r, "Terr", false) ) {
-			libNtve_gf_SetBossBarRace( EventPlayer(), 0, true );
+			libNtve_gf_SetBossBarRace( bossbar_origin, 0, true );
 		} else if( StringEqual(r, "Zerg", false) ) {
-			libNtve_gf_SetBossBarRace( EventPlayer(), 2, true );
+			libNtve_gf_SetBossBarRace( bossbar_origin, 2, true );
 		} else {
-			libNtve_gf_SetBossBarRace( EventPlayer(), 1, true );
+			libNtve_gf_SetBossBarRace( bossbar_origin, 1, true );
 		}
-		libNtve_gf_MoveBossBar( EventPlayer(), c_anchorTop, 0, 50);
-		libNtve_gf_ShowHideBossBar( true, EventPlayer() );
+		libNtve_gf_MoveBossBar( bossbar_origin, c_anchorTopLeft, 50, 50);
+		libNtve_gf_ShowHideBossBar( true, bossbar_origin );
 
 		libactionbar_set_active_unit(EventPlayer(), u);
 
@@ -907,6 +942,7 @@ bool libcrtx_command_firstperson(bool testConds, bool runActions) {
 			TriggerAddEventMouseClicked( TriggerCreate("libcrtx_command_firstperson_mouseclick"), EventPlayer(), c_mouseButtonRight, true);
 			TriggerAddEventMouseClicked( TriggerCreate("libcrtx_command_firstperson_mouseclick"), EventPlayer(), c_mouseButtonLeft, false);
 			TriggerAddEventMouseClicked( TriggerCreate("libcrtx_command_firstperson_mouseclick"), EventPlayer(), c_mouseButtonRight, false);
+			TriggerAddEventUnitSelected( TriggerCreate("libcrtx_command_firstperson_selectedunit"), null, EventPlayer(), true );
 		}
 
 		UnitGroupLoopEnd();
@@ -925,12 +961,14 @@ bool libcrtx_command_firstperson(bool testConds, bool runActions) {
 }
 
 bool libcrtx_command_thirdperson(bool testConds, bool runActions) {
+	int bar = libcrtx_generate_bossbar_id(EventPlayer(), 0);
 	UISetMode( PlayerGroupSingle(EventPlayer()), c_uiModeConsole, 1.0);
 	libcrtx_command_firstperson_unit[EventPlayer()] = null;
 	CameraUseHeightSmoothing(EventPlayer(), false);
 	CameraSetMouseRotates(EventPlayer(), false);
 	UISetFrameVisible( PlayerGroupSingle(EventPlayer()), c_syncFrameTypeHeroPanel, true );
-	libNtve_gf_ShowHideBossBar( false, EventPlayer() );
+	libNtve_gf_ShowHideBossBar( false, bar);
+	libNtve_gf_ShowHideBossBar( false, bar+1);
 	CameraApplyInfo( EventPlayer(), CameraInfoDefault(), 2.0, -1, 10, false );
 	CameraLockInput(EventPlayer(), false);
 	libcrtx_command_firstperson_mousestatus[EventPlayer()][0] = false;

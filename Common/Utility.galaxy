@@ -284,4 +284,7 @@ void libcrtx_writelocalsuccess(string s)
 	libcrtx_writetext( PlayerGroupSingle(EventPlayer()), libcrtx_utility_colortext(StringToText(s), Color(0,255,0)) );
 }
 
-
+int libcrtx_generate_bossbar_id(int player, int btype)
+{
+	return (player * 3) + btype;
+}
