@@ -19,7 +19,7 @@ bool libcrtx_command_regioncreate(bool checkConds, bool runActions)
 	name = StringWord(EventChatMessage(false), 2);
 	radius = StringToFixed(StringWord(EventChatMessage(false), 3));
 	if( radius == 0.0 ) {
-		radius = 0.1;
+		radius = 2;
 	}
 
 	if( DataTableGetRegion( true, libcrtx_command_region_buildidentifier(name) ) ) {
@@ -38,11 +38,19 @@ bool libcrtx_command_regioncreate(bool checkConds, bool runActions)
 
 bool libcrtx_command_teleport(bool checkConds, bool runActions)
 {
+	trigger t;
+
 	string rn1;
 	string rn2;
 
+	string rl1;
+	string rl2;
+
 	region r1;
 	region r2;
+
+	int g1;
+	int g2;
 
 	// Take two regions we own, and read 'em.
 	rn1 = StringWord(EventChatMessage(false), 2);
@@ -59,6 +67,28 @@ bool libcrtx_command_teleport(bool checkConds, bool runActions)
 		return true;
 	}
 
-	
+	rl1 = rn1 + "_link";
+	rl2 = rn2 + "_link";
+
+	// Link the regions to their counterparts.
+	// Add regions to the global region index
+	DataTableSetRegion(true, IntToString(libcrtx_region_guid_counter), r1);
+	DataTableSetString(true, "region_guid_" + IntToString(libcrtx_region_guid_counter), rn1);
+	g1 = libcrtx_region_guid_counter;
+	libcrtx_region_guid_counter = libcrtx_region_guid_counter + 1;
+	DataTableSetRegion(true, IntToString(libcrtx_region_guid_counter), r2);
+	DataTableSetString(true, "region_guid_" + IntToString(libcrtx_region_guid_counter), rn2);
+	g2 = libcrtx_region_guid_counter;
+	libcrtx_region_guid_counter = libcrtx_region_guid_counter + 1;
+
+	// Link 'em together!
+	DataTableSetInt(true, rl1, g2);
+	DataTableSetInt(true, rl2, g1);
+
+	t = TriggerCreate("libcrtx_event_unit_enter_region");
+	TriggerAddEventUnitRegion( t, null, r1, true );
+	TriggerAddEventUnitRegion( t, null, r1, false );
+	TriggerAddEventUnitRegion( t, null, r2, true );
+	TriggerAddEventUnitRegion( t, null, r2, false );
 	return true;
 }
