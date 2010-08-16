@@ -18,10 +18,38 @@ void libcrtx_events_init()
 
 // Called on all dialog clicks
 bool libcrtx_event_dialog_clicked(bool checkConds, bool runActions) {
+	unitgroup g;
+	int i;
+	int x;
+	unit u;
+	region r;
+	string s;
+
 	// Waygate teleport system
 	if( EventDialogControl() == libcrtx_waygate_dialogcontrol[EventPlayer()] ) {
 		// We must initiate teleport now!
-		TriggerDebugOutput(1, StringToText("Initiate teleport now."), true);
+		g = libcrtx_utility_getselectedunits();
+		if( UnitGroupCount(g, c_unitCountAlive) > 0 ) {
+			i = 1;
+			while( i <= UnitGroupCount(g, c_unitCountAlive) ) {
+				u = UnitGroupUnit(g, i);
+				x = FixedToInt(UnitGetCustomValue(u, libcrtx_unit_custom_value_waygate));
+
+				if( x != 0 ) {
+					// Lookup this region by GUID!
+					s = DataTableGetString(true, "region_guid_" + IntToString(x));
+					if( s != "" ) {
+						r = DataTableGetRegion(true, s);
+						if( r != null ) {
+							// Initiate transport.
+							UnitSetPosition( u, RegionRandomPoint( r ),false );
+						}	
+					}
+				}
+				i = i + 1;
+			}
+		}
+			
 	}
 
 	return true;
