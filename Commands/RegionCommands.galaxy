@@ -35,3 +35,30 @@ bool libcrtx_command_regioncreate(bool checkConds, bool runActions)
 	libcrtx_writelocalsuccess("Region \"" + name + "\" has been created.");
 	return true;
 }
+
+bool libcrtx_command_teleport(bool checkConds, bool runActions)
+{
+	string rn1;
+	string rn2;
+
+	region r1;
+	region r2;
+
+	// Take two regions we own, and read 'em.
+	rn1 = StringWord(EventChatMessage(false), 2);
+	rn2 = StringWord(EventChatMessage(false), 3);
+	
+	rn1 = libcrtx_command_region_buildidentifier(rn1);
+	rn2 = libcrtx_command_region_buildidentifier(rn2);
+	
+	r1 = DataTableGetRegion(true, rn1);
+	r2 = DataTableGetRegion(true, rn2);
+	
+	if( r1 == null || r2 == null ) {
+		libcrtx_writelocalerror("One or more invalid regions were entered.");
+		return true;
+	}
+
+	
+	return true;
+}

@@ -83,6 +83,7 @@ void libcrtx_commands_init()
 
 	// region commands
 	libcrtx_command_create("#create", "libcrtx_command_regioncreate");
+	libcrtx_command_create("#teleport", "libcrtx_command_teleport");
 }
 
 
