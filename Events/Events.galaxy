@@ -12,6 +12,69 @@
 
 void libcrtx_events_init()
 {
+	TriggerAddEventTimePeriodic( TriggerCreate("libcrtx_event_periodic_tick"), 1.0, c_timeReal );
+	TriggerAddEventDialogControl( TriggerCreate("libcrtx_event_dialog_clicked"), c_playerAny, c_invalidDialogControlId, c_triggerControlEventTypeClick );
+}
+
+// Called on all dialog clicks
+bool libcrtx_event_dialog_clicked(bool checkConds, bool runActions) {
+	// Waygate teleport system
+	if( EventDialogControl() == libcrtx_waygate_dialogcontrol[EventPlayer()] ) {
+		// We must initiate teleport now!
+		TriggerDebugOutput(1, StringToText("Initiate teleport now."), true);
+	}
+
+	return true;
+}
+
+// Called every 1.0 seconds.
+bool libcrtx_event_periodic_tick(bool checkConds, bool runActions)
+{
+	unitgroup g;
+	int x;
+	unit u;
+	int p;
+	int i = 1;
+	while( i != libcrtx_max_players ) {
+		if( libcrtx_waygate_dialog[i] != 0 ) {
+			DialogDestroy(libcrtx_waygate_dialog[i]);
+			libcrtx_waygate_dialog[i] = 0;
+		}
+
+		g = UnitGroupSelected(i);
+		if(g == null) {
+			i = i + 1;
+			continue;
+		}
+		
+		if( UnitGroupCount(g, c_unitCountAlive) == 0 ) {
+			i = i + 1;
+			continue;
+		}
+
+		x = 1;
+		while( x <= UnitGroupCount(g, c_unitCountAlive) ) {
+			u = UnitGroupUnit(g, x);
+			p = FixedToInt(UnitGetCustomValue(u, libcrtx_unit_custom_value_waygate));
+			if( p == 0 ) {
+				x = x + 1;
+				continue;
+			} else {
+				// Draw our dialogs!
+				libcrtx_waygate_dialog[i] = DialogCreate(250, 100, c_anchorRight, 0, 120, true);
+				DialogSetVisible(libcrtx_waygate_dialog[i], PlayerGroupSingle(i), true);
+				libcrtx_waygate_dialogcontrol[i] = libNtve_gf_CreateDialogItemButton(libcrtx_waygate_dialog[i], 200, 70, c_anchorCenter, 0, 0, StringToText("Click to teleport these unit(s)."), StringToText("Enter"), "");
+				DialogControlSetVisible( DialogControlLastCreated(), PlayerGroupSingle(i), true);
+				break;
+			}
+			
+			x = x + 1;
+		}
+
+		i = i + 1;
+	}
+
+	return true;
 }
 
 bool libcrtx_event_unit_enter_region(bool checkConds, bool runActions)

@@ -28,6 +28,9 @@ int libcrtx_region_guid_counter = 1;
 
 bank[libcrtx_max_players] libcrtx_player_banks;
 
+int[libcrtx_max_players] libcrtx_waygate_dialog;
+int[libcrtx_max_players] libcrtx_waygate_dialogcontrol;
+
 string libcrtx_command_region_buildidentifier(string name) {
 	return "regions_" + IntToString(EventPlayer()) + "_" + name;
 }
