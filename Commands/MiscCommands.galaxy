@@ -861,6 +861,7 @@ bool libcrtx_command_firstperson(bool testConds, bool runActions) {
 	string r;
 	trigger t;
 	unit u;
+	string s;
 	camerainfo cam;
 	unitgroup g = libcrtx_utility_getselectedunits();
 	UnitGroupLoopBegin(g);
@@ -880,7 +881,12 @@ bool libcrtx_command_firstperson(bool testConds, bool runActions) {
 		CameraUseHeightSmoothing(EventPlayer(), true);
 		CameraUseHeightDisplacement(EventPlayer(), true);
 		CameraLockInput(EventPlayer(), true);
-		libNtve_gf_DisplayBossBar( EventPlayer(), CatalogFieldValueGet(c_gameCatalogActor, UnitGetType(u), "UnitIcon", EventPlayer()), UnitTypeGetName( UnitGetType(u) ), 1, PlayerGroupSingle(EventPlayer()));
+		if( CatalogEntryIsValid(c_gameCatalogActor, UnitGetType(u)) ) {
+			s = CatalogFieldValueGet(c_gameCatalogActor, UnitGetType(u), "UnitIcon", EventPlayer());
+		} else {
+			s = "Assets\\Textures\\btn-unit-terran-marine.dds";
+		}
+		libNtve_gf_DisplayBossBar( EventPlayer(), s, UnitTypeGetName( UnitGetType(u) ), 1, PlayerGroupSingle(EventPlayer()));
 		libNtve_gf_SetBossBarBoss( EventPlayer(), UnitGroupLoopCurrent(), true );
 		r = CatalogFieldValueGet(c_gameCatalogUnit, UnitGetType(u), "Race", EventPlayer());
 		if( StringEqual(r, "Terr", false) ) {
