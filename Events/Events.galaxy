@@ -1,0 +1,72 @@
+// Cortex SC2 Roleplaying Engine
+// Copyright (C) 2009-2010 <http://www.cortexrp.com/>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; version 2 of the License.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+void libcrtx_events_init()
+{
+}
+
+bool libcrtx_event_unit_enter_region(bool checkConds, bool runActions)
+{
+	int i;
+	region r;
+	string s;
+
+	// Are we in this region, or leaving?
+	if( libNtve_gf_UnitInRegion( EventUnit(), EventUnitRegion() ) ) {
+		// We're in the region!
+		// But which region are we in (by name)?
+		i = 0;
+		while(i < libcrtx_region_guid_counter) {
+			s = DataTableGetString(true, "region_guid_" + IntToString(i));
+			r = DataTableGetRegion(true, s);
+			if( r == EventUnitRegion() ) {
+				// This is it!
+				break;
+			}
+
+			i = i + 1;
+			if( i == libcrtx_region_guid_counter ) {
+				return true;
+			}
+		}
+
+		// r is now the right region, and i == guid.
+		// Do we have a linked region? (prolly, if we're here!)
+		i = DataTableGetInt(true, s + "_link");
+		UnitSetCustomValue(EventUnit(), libcrtx_unit_custom_value_waygate, IntToFixed(i));
+	} else {
+		// We are leaving this region. 
+		// Figure out which GUID this region's link is, and remove it!
+		i = 0;
+		while(i < libcrtx_region_guid_counter) {
+			s = DataTableGetString(true, "region_guid_" + IntToString(i));
+			r = DataTableGetRegion(true, s);
+			if( r == EventUnitRegion() ) {
+				// This is it!
+				break;
+			}
+
+			i = i + 1;
+			if( i == libcrtx_region_guid_counter ) {
+				return true;
+			}
+		}
+
+		// r is now the right region, and i == guid.
+		// Do we have a linked region? (prolly, if we're here!)
+		i = DataTableGetInt(true, s + "_link");
+		if( FixedToInt(UnitGetCustomValue(EventUnit(), libcrtx_unit_custom_value_waygate)) == i ) {
+			UnitSetCustomValue(EventUnit(), libcrtx_unit_custom_value_waygate, 0);
+		}
+	}
+	return true;
+}
