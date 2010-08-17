@@ -18,9 +18,12 @@ void libcrtx_chat_init()
 	trigger t = TriggerCreate("libcrtx_chat_receivedevent");
 
 	// Register chat msg events
-	while( i <= libcrtx_max_players )
+	while( i < libcrtx_max_players )
 	{
 		TriggerAddEventChatMessage(t, i, "", false);
+		if( PlayerStatus(i) == c_playerStatusActive ) {
+			libcrtx_alias_banks[i] = BankLoad( libcrtx_bank_prefix + "alias", i );
+		}
 		i = i + 1;
 	}
 }
