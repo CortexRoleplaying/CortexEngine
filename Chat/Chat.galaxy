@@ -21,24 +21,13 @@ void libcrtx_command_create(string lp_cmd, string lp_func)
 
 bool libcrtx_alias_exists(string aliasName)
 {
-	bank b;
 	string s;
 	
-	if( libcrtx_alias_banks[EventPlayer()] ) {
-		s = BankValueGetAsString( libcrtx_alias_banks[EventPlayer()], "aliases", aliasName );
-		if( s == "" ) {
-			return false;
-		}
-		return true;
-	} else {
-		b = BankLoad( libcrtx_bank_prefix + "aliases", EventPlayer() );
-		libcrtx_alias_banks[EventPlayer()] = b;
-		s = BankValueGetAsString( libcrtx_alias_banks[EventPlayer()], "aliases", aliasName );
-		if( s == "" ) {
-			return false;
-		}
-		return true;
+	s = BankValueGetAsString( libcrtx_alias_banks[EventPlayer()], "aliases", aliasName );
+	if( s == "" ) {
+		return false;
 	}
+	return true;
 }
 
 // lists all aliases in comma and space-deliminted format

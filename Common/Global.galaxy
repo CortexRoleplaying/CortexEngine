@@ -32,7 +32,7 @@ const int libcrtx_unit_custom_value_guid = 0;
 const int libcrtx_unit_custom_value_texttag = 1;
 
 // Prefix for all banks.
-const string libcrtx_bank_prefix = "libcrtx_bank_";
+const string libcrtx_bank_prefix = "Cortex";
 
 // Returns a 7-character long version of the Git commit hash, referred to as a commit-ish.
 string libcrtx_get_commitish()
