@@ -1011,7 +1011,21 @@ bool libcrtx_command_play(bool testConds, bool runActions) {
 	return true;
 }
 
+bool libcrtx_command_renameall(bool testConds, bool runActions) {
+	string val;
+	unitgroup g = libcrtx_utility_getselectedunits();
+	val = EventChatMessage(false);
+	val = StringSub( val, StringFind(val, " ", c_stringCase)+1, StringLength(val)); // The remainder of the chat message.	
 
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		CatalogFieldValueSet(c_gameCatalogUnit, UnitGetType(UnitGroupLoopCurrent()), "Name", EventPlayer(), val);
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}
 
 
 
