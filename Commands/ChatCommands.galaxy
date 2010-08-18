@@ -33,7 +33,10 @@ text libcrtx_get_name_from_unit(unit u)
 	bank b = libcrtx_player_banks[EventPlayer()];
 	if( b == null )
 	{
-		return StringToText(CatalogFieldValueGet(c_gameCatalogUnit, UnitGetType(u), "Name", UnitGetOwner(u)));
+		s =CatalogFieldValueGet(c_gameCatalogUnit, UnitGetType(u), "Name", UnitGetOwner(u));
+		if( StringSub(s, 1, 10) == "Unit/Name/" ) {
+			return StringExternal(s);
+		}
 	}
 
 	// Convert to int, then to string so we don't end up with "832.00" which isn't the same as "832" in a string.
@@ -41,7 +44,10 @@ text libcrtx_get_name_from_unit(unit u)
 	if( s == "" ) // no name.
 	{
 		// Perform catalog lookup
-		return StringToText(CatalogFieldValueGet(c_gameCatalogUnit, UnitGetType(u), "Name", UnitGetOwner(u)));
+		s = CatalogFieldValueGet(c_gameCatalogUnit, UnitGetType(u), "Name", UnitGetOwner(u));
+		if( StringSub(s, 1, 10) == "Unit/Name/" ) {
+			return StringExternal(s);
+		}
 	}
 
 	return StringToText(s);
