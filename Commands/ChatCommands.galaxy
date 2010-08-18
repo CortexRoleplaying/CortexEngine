@@ -33,14 +33,15 @@ text libcrtx_get_name_from_unit(unit u)
 	bank b = libcrtx_player_banks[EventPlayer()];
 	if( b == null )
 	{
-		return UnitTypeGetName( UnitGetType(u) ); 
+		return StringToText(CatalogFieldValueGet(c_gameCatalogUnit, UnitGetType(u), "Name", UnitGetOwner(u)));
 	}
 
 	// Convert to int, then to string so we don't end up with "832.00" which isn't the same as "832" in a string.
 	s = BankValueGetAsString( b, "chat", IntToString(FixedToInt( UnitGetCustomValue(u, libcrtx_unit_custom_value_guid)) ) );
 	if( s == "" ) // no name.
 	{
-		return UnitTypeGetName( UnitGetType(u) ); 
+		// Perform catalog lookup
+		return StringToText(CatalogFieldValueGet(c_gameCatalogUnit, UnitGetType(u), "Name", UnitGetOwner(u)));
 	}
 
 	return StringToText(s);

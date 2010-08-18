@@ -30,6 +30,7 @@ void libcrtx_commands_init()
 	libcrtx_command_create("alias", "libcrtx_command_alias");
 	libcrtx_command_create("commands", "libcrtx_command_commands");
 	libcrtx_command_create("colors", "libcrtx_command_colors");
+	libcrtx_command_create("zoom", "libcrtx_command_zoom");
 
 	// unit commands
 	libcrtx_command_create("@spawn", "libcrtx_command_spawn");
@@ -61,7 +62,7 @@ void libcrtx_commands_init()
 	libcrtx_command_create("@kills", "libcrtx_command_kills");
       	libcrtx_command_create("@level", "libcrtx_command_level");
       	libcrtx_command_create("@adddamage", "libcrtx_command_adddamage");
-		libcrtx_command_create("@removedamage", "libcrtx_command_removedamage");
+	libcrtx_command_create("@removedamage", "libcrtx_command_removedamage");
       	libcrtx_command_create("@attach", "libcrtx_command_attach");
       	libcrtx_command_create("@removearea", "libcrtx_command_removearea");
 	libcrtx_command_create("@removebehavior", "libcrtx_command_removebehavior");
@@ -70,6 +71,7 @@ void libcrtx_commands_init()
 	libcrtx_command_create("@thirdperson", "libcrtx_command_thirdperson");
 	libcrtx_command_create("@sayoverhead", "libcrtx_command_sayoverhead");
 	libcrtx_command_create("@play", "libcrtx_command_play");
+	libcrtx_command_create("@renameall", "libcrtx_command_renameall");
 
 	// admin commands
 	libcrtx_command_create("!ban", "libcrtx_command_ban");
@@ -82,6 +84,7 @@ void libcrtx_commands_init()
 
 	// region commands
 	libcrtx_command_create("#create", "libcrtx_command_regioncreate");
+	libcrtx_command_create("#teleport", "libcrtx_command_teleport");
 }
 
 

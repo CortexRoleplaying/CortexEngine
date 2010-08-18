@@ -24,9 +24,13 @@ fixed[libcrtx_max_players] libcrtx_command_spawn_frozenuntil;
 int[libcrtx_max_players] libcrtx_command_spawn_count;
 
 int libcrtx_command_chat_guid_counter = 1;
+int libcrtx_region_guid_counter = 1;
 
 bank[libcrtx_max_players] libcrtx_player_banks;
 
+int[libcrtx_max_players] libcrtx_waygate_dialog;
+int[libcrtx_max_players] libcrtx_waygate_dialogcontrol;
+
 string libcrtx_command_region_buildidentifier(string name) {
-	return "regions_" + IntToString(EventPlayer()) + "_" + name;
+	return StringCase("regions_" + IntToString(EventPlayer()) + "_" + name, false);
 }
