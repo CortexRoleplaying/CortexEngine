@@ -87,3 +87,46 @@ bool libcrtx_command_zoom(bool testConds, bool runActions) {
 	}
 	return true;
 }
+
+bool libcrtx_command_roll(bool testConds, bool runActions) {
+	string snum = StringWord(EventChatMessage(false),2);
+	string snumTo = StringWord(EventChatMessage(false),3);
+	int tableHost;
+	int tableGambler = 1;
+	int winnings = 0;
+	
+	if(!runActions) {
+	return true;
+    }
+	
+	//Check if we have a xDy input format. -F
+	if(StringContains(snum, "d", c_stringAnywhere, false)) {
+		//We have xDy, check if a number of dice has been specified. -F
+		if(StringSub(snum, 1, StringFind(snum,"d",false)-1) != "") {
+			//We have a dice count, so let's find it, then run our randomizer loop. -F
+			tableHost = StringToInt( StringSub( snum, 1, StringFind(snum,"d",false) - 1) );
+			while(tableGambler > tableHost) {
+				winnings = winnings + RandomInt(1,StringToInt( StringToInt( StringSub( snum, StringFind(snum,"d",false) + 1, StringLength(snum) ) ) ) );
+				tableGambler = tableGambler + 1
+			}
+		} else {
+			//We did not have a dice count, so our command actually looked more like Dy than xDy... let's just run one die then. -F
+			winnings = RandomInt(1,StringToInt( StringToInt( StringSub( snum, StringFind(snum,"d",false) + 1, StringLength(snum) ) ) ) );
+		}
+		libcrtx_write(PlayerGroupSingle(EventPlayer()),"Rolled number: " + IntToString(winnings));
+		return true;
+	}
+	
+	//Did not have a xDy input format, check for second parameter. -F
+	if(snumTo != "") {
+		libcrtx_write(PlayerGroupSingle(EventPlayer()),"Rolled number: " + IntToString(RandomInt(StringToInt(snum),StringToInt(snumTo)));
+		return true;
+	} else if (snum != "") {
+		libcrtx_write(PlayerGroupSingle(EventPlayer()),"Rolled number: " + IntToString(RandomInt(1,StringToInt(snum)));
+		return true;
+	}	//If we got this far, then something went horribly wrong. Or the player just didn't supply any parameters...
+		//Shit happens. We could put a default roll here, but that'll have to be according to feeback. Or something.
+		//Either way, our job here is done. At least for this instance of the function call. -F
+	
+	return true;
+}

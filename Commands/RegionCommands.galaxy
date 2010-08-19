@@ -36,6 +36,68 @@ bool libcrtx_command_regioncreate(bool checkConds, bool runActions)
 	return true;
 }
 
+bool libcrtx_command_regionremove(bool checkConds, bool runActions)
+{
+	string name = StringWord(EventChatMessage(false), 2);
+
+	if( DataTableGetRegion( true, libcrtx_command_region_buildidentifier(name) ) ) {
+		DataTableValueRemove( true, libcrtx_command_region_buildidentifier(name) );
+		libcrtx_writelocalsuccess("Region \"" + name + "\" has been removed.");
+	} else {
+		libcrtx_writelocalerror("No region with that name exists!");
+	}
+	
+	return true;
+}
+
+bool libcrtx_command_regionremoveall(bool checkConds, bool runActions)
+{
+	int dataCount = 1;
+	int removeCount = 0;
+	
+	while( dataCount <= DataTableValueCount(true)) {
+		if(StringSub(DataTableValueName(true,dataCount),1,StringLength(libcrtx_command_region_buildidentifier(""))) == libcrtx_command_region_buildidentifier("")) {
+			DataTableValueRemove(true,DataTableValueName(true,dataCount));
+			removeCount = removeCount + 1
+		}
+		dataCount = dataCount + 1
+	}
+	
+	if(removeCount) {
+		libcrtx_write(PlayerGroupSingle(EventPlayer()),"All your regions have been removed.");
+	} else {
+		libcrtx_write(PlayerGroupSingle(EventPlayer()),"You have no regions to remove.");
+	}
+	
+	return true;
+}
+
+bool libcrtx_command_regionlist(bool checkConds, bool runActions)
+{
+	int dataCount = 1;
+	int regionCount = 0;
+	string regList;
+	
+	while( dataCount <= DataTableValueCount(true)) {
+		if(StringSub(DataTableValueName(true,dataCount),1,StringLength(libcrtx_command_region_buildidentifier(""))) == libcrtx_command_region_buildidentifier("")) {
+			regList = regList + StringSub(DataTableValueName(true,dataCount),StringLength(libcrtx_command_region_buildidentifier("")+1,StringLength(DataTableValueName(true,dataCount))));
+			regionCount = regionCount + 1
+			if(dataCount != DataTableValueCount(true) {
+				regList = regList + ", ";
+			}
+		}
+		dataCount = dataCount + 1
+	}
+	
+	if(regionCount) {
+		libcrtx_write(PlayerGroupSingle(EventPlayer()), regList);
+	} else {
+		libcrtx_write(PlayerGroupSingle(EventPlayer()),"You have no regions.");
+	}
+	
+	return true;
+}
+
 bool libcrtx_command_teleport(bool checkConds, bool runActions)
 {
 	trigger t;

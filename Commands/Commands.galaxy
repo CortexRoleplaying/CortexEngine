@@ -31,6 +31,7 @@ void libcrtx_commands_init()
 	libcrtx_command_create("commands", "libcrtx_command_commands");
 	libcrtx_command_create("colors", "libcrtx_command_colors");
 	libcrtx_command_create("zoom", "libcrtx_command_zoom");
+	libcrtx_command_create("roll", "libcrtx_command_roll");
 
 	// unit commands
 	libcrtx_command_create("@spawn", "libcrtx_command_spawn");
@@ -85,6 +86,9 @@ void libcrtx_commands_init()
 	// region commands
 	libcrtx_command_create("#create", "libcrtx_command_regioncreate");
 	libcrtx_command_create("#teleport", "libcrtx_command_teleport");
+		libcrtx_command_create("#remove", "libcrtx_command_regionremove");
+		libcrtx_command_create("#removeall", "libcrtx_command_regionremoveall");
+	libcrtx_command_create("#list", "libcrtx_command_regionlist");
 }
 
 
