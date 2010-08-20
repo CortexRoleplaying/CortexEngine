@@ -42,6 +42,29 @@ bool libcrtx_command_regionremove(bool checkConds, bool runActions)
 
 	if( DataTableGetRegion( true, libcrtx_command_region_buildidentifier(name) ) ) {
 		DataTableValueRemove( true, libcrtx_command_region_buildidentifier(name) );
+		//Check if this region, "Region A" for convenience, was linked to another region for teleportation.
+		if(DataTableValueExists(true, libcrtx_command_region_buildidentifier(name)+"_link")) {
+			// We have a link! Let's purge everything with holy fire! Or a handy native and some tricky code.
+			//
+			// Basically, we need to destroy everything from Region A to the region it's linked to (which we'll call "B").
+			// But we don't want to destroy B itself! So we first use A's link to B again to find B's name.
+			// Then we append the "_link" suffix to B's name, use it to get the link from B to A, and use that to destroy the value that B used to get A's name.
+			DataTableValueRemove(true,"region_guid_" + IntToString(DataTableGetInt(true,DataTableGetString(true,"region_guid_" + IntToString(DataTableGetInt(true,libcrtx_command_region_buildidentifier(name)+"_link"))) + "_link")));
+			
+			// Now that we did the single most confusing leapfrogging function call I've ever written, we need to backtrack our way a little.
+			// This time, we do the same process, but stop at the link from B to A we used above and destroy it instead of using it.
+			DataTableValueRemove(true,DataTableGetString(true,"region_guid_" + IntToString(DataTableGetInt(true,libcrtx_command_region_buildidentifier(name)+"_link"))) + "_link");
+			
+			// We've finally destroyed the chain from B to A. Now we need to destroy the chain from A to B.
+			// Again, first comes the data that A uses to find B's name. Which means we're basically backtracking one step again.
+			DataTableValueRemove(true,"region_guid_" + IntToString(DataTableGetInt(true,libcrtx_command_region_buildidentifier(name)+"_link")));
+			
+			// One less backtrack, this time to directly destroy A's link to B. 
+			DataTableValueRemove(true,libcrtx_command_region_buildidentifier(name)+"_link");
+			// We're finally done! All the links between A and B are gone, and since we've already destroyed A itself before even entering this IF block,
+			// our job here is done. Someone should rewrite this stuff seomday to not be so incredibly leapfroggy and nested.
+		}
+		
 		libcrtx_writelocalsuccess("Region \"" + name + "\" has been removed.");
 	} else {
 		libcrtx_writelocalerror("No region with that name exists!");
@@ -55,18 +78,25 @@ bool libcrtx_command_regionremoveall(bool checkConds, bool runActions)
 	int dataCount = 1;
 	int removeCount = 0;
 	
+	//Remove everything that uses the region prefix or the region guid prefix.
+	//This will remove everything including links between regions. -F
 	while( dataCount <= DataTableValueCount(true)) {
 		if(StringSub(DataTableValueName(true,dataCount),1,StringLength(libcrtx_command_region_buildidentifier(""))) == libcrtx_command_region_buildidentifier("")) {
+			//This entry was either a region or a link to a region name. Remove it. -F
 			DataTableValueRemove(true,DataTableValueName(true,dataCount));
-			removeCount = removeCount + 1
+			removeCount = removeCount + 1;
+		} else if(StringSub(DataTableValueName(true,dataCount),1,StringLength("region_guid_")) == "region_guid_") {
+			//This entry was a region name used by a region link. Remove it. -F
+			DataTableValueRemove(true,DataTableValueName(true,dataCount));
+			removeCount = removeCount + 1;
 		}
-		dataCount = dataCount + 1
+		dataCount = dataCount + 1;
 	}
 	
 	if(removeCount) {
-		libcrtx_write(PlayerGroupSingle(EventPlayer()),"All your regions have been removed.");
+		libcrtx_writelocalsuccess("All your regions have been removed.");
 	} else {
-		libcrtx_write(PlayerGroupSingle(EventPlayer()),"You have no regions to remove.");
+		libcrtx_writelocalerror("You have no regions to remove.");
 	}
 	
 	return true;
@@ -79,14 +109,18 @@ bool libcrtx_command_regionlist(bool checkConds, bool runActions)
 	string regList;
 	
 	while( dataCount <= DataTableValueCount(true)) {
-		if(StringSub(DataTableValueName(true,dataCount),1,StringLength(libcrtx_command_region_buildidentifier(""))) == libcrtx_command_region_buildidentifier("")) {
-			regList = regList + StringSub(DataTableValueName(true,dataCount),StringLength(libcrtx_command_region_buildidentifier("")+1,StringLength(DataTableValueName(true,dataCount))));
-			regionCount = regionCount + 1
-			if(dataCount != DataTableValueCount(true) {
-				regList = regList + ", ";
+		//If the name of this entry begins with the region prefix, and doesn't have the _link suffix for teleports, then this is one of the regions we want.
+		if( StringSub( DataTableValueName(true,dataCount) , 1 , StringLength(libcrtx_command_region_buildidentifier("")) ) == libcrtx_command_region_buildidentifier("")
+				&& StringSub( DataTableValueName(true,dataCount) , StringLength(DataTableValueName(true,dataCount))-4 , StringLength(DataTableValueName(true,dataCount)) ) != "_link") 
+		{
+			if(regionCount == 0) {
+			regList = StringSub(DataTableValueName(true,dataCount),StringLength(libcrtx_command_region_buildidentifier(""))+1,StringLength(DataTableValueName(true,dataCount)));
+			} else {
+			regList = regList + ", " + StringSub(DataTableValueName(true,dataCount),StringLength(libcrtx_command_region_buildidentifier(""))+1,StringLength(DataTableValueName(true,dataCount)));
 			}
+			regionCount = regionCount + 1;
 		}
-		dataCount = dataCount + 1
+		dataCount = dataCount + 1;
 	}
 	
 	if(regionCount) {
