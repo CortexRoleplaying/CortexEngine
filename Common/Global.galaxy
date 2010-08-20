@@ -12,6 +12,7 @@
 
 // Load all Cortex dependencies
 include "Cortex/Common/libactionbar/libactionbar.galaxy"
+include "Cortex/Common/libstarcode/libstarcode.galaxy"
 
 // Cortex Git revision
 const string libcrtx_version_branch = "master";

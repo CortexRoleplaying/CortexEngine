@@ -31,6 +31,7 @@ void libcrtx_commands_init()
 	libcrtx_command_create("commands", "libcrtx_command_commands");
 	libcrtx_command_create("colors", "libcrtx_command_colors");
 	libcrtx_command_create("zoom", "libcrtx_command_zoom");
+	libcrtx_command_create("omega", "libcrtx_command_omega");
 
 	// unit commands
 	libcrtx_command_create("@spawn", "libcrtx_command_spawn");

@@ -1,0 +1,427 @@
+//--------------------------------------------------------------------------------------------------
+// Library: STARCODE v1.0
+//--------------------------------------------------------------------------------------------------
+// Function Declarations
+void libstrc_gf_StarcodeStartCode ();
+void libstrc_gf_StarcodeStoreIntegerValue (int lp_value, int lp_maximumValue);
+void libstrc_gf_StarcodeSetCode (string lp_code);
+void libstrc_gf_StarcodeSetEncryptionAlphabet (string lp_string);
+string libstrc_gf_StarcodeGetCode ();
+int libstrc_gf_StarcodeGetIntegerValue (int lp_maximumValue);
+string libstrc_gf_StarcodeEncryptString (string lp_toEncrypt, string lp_key);
+string libstrc_gf_StarcodeCompressString (string lp_toCompress);
+string libstrc_gf_StarcodeHashString (string lp_toHash, int lp_securityLevel);
+string libstrc_gf_StarcodeRemoveHashfromString (string lp_string, int lp_securityLevel);
+bool libstrc_gf_StarcodeValidateString (string lp_toCheck, int lp_securityLevel);
+string libstrc_gf_StarcodeDecryptString (string lp_toDecrypt, string lp_key);
+string libstrc_gf_StarcodeDecompressString (string lp_toDecompress);
+
+// Custom Script
+//--------------------------------------------------------------------------------------------------
+// Custom Script: Source
+//--------------------------------------------------------------------------------------------------
+//===========================================================
+//================  S T A R C O D E  v1.0 ===================
+//===========================================================
+//  by s3rius
+ 
+ 
+string STARCODE_Alphabet="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!$%&/()=?,.-;:_^#+*' @{[]}|>"; //
+int STARCODE_AlphabetLength=StringLength(STARCODE_Alphabet);
+string STARCODE_CurrentCode="0";
+string STARCODE_fill(string s, int i){
+    int c=i-StringLength(s);
+    string t="";
+    while(c>0){
+        t+="0";
+        c-=1;
+    }
+    return t+s;
+}
+string STARCODE_cut(string s){
+    int i=1;
+    while(i<StringLength(s) && StringSub(s,i,i)=="0"){
+        i+=1;
+    }
+    return StringSub(s,i,StringLength(s));
+}
+string STARCODE_BigNumAdd(string number, string addition){
+    int i=0;
+    int c=0;
+    int carry=0;
+    int ln=StringLength(number);
+    int la=StringLength(addition);
+    string out="";
+    if(la>ln){
+        number=STARCODE_fill(number, la);
+        ln=la;
+    }else if(ln>la){
+        addition=STARCODE_fill(addition, ln);
+        la=ln;
+    }
+ 
+    while(i<ln){
+        c=StringToInt( StringSub(number, ln-i,ln-i) ) + StringToInt( StringSub(addition, la-i,la-i) );
+        out=IntToString( (c+carry) % 10 ) +out;
+        carry=(c+carry) / 10;
+        i+=1;
+    }
+    if (carry>0){
+        out=IntToString(carry)+out;
+    }
+    return out;
+}
+string STARCODE_BigNumSubtract(string number, string subtraction){
+    int i=0;
+    int c=0;
+    int carry=0;
+    int ln=StringLength(number);
+    int ls=StringLength(subtraction);
+    string out="";
+    if(ls>ln){
+        number=STARCODE_fill(number, ls);
+        ln=ls;
+    }else if(ln>ls){
+        subtraction=STARCODE_fill(subtraction, ln);
+        ls=ln;
+    }
+    while(i<ln){
+        c=StringToInt( StringSub(number, ln-i,ln-i) ) - StringToInt( StringSub(subtraction, ls-i,ls-i) );
+        c-=carry;
+        if(c<0){
+            carry=1;
+            c+=10;
+        }else{
+            carry=0;
+        }
+        out=IntToString( c ) +out;
+        i+=1;
+    }
+    //if (carry>0){
+        //debug("This bigint is not suited for negative numbers!");
+    //}
+    out=STARCODE_cut(out);
+    //debug(out);
+    return out;
+}
+string STARCODE_BigNumMultiply(string number, string multi){
+    int i=0;
+    int m=StringToInt(multi);
+    int c=0;
+    int carry=0;
+    int ln=StringLength(number);
+    int lm=StringLength(multi);
+    string out="";
+    while(i<ln){
+        c=(StringToInt(StringSub(number, ln-i,ln-i)) * m)+carry;
+        out=IntToString( (c % 10) ) +out;
+        carry=c / 10;
+        i+=1;
+    }
+    if (carry>0){
+        out=IntToString(carry)+out;
+    }
+    if(multi=="0"){
+        out="0";
+    }
+    //debug(out);
+    return out;
+}
+string STARCODE_BigNumDivive(string number, string div){
+    int i=1;
+    int d=StringToInt(div);
+    int c=0;
+    int carry=0;
+    int ln=StringLength(number);
+    int ld=StringLength(div);
+    string out="";
+    while(i<=ln){
+        c=(StringToInt(StringSub(number, i, i)))+carry*10;
+        out+=IntToString( c / d );
+        carry=c % d;
+        i+=1;
+    }
+    if (carry>0){
+        //debug("Left: "+IntToString(carry));
+    }
+    out=STARCODE_cut(out);
+    //debug(out);
+    return out;
+}
+string STARCODE_BigNumModulo(string number, string div){
+    int i=1;
+    int d=StringToInt(div);
+    int c=0;
+    int carry=0;
+    int ln=StringLength(number);
+    int ld=StringLength(div);
+    string out="";
+    while(i<=ln){
+        c=(StringToInt(StringSub(number, i, i)))+carry*10;
+        carry=c % d;
+        i+=1;
+    }
+    //debug(IntToString(carry));
+    return IntToString(carry);
+}
+string STARCODE_BigNumPower(string number, int pow){
+    string out=number;
+    if (pow>0){
+        while(pow>1){
+            out=STARCODE_BigNumMultiply(out, number);
+            pow-=1;
+        }
+        return out;
+    }else{
+        return "1";
+    }
+}
+string STARCODE_Encode(string s, int i, int max){
+    return STARCODE_BigNumAdd(STARCODE_BigNumMultiply(s, IntToString(max)), IntToString(i));
+}
+int STARCODE_Decode(string s, int max){
+    return StringToInt(STARCODE_BigNumModulo(s, IntToString(max)));
+}
+string STARCODE_Decode2(string s, int max){
+    return STARCODE_BigNumDivive(s, IntToString(max));
+}
+string STARCODE_chr(int i){
+    return StringSub(STARCODE_Alphabet, i+1,i+1);
+}
+int STARCODE_ord(string i){
+    return StringFind(STARCODE_Alphabet, i, c_stringCase)-1;
+}
+string STARCODE_shiftForward(string s, string k){
+    return STARCODE_chr((STARCODE_ord(s)+STARCODE_ord(k)) % STARCODE_AlphabetLength);
+}
+string STARCODE_shiftBackward(string s, string k){
+    int c=STARCODE_ord(s)-STARCODE_ord(k);
+    if (c<0){
+        return STARCODE_chr((c+STARCODE_AlphabetLength)%STARCODE_AlphabetLength);
+    }
+    else{
+        return STARCODE_chr(c % STARCODE_AlphabetLength);
+    }
+}
+string STARCODE_Encrypt(string s, string key){
+    int i=1;
+    int ls=StringLength(s);
+    int lk=StringLength(key);
+    string out="";
+    while(i<=ls){
+        out+=STARCODE_shiftForward( StringSub(s, i,i), StringSub(key, i%lk,i%lk) );
+        i+=1;
+    }
+    return out;
+}
+string STARCODE_Decrypt(string s, string key){
+    int i=1;
+    int ls=StringLength(s);
+    int lk=StringLength(key);
+    string out="";
+    while(i<=ls){
+        out+=STARCODE_shiftBackward( StringSub(s, i,i), StringSub(key, i%lk,i%lk) );
+        i+=1;
+    }
+    return out;
+}
+string STARCODE_Base10ToN(string current, int baseN){
+    string n=IntToString(baseN);    
+    string remainder="";
+    string out="";
+    
+    while (current!="0"){
+        remainder=STARCODE_BigNumModulo(current, n);
+        out= STARCODE_chr(StringToInt(remainder)) + out;
+        current=STARCODE_BigNumDivive(current, n);
+    }
+    return out;
+}
+string STARCODE_BaseNTo10(string current, int baseN){
+    string out="0";
+    string base=IntToString(baseN);
+    int l=StringLength(current);
+    int i=1;
+    while(i<=l){
+        out=STARCODE_BigNumAdd(out, STARCODE_BigNumMultiply(STARCODE_BigNumPower(base, l-i), IntToString(STARCODE_ord(StringSub(current, i,i)))) );
+        i+=1;
+    }
+    return out;
+}
+string STARCODE_Hash(string toHash, int keyLength){
+    int i=StringLength(toHash);
+    string out="0";
+    while(i>0){
+        out=STARCODE_BigNumAdd(out, IntToString(  STARCODE_ord(StringSub(toHash,i,i)) * i  ));
+        i-=1;
+    }
+    
+    return STARCODE_fill(STARCODE_Base10ToN(STARCODE_BigNumModulo(out, IntToString( FixedToInt(Pow(STARCODE_AlphabetLength, keyLength)) )), STARCODE_AlphabetLength), keyLength);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Custom Script: READ ME
+//--------------------------------------------------------------------------------------------------
+//===========================================================
+//================  S T A R C O D E  v1.2 ===================
+//===========================================================
+//  by s3rius
+//
+//    
+//    SC2Mapster.com
+//    http://forums.sc2mapster.com/development/galaxy-scripting-and-trigger-lib/5091-library-starcode-v1-0/
+//    Credits to vjeux
+//
+//
+//  DOCUMENTATION:
+//
+//  Before you start using STARCODE you should know a couple of things:
+//
+//    1) STARCODE is still somewhat experimental. There could very well be bugs 
+//       or glitches left in the system. During my tests I have fixed everything
+//       I noticed, but that is no guarantee that it's always work under every 
+//       circumstances. The system is rather messy too.
+//       I haven't noticed any lags during my tests, but I believe that it could be
+//       quite a bit faster with optimized functions.
+//       Not my problem, at the moment.
+//
+//    2) I have tested STARCODE with dozens of integer values and generated codes of
+//       up to 100 digits length without problems. After that, however, the system 
+//       often hits StarCraft II's execution limit. Since I cannot disable this limit
+//       you should try not to make codes longer than 100 digits.
+//       You can, however, just create several codes with 100 digits length each.
+//
+//    3) The generated code length can change, even if you haven't added or removed any
+//       integers. 
+//       That is because the closer an integer's value is to it's maximum value, the more
+//       space it needs in the code.
+//       So to get the maximum code length you have to set all stored integer's values to
+//       their respective maximum values.
+//       Keep this in mind when you are storing your codes in a bank.
+//       When the codes' length is already close to the maximum size of the bank, you should
+//       check whether the code can possibly exceed the bank size.
+//
+//    4) There is a public function called Set Encryption Alphabet.
+//       You should leave this function alone, unless you have a good reason to use it and know
+//       what you are doing.
+//       One reason could be to remove some characters from the alphabet so that they
+//       won't be used in the code anymore.
+//       The default alphabet is:
+//
+//       "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!$%&/()=?,.-;:_^#+*' @{[]}|>"
+//
+//       You can add and remove characters as you like. However, you should always keep the first
+//       ten characters (all numbers) at it's place, or some functions might return strange
+//       results.
+//       Also note that I have excluded "<" and "\" from the alphabet.
+//       "\" is an escape characters so it's of no use to us.
+//       "<" could be potentially dangerous. If you want to display your code and there happens
+//       to be a sequence such as "<abc>" in there, StarCraft II will recongize this as a tag
+//       and not display it. Thus you would get wrong results. I left ">" in because it won't
+//       cause any harm on it's own.
+//
+//
+//  Ok, I think I have mentioned everything. 
+//  You can take a look at the Example Usage trigger to see how STARCODE can be used.
+//
+//  
+//
+// ~ s3rius
+//
+
+void libstrc_InitCustomScript () {
+}
+
+// Functions
+void libstrc_gf_StarcodeStartCode () {
+    // Implementation
+        STARCODE_CurrentCode = "0";
+}
+
+void libstrc_gf_StarcodeStoreIntegerValue (int lp_value, int lp_maximumValue) {
+    // Implementation
+    if(lp_value<lp_maximumValue+1){
+        STARCODE_CurrentCode=STARCODE_Encode(STARCODE_CurrentCode, lp_value, lp_maximumValue+1);
+    }else{
+        UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, StringToText("Error! Starcode tried to save a value larger than it's maximum!"));
+    }
+}
+
+void libstrc_gf_StarcodeSetCode (string lp_code) {
+    // Implementation
+    STARCODE_CurrentCode=lp_code;
+}
+
+void libstrc_gf_StarcodeSetEncryptionAlphabet (string lp_string) {
+    // Implementation
+    STARCODE_Alphabet=lp_string;
+    STARCODE_AlphabetLength=StringLength(STARCODE_Alphabet);
+}
+
+string libstrc_gf_StarcodeGetCode () {
+    // Implementation
+    return STARCODE_CurrentCode;
+}
+
+int libstrc_gf_StarcodeGetIntegerValue (int lp_maximumValue) {
+    // Variable Declarations
+    int lv_i;
+
+    // Variable Initialization
+    lv_i = 0;
+
+    // Implementation
+    lv_i=STARCODE_Decode(STARCODE_CurrentCode, lp_maximumValue+1);
+    STARCODE_CurrentCode=STARCODE_Decode2(STARCODE_CurrentCode, lp_maximumValue+1); //advance in the code
+    return lv_i;
+}
+
+string libstrc_gf_StarcodeEncryptString (string lp_toEncrypt, string lp_key) {
+    // Implementation
+    return STARCODE_Encrypt(lp_toEncrypt, lp_key);
+}
+
+string libstrc_gf_StarcodeCompressString (string lp_toCompress) {
+    // Implementation
+    return STARCODE_Base10ToN(lp_toCompress, STARCODE_AlphabetLength);
+}
+
+string libstrc_gf_StarcodeHashString (string lp_toHash, int lp_securityLevel) {
+    // Implementation
+    return STARCODE_Hash(lp_toHash, lp_securityLevel)+lp_toHash;
+}
+
+string libstrc_gf_StarcodeRemoveHashfromString (string lp_string, int lp_securityLevel) {
+    // Implementation
+    return StringSub(lp_string,lp_securityLevel+1, StringLength(lp_string));
+}
+
+bool libstrc_gf_StarcodeValidateString (string lp_toCheck, int lp_securityLevel) {
+    // Implementation
+    return STARCODE_Hash(StringSub(lp_toCheck,lp_securityLevel+1, StringLength(lp_toCheck)), lp_securityLevel)==StringSub(lp_toCheck,1, lp_securityLevel);
+}
+
+string libstrc_gf_StarcodeDecryptString (string lp_toDecrypt, string lp_key) {
+    // Implementation
+    return STARCODE_Decrypt(lp_toDecrypt, lp_key);
+}
+
+string libstrc_gf_StarcodeDecompressString (string lp_toDecompress) {
+    // Implementation
+    return STARCODE_BaseNTo10(lp_toDecompress, STARCODE_AlphabetLength);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libstrc_InitLib_completed = false;
+
+void libstrc_InitLib () {
+    if (libstrc_InitLib_completed) {
+        return;
+    }
+
+    libstrc_InitCustomScript();
+
+    libstrc_InitLib_completed = true;
+}

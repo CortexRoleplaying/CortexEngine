@@ -10,10 +10,38 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+bool libcrtx_event_map_init(bool checkConds, bool runActions);
 void libcrtx_events_init()
 {
+	libcrtx_event_map_init(false, true);
 	TriggerAddEventTimePeriodic( TriggerCreate("libcrtx_event_periodic_tick"), 1.0, c_timeReal );
 	TriggerAddEventDialogControl( TriggerCreate("libcrtx_event_dialog_clicked"), c_playerAny, c_invalidDialogControlId, c_triggerControlEventTypeClick );
+}
+
+bool libcrtx_event_map_init(bool checkConds, bool runActions) {
+	bank b;
+	int i = 0;
+	string x;
+	// Init Bank GUID system
+	while( i != libcrtx_max_players ) { 
+		if( PlayerStatus(i) != c_playerStatusActive ) {
+			i = i + 1;
+			continue;
+		}
+
+		b = BankLoad( "CortexID", i );
+		x = BankValueGetAsString( b, "CortexID", "GUID" );
+		if( x == "" ) {
+			libcrtx_writetext(PlayerGroupAll(), libcrtx_utility_coloredplayername(i) + StringToText(" is playing for the first time today. Please welcome him and teach him how things work.") );
+			// Set us up a new ID!
+			x = IntToString(RandomInt(10000, 500000));
+			BankValueSetFromString( b, "CortexID", "GUID", STARCODE_Encrypt(x, libcrtx_get_commitish()) );
+			BankValueSetFromText(b, "CortexID", "Name", PlayerName(i) );
+			BankSave(b);
+		}
+		i = i + 1;
+	}
+	return true;
 }
 
 // Called on all dialog clicks
