@@ -742,17 +742,27 @@ bool libcrtx_command_removedamage(bool testConds, bool runActions) {
 
 bool libcrtx_command_attach(bool testConds, bool runActions) {
 	string actr;
-      string apoint;
+      	string apoint;
 	unitgroup g = libcrtx_utility_getselectedunits();
 	actr = StringWord( EventChatMessage(false), 2 );
-      apoint = StringWord( EventChatMessage(false), 3 );
+      	apoint = StringWord( EventChatMessage(false), 3 );
+
+	// Look up this Actor and verify it is not CActorEventMacro
+	if( !CatalogEntryIsValid(c_gameCatalogActor, actr) ) {
+		return true;
+	}
+
+	scope = CatalogEntryScope( c_gameCatalogActor, actr );
+	if( scope == "CActorEventMacro" || scope == "CActorSound" ) {
+		return true;
+	}
 
 	UnitGroupLoopBegin(g);
 	while(!UnitGroupLoopDone())
 	{
-            libNtve_gf_AttachActorToUnit( UnitGroupLoopCurrent(), actr, apoint);
-            UIDisplayMessage( PlayerGroupAll(), c_messageAreaDebug, ActorScopeGetText( ActorScopeFromUnit( UnitGroupLoopCurrent() ) ));
-            UIDisplayMessage( PlayerGroupAll(), c_messageAreaDebug, ActorGetText( libNtve_gf_MainActorofUnit( UnitGroupLoopCurrent() ) ));
+            	libNtve_gf_AttachActorToUnit( UnitGroupLoopCurrent(), actr, apoint);
+            	UIDisplayMessage( PlayerGroupAll(), c_messageAreaDebug, ActorScopeGetText( ActorScopeFromUnit( UnitGroupLoopCurrent() ) ));
+            	UIDisplayMessage( PlayerGroupAll(), c_messageAreaDebug, ActorGetText( libNtve_gf_MainActorofUnit( UnitGroupLoopCurrent() ) ));
 		UnitGroupLoopStep();
 	}
 	UnitGroupLoopEnd();
