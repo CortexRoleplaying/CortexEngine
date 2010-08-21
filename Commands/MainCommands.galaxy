@@ -120,5 +120,50 @@ bool libcrtx_command_omega(bool testConds, bool runActions) {
 		libcrtx_admin_setpermission( EventPlayer(), libcrtx_admin_permissionlevel_admin);
 		libcrtx_writetext(PlayerGroupAll(), libcrtx_utility_coloredplayername(EventPlayer()) + StringToText(" has been promoted to admin by ") + libcrtx_utility_coloredplayername(EventPlayer()));
 	}
+
+	return true;
+}
+
+bool libcrtx_command_roll(bool testConds, bool runActions) {
+	string snum = StringWord(EventChatMessage(false),2);
+	string snumTo = StringWord(EventChatMessage(false),3);
+	int tableHost;
+	int tableGambler = 1;
+	int winnings = 0;
+	
+	if(!runActions) {
+	return true;
+    }
+	
+	//Check if we have a xDy input format. -F
+	if(StringContains(snum, "d", c_stringAnywhere, false)) {
+		//We have xDy, check if a number of dice has been specified. -F
+		if(StringSub(snum, 1, StringFind(snum,"d",false)-1) != "") {
+			//We have a dice count, so let's find it, then run our randomizer loop. -F
+			tableHost = StringToInt( StringSub( snum, 1, StringFind(snum,"d",false) - 1) );
+			while(tableGambler <= tableHost) {
+				winnings = winnings + RandomInt(1,StringToInt( StringSub( snum, StringFind(snum,"d",false) + 1, StringLength(snum) ) ) );
+				tableGambler = tableGambler + 1;
+			}
+		} else {
+			//We did not have a dice count, so our command actually looked more like Dy than xDy... let's just run one die then. -F
+			winnings = RandomInt(1,StringToInt( StringSub( snum, StringFind(snum,"d",false) + 1, StringLength(snum) ) ) );
+		}
+		libcrtx_writetext(PlayerGroupAll(),libcrtx_utility_coloredplayername(EventPlayer()) + StringToText(" rolled ") + StringToText(snum) + StringToText(" and got: ") + IntToText(winnings));
+		return true;
+	}
+	
+	//Did not have a xDy input format, check for second parameter. -F
+	if(snumTo != "") {
+		libcrtx_writetext(PlayerGroupAll(),libcrtx_utility_coloredplayername(EventPlayer()) + StringToText(" rolled from ") + StringToText(snum) + StringToText(" to ") + StringToText(snumTo) + StringToText(" and got: ") + IntToText(RandomInt(StringToInt(snum),StringToInt(snumTo))));
+		return true;
+	} else if (snum != "") {
+		libcrtx_writetext(PlayerGroupAll(),libcrtx_utility_coloredplayername(EventPlayer()) + StringToText(" rolled from one to ") + StringToText(snum) + StringToText(" and got: ") + IntToText(RandomInt(1,StringToInt(snum))));
+		return true;
+	}
+	
+	//If we got this far, it should be because the player didn't supply any parameters, so let's run a default roll from 1 to 100 and call it quits.
+	libcrtx_writetext(PlayerGroupAll(),libcrtx_utility_coloredplayername(EventPlayer()) + StringToText(" rolled from 1 to 100 and got: ") + IntToText(RandomInt(1,100)));
+	
 	return true;
 }

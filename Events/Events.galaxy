@@ -115,7 +115,7 @@ bool libcrtx_event_periodic_tick(bool checkConds, bool runActions)
 			if( p == 0 ) {
 				x = x + 1;
 				continue;
-			} else {
+			} else if( DataTableGetString(true, "region_guid_" + IntToString( p )) != "" ) {
 				// Draw our dialogs!
 				libcrtx_waygate_dialog[i] = DialogCreate(250, 100, c_anchorRight, 0, 120, true);
 				DialogSetVisible(libcrtx_waygate_dialog[i], PlayerGroupSingle(i), true);
