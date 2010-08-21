@@ -743,6 +743,7 @@ bool libcrtx_command_removedamage(bool testConds, bool runActions) {
 bool libcrtx_command_attach(bool testConds, bool runActions) {
 	string actr;
       	string apoint;
+	string scope;
 	unitgroup g = libcrtx_utility_getselectedunits();
 	actr = StringWord( EventChatMessage(false), 2 );
       	apoint = StringWord( EventChatMessage(false), 3 );
