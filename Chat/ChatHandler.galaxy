@@ -95,7 +95,7 @@ bool libcrtx_chat_parsechat(int lp_player, string lp_message, int lp_recursionLi
 			if( StringSub(lp_message, x-1, x-1) == "\\" ) {
 				// We must remove these!
 				s = StringSub(lp_message, 1, x-2);
-				lp_message = s + StringSub(lp_message, x+1, StringLength(lp_message));
+				lp_message = s + StringSub(lp_message, x, StringLength(lp_message));
 				x = 1; // Restart!
 	 		}
 		}
