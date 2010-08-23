@@ -10,6 +10,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+const int libcrtx_chat_recursion_limit = 50;
+
 void libcrtx_chat_init()
 {
 	int i = 1;
@@ -28,19 +30,62 @@ void libcrtx_chat_init()
 	}
 }
 
-bool libcrtx_chat_parsechat(int lp_player, string lp_message)
+bool libcrtx_chat_parsechat(int lp_player, string lp_message, int lp_recursionLimit)
 {
 	trigger t;
 	int spaceIndex;
 	int currentCmd = 0;
 	string sub = "";
+	int l;
+	int x;
+	string c;
+	string s;
+	bool aliasCreate;
 	bool commandFound = false;
+
+	lp_recursionLimit = lp_recursionLimit - 1;
+	if( lp_recursionLimit == 0 ) {
+		return true;
+	}
 
 	libcrtx_debug("libcrtx_chat_parsechat()");
 
 	// disabled players: all chat is routed to OOC.
 	if( libcrtx_admin_isplayerdisabled(lp_player) ) {
 		return false;
+	}
+
+	// Parse normally so we don't have to escape the ;'s
+	if( StringEqual(StringSub(lp_message, 1, 12), "alias create", false) ) {
+		aliasCreate = true;
+	}
+
+	l = 1;
+	x = 1;
+	while( x <= StringLength(lp_message) && !aliasCreate ) {
+		s = StringSub(lp_message, x, x);
+
+		if( x >= StringLength(lp_message) ) {
+			if( StringSub(lp_message, StringLength(lp_message), StringLength(lp_message)) == ";" ) {
+				c = StringSub(lp_message, l, StringLength(lp_message)-1);
+			} else {
+				c = StringSub(lp_message, l, StringLength(lp_message));
+			}
+			lp_message = libcrtx_string_trim( c );
+			l = 1;
+			// This part finishes the recursion and runs us through the regular non-recursive parser.
+		} else if( s == ";" ) { 
+			// Everything from here on backwards, new command!
+			c = StringSub(lp_message, l, x-1);
+			c = libcrtx_string_trim( c );
+			libcrtx_chat_parsechat( lp_player, c, lp_recursionLimit );
+			l = x+1;
+		}
+		x = x + 1;
+	}
+	if( l != 1 ) {
+		// Using recursion: skip!
+		return true;
 	}
 
 	spaceIndex = StringFind( lp_message, " ", c_stringCase );
@@ -54,6 +99,11 @@ bool libcrtx_chat_parsechat(int lp_player, string lp_message)
 	// alias system, if we're running an alias command, stop, no need to do more.
 	if( libcrtx_alias_exists( sub ) ) {
 		sub = libcrtx_alias_getsource(sub);
+		// Rewrite this and re-parse recursively.
+		// We must do this to ensure that complex aliases will function.
+		lp_message = sub + " " + StringSub(lp_message, StringFind( lp_message, " ", c_stringCase ), StringLength(lp_message));
+		libcrtx_chat_parsechat( lp_player, lp_message, lp_recursionLimit );
+		return true;
 	}
 
 	// convert to lowercase.
@@ -81,41 +131,14 @@ bool libcrtx_chat_receivedevent(bool testConds, bool runActions)
 	bool isCmd = false;
 	int triggerPlayer = EventPlayer();
 	string chatMsg = EventChatMessage(false);
+	chatMsg = libcrtx_string_trim(chatMsg);
 
 	if(!runActions)
 	{
 		return true;
 	}
 
-	l = 1;
-	x = 1;
-	while( x != StringLength(chatMsg) ) {
-		s = StringSub(chatMsg, x, x);
-		if( s == ";" ) { 
-			// Everything from here on backwards, new command!
-			c = StringSub(chatMsg, l, x-1);
-			c = libcrtx_string_trim( c );
-			libcrtx_chat_parsechat( triggerPlayer, c );
-			l = x+1;
-		}
-		x = x + 1;
-
-		if( x >= StringLength(chatMsg) ) {
-			if( StringSub(chatMsg, StringLength(chatMsg), StringLength(chatMsg)) == ";" ) {
-				c = StringSub(chatMsg, l, StringLength(chatMsg)-1);
-			} else {
-				c = StringSub(chatMsg, l, StringLength(chatMsg));
-			}
-			c = libcrtx_string_trim( c );
-			libcrtx_chat_parsechat( triggerPlayer, c );
-			l = x+1;
-		}
-	}
-	if( l != 1 ) {
-		return true;
-	}
-
-	isCmd = libcrtx_chat_parsechat( triggerPlayer, chatMsg );
+	isCmd = libcrtx_chat_parsechat( triggerPlayer, chatMsg, libcrtx_chat_recursion_limit );
 
 	// Clear everyone's chat of the filth. FILTH I SAY.
 	UIClearMessages( PlayerGroupAll(), c_messageAreaChat );

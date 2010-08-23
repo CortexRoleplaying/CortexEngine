@@ -15,11 +15,18 @@ bool libcrtx_command_alias(bool checkConds, bool runActions)
 	// Alias uses a subcommand tree. Woo!
 	string parameter;
 	string parameterTwo;
+	int x;
 	string subCommand = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
 	if( subCommand == "create" ) {
 		// create an alias!
 		parameter = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 3 ); // the new command 
-		parameterTwo = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 4 ); // the old command's name.
+		x = 4;
+		while( StringWord( libcrtx_chat_get_parse_line(EventPlayer()), x) != "" ) {
+			parameterTwo = parameterTwo + StringWord( libcrtx_chat_get_parse_line(EventPlayer()), x) + " ";
+			x = x + 1;
+		}
+		parameterTwo = libcrtx_string_trim(parameterTwo);
+
 		if( parameterTwo == "alias" ) { // do not allow aliasing the alias command.
 			return true;
 		}
