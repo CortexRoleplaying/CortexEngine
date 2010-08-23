@@ -73,6 +73,10 @@ bool libcrtx_chat_parsechat(int lp_player, string lp_message)
 bool libcrtx_chat_receivedevent(bool testConds, bool runActions)
 {
 	text t;
+	int i;
+	int x;
+	int l;
+	string c;
 	string s;
 	bool isCmd = false;
 	int triggerPlayer = EventPlayer();
@@ -80,6 +84,34 @@ bool libcrtx_chat_receivedevent(bool testConds, bool runActions)
 
 	if(!runActions)
 	{
+		return true;
+	}
+
+	l = 1;
+	x = 1;
+	while( x != StringLength(chatMsg) ) {
+		s = StringSub(chatMsg, x, x);
+		if( s == ";" ) { 
+			// Everything from here on backwards, new command!
+			c = StringSub(chatMsg, l, x-1);
+			c = libcrtx_string_trim( c );
+			libcrtx_chat_parsechat( triggerPlayer, c );
+			l = x+1;
+		}
+		x = x + 1;
+
+		if( x >= StringLength(chatMsg) ) {
+			if( StringSub(chatMsg, StringLength(chatMsg), StringLength(chatMsg)) == ";" ) {
+				c = StringSub(chatMsg, l, StringLength(chatMsg)-1);
+			} else {
+				c = StringSub(chatMsg, l, StringLength(chatMsg));
+			}
+			c = libcrtx_string_trim( c );
+			libcrtx_chat_parsechat( triggerPlayer, c );
+			l = x+1;
+		}
+	}
+	if( l != 1 ) {
 		return true;
 	}
 

@@ -288,3 +288,20 @@ int libcrtx_generate_bossbar_id(int player, int btype)
 {
 	return (player * 3) + btype;
 }
+
+string libcrtx_string_trim( string s )
+{
+	int x = 1;
+	int y = StringLength(s);
+	// Trim front
+	while( StringSub(s, x, x) == " " ) {
+		x = x + 1;
+	}
+
+	// Trim back
+	while( StringSub(s, y, y) == " " ) {
+		y = y - 1;
+	}
+
+	return StringSub(s, x, y);
+}
