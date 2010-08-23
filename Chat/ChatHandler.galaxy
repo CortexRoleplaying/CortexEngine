@@ -60,7 +60,9 @@ bool libcrtx_chat_parsechat(int lp_player, string lp_message)
 	sub = StringCase(sub, false);
 
 	t = DataTableGetTrigger( true, "libcrtx_commands_" + sub );
-	if( t ) {
+	if( t )
+	{
+		libcrtx_chat_set_parse_line( lp_player, lp_message );
 		TriggerExecute(t, false, false);
 		commandFound = true;
 	}

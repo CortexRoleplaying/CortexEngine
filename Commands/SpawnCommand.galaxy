@@ -146,7 +146,7 @@ bool libcrtx_command_spawn(bool testConds, bool runActions)
 		// Do not halt execution, move on and allow the command to parse so it can be repeated using @spawn later.
 	}
 
-	message = EventChatMessage(false);
+	message = libcrtx_chat_get_parse_line(EventPlayer());
 	if( libcrtx_command_spawn_parse(message) )
 	{
 		libcrtx_command_spawn_execute();

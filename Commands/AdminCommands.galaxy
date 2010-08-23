@@ -14,7 +14,7 @@ bool libcrtx_command_ban(bool testConds, bool runActions)
 {
 	int player;
 	unitgroup g;
-	string val = StringWord( EventChatMessage(false), 2 );
+	string val = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
 	player = libcrtx_utility_getplayerfromcolor( val );
 	if( player == -1 ) {
 		return true;
@@ -41,7 +41,7 @@ bool libcrtx_command_ban(bool testConds, bool runActions)
 bool libcrtx_command_disable(bool testConds, bool runActions)
 {
 	int player;
-	string val = StringWord( EventChatMessage(false), 2 );
+	string val = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
 	player = libcrtx_utility_getplayerfromcolor( val );
 	if( player == -1 ) {
 		return true;
@@ -60,7 +60,7 @@ bool libcrtx_command_disable(bool testConds, bool runActions)
 bool libcrtx_command_enable(bool testConds, bool runActions)
 {
 	int player;
-	string val = StringWord( EventChatMessage(false), 2 );
+	string val = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
 	player = libcrtx_utility_getplayerfromcolor( val );
 	if( player == -1 ) {
 		return true;
@@ -79,7 +79,7 @@ bool libcrtx_command_enable(bool testConds, bool runActions)
 bool libcrtx_command_promote(bool testConds, bool runActions)
 {
 	int player;
-	string val = StringWord( EventChatMessage(false), 2 );
+	string val = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
 	player = libcrtx_utility_getplayerfromcolor( val );
 	if( player == -1 ) {
 		return true;
@@ -98,7 +98,7 @@ bool libcrtx_command_promote(bool testConds, bool runActions)
 bool libcrtx_command_demote(bool testConds, bool runActions)
 {
 	int player;
-	string val = StringWord( EventChatMessage(false), 2 );
+	string val = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
 	player = libcrtx_utility_getplayerfromcolor( val );
 	if( player == -1 ) {
 		return true;
@@ -118,7 +118,7 @@ bool libcrtx_command_adminremove(bool testConds, bool runActions)
 {
 	int player;
 	unitgroup g;
-	string val = StringWord( EventChatMessage(false), 2 );
+	string val = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
 	player = libcrtx_utility_getplayerfromcolor( val );
 	if( player == -1 ) {
 		return true;
@@ -148,7 +148,7 @@ bool libcrtx_command_seeall(bool testConds, bool runActions)
 {
 	int i = 1;
 	string state;
-	state = StringWord( EventChatMessage(false), 2 );
+	state = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
 	if( libcrtx_admin_getpermissions( EventPlayer() ) < libcrtx_admin_permissionlevel_moderator ) {
 		return true;
 	}

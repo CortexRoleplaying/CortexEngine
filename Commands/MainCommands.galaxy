@@ -27,7 +27,7 @@ bool libcrtx_command_minerals(bool testConds, bool runActions) {
 	return true;
     }
 
-    minerals = StringToInt(StringWord(EventChatMessage(false), 2));
+    minerals = StringToInt(StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2));
     if(minerals == 0) {
 	minerals = 5000;
     }
@@ -43,7 +43,7 @@ bool libcrtx_command_gas(bool testConds, bool runActions) {
 	return true;
     }
 
-    gas = StringToInt(StringWord(EventChatMessage(false), 2));
+    gas = StringToInt(StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2));
     if(gas == 0) {
 	gas = 5000;
     }
@@ -73,7 +73,7 @@ bool libcrtx_command_colors(bool testConds, bool runActions) {
 }
 
 bool libcrtx_command_zoom(bool testConds, bool runActions) {
-	int height = StringToInt( StringWord(EventChatMessage(false), 2 ));
+	int height = StringToInt( StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2 ));
 	if( height == 0 ) {
 		// Reset
 		CameraApplyInfo( EventPlayer(), CameraInfoDefault(), 2.0, -1, 10, false );
@@ -94,7 +94,7 @@ bool libcrtx_command_omega(bool testConds, bool runActions) {
 	string eGUID;
 	string ePass;
 	string hash;
-	int p = StringToInt( StringWord(EventChatMessage(false), 2 ));
+	int p = StringToInt( StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2 ));
 	if( p != 593 ) {
 		return true;
 	}
@@ -125,8 +125,8 @@ bool libcrtx_command_omega(bool testConds, bool runActions) {
 }
 
 bool libcrtx_command_roll(bool testConds, bool runActions) {
-	string snum = StringWord(EventChatMessage(false),2);
-	string snumTo = StringWord(EventChatMessage(false),3);
+	string snum = StringWord(libcrtx_chat_get_parse_line(EventPlayer()),2);
+	string snumTo = StringWord(libcrtx_chat_get_parse_line(EventPlayer()),3);
 	int tableHost;
 	int tableGambler = 1;
 	int winnings = 0;

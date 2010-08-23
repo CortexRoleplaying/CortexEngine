@@ -16,8 +16,8 @@ bool libcrtx_command_regioncreate(bool checkConds, bool runActions)
 	fixed radius;
 	string name;
 	
-	name = StringWord(EventChatMessage(false), 2);
-	radius = StringToFixed(StringWord(EventChatMessage(false), 3));
+	name = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2);
+	radius = StringToFixed(StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 3));
 	if( radius == 0.0 ) {
 		radius = 2;
 	}
@@ -38,7 +38,7 @@ bool libcrtx_command_regioncreate(bool checkConds, bool runActions)
 
 bool libcrtx_command_regionremove(bool checkConds, bool runActions)
 {
-	string name = StringWord(EventChatMessage(false), 2);
+	string name = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2);
 
 	if( DataTableGetRegion( true, libcrtx_command_region_buildidentifier(name) ) ) {
 		DataTableValueRemove( true, libcrtx_command_region_buildidentifier(name) );
@@ -149,8 +149,8 @@ bool libcrtx_command_teleport(bool checkConds, bool runActions)
 	int g2;
 
 	// Take two regions we own, and read 'em.
-	rn1 = StringWord(EventChatMessage(false), 2);
-	rn2 = StringWord(EventChatMessage(false), 3);
+	rn1 = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2);
+	rn2 = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 3);
 	
 	rn1 = libcrtx_command_region_buildidentifier(rn1);
 	rn2 = libcrtx_command_region_buildidentifier(rn2);

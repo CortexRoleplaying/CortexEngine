@@ -66,7 +66,7 @@ bool libcrtx_command_say(bool checkConds, bool runActions)
 		u = UnitGroupLoopCurrent();
 		unitName = libcrtx_utility_colortextbyplayer( EventPlayer(), libcrtx_get_name_from_unit(u));
 		
-		s = EventChatMessage(false);
+		s = libcrtx_chat_get_parse_line(EventPlayer());
 		s = StringSub( s, StringFind(s, " ", c_stringCase)+1, StringLength(s)); // The remainder of the chat message.
 		s = ": " + s;
 		misc = unitName + StringToText(s);
@@ -94,7 +94,7 @@ bool libcrtx_command_sayoverhead(bool checkConds, bool runActions)
 	{
 		u = UnitGroupLoopCurrent();
 		
-		s = EventChatMessage(false);
+		s = libcrtx_chat_get_parse_line(EventPlayer());
 		s = StringSub( s, StringFind(s, " ", c_stringCase)+1, StringLength(s)); // The remainder of the chat message.
 		misc = libcrtx_utility_colortextbyplayer(EventPlayer(), StringToText(s));
 
@@ -124,7 +124,7 @@ bool libcrtx_command_setname(bool checkConds, bool runActions)
 	unit u;
 	unitgroup g;
 
-	s = EventChatMessage(false);
+	s = libcrtx_chat_get_parse_line(EventPlayer());
 	s = StringSub( s, StringFind(s, " ", c_stringCase)+1, StringLength(s)); // The remainder of the chat message.	
 	if( s == "" ) { // don't want people with null names hiding their chat color.
 		return true;

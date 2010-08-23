@@ -36,7 +36,7 @@ bool libcrtx_command_remove(bool testConds, bool runActions) {
 
 bool libcrtx_command_removearea(bool testConds, bool runActions) {
       unitgroup g;
-      fixed radius = StringToFixed( StringWord( EventChatMessage(false), 2 ));
+      fixed radius = StringToFixed( StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 ));
       if(radius == 0.0) {
         radius = 5.0;
       }
@@ -67,9 +67,9 @@ bool libcrtx_command_scale(bool testConds, bool runActions) {
 	fixed scaleY;
 	fixed scaleZ;
 	unitgroup g = libcrtx_utility_getselectedunits();
-	scale = StringToFixed(StringWord(EventChatMessage(false), 2));
-	scaleY = StringToFixed(StringWord(EventChatMessage(false), 3));
-	scaleZ = StringToFixed(StringWord(EventChatMessage(false), 4));
+	scale = StringToFixed(StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2));
+	scaleY = StringToFixed(StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 3));
+	scaleZ = StringToFixed(StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 4));
 	
 	if(scaleZ == 0.0) {
 		scaleZ = scale;
@@ -107,7 +107,7 @@ bool libcrtx_command_give(bool testConds, bool runActions) {
 	int newOwner;
 	string nextParam;
 	unitgroup g = libcrtx_utility_getselectedunits();
-	nextParam = StringWord( EventChatMessage(false), 2 );
+	nextParam = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
 	newOwner = libcrtx_utility_getplayerfromcolor(nextParam);
 	if(newOwner == -1) { // invalid entry by user
 		return true;
@@ -128,7 +128,7 @@ bool libcrtx_command_givecolor(bool testConds, bool runActions) {
 	int oldOwner;
 	string nextParam;
 	unitgroup g = libcrtx_utility_getselectedunits();
-	nextParam = StringWord( EventChatMessage(false), 2 );
+	nextParam = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
 	newOwner = libcrtx_utility_getplayerfromcolor(nextParam);
 	if(newOwner == -1) { // invalid entry by user
 		return true;
@@ -148,7 +148,7 @@ bool libcrtx_command_color(bool testConds, bool runActions) {
 	int newColour;
 	string nextParam;
 	unitgroup g = libcrtx_utility_getselectedunits();
-	nextParam = StringWord( EventChatMessage(false), 2 );
+	nextParam = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
 	newColour = libcrtx_utility_getplayerfromdefaultcolor(nextParam);
 	if(newColour == -1) { // invalid entry by user
 		return true;
@@ -221,7 +221,7 @@ bool libcrtx_command_movable(bool testConds, bool runActions) {
 	string nextParam;
 	unitgroup g = libcrtx_utility_getselectedunits();
 	query = false;
-	nextParam = StringWord( EventChatMessage(false), 2 );
+	nextParam = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
 	if( nextParam == "on" ) {
 		enable = true;
 	} else if( nextParam == "off" ) {
@@ -256,7 +256,7 @@ bool libcrtx_command_life(bool testConds, bool runActions) {
 	bool percent = false;
 	int position = 0;
 	unitgroup g = libcrtx_utility_getselectedunits();
-	nextParam = StringWord( EventChatMessage(false), 2 );
+	nextParam = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
 
 	if( StringContains(nextParam, "%", c_stringAnywhere, c_stringCase) ) {
 		percent = true;
@@ -285,7 +285,7 @@ bool libcrtx_command_energy(bool testConds, bool runActions) {
 	bool percent = false;
 	int position = 0;
 	unitgroup g = libcrtx_utility_getselectedunits();
-	nextParam = StringWord( EventChatMessage(false), 2 );
+	nextParam = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
 
 	if( StringContains(nextParam, "%", c_stringAnywhere, c_stringCase) ) {
 		percent = true;
@@ -314,7 +314,7 @@ bool libcrtx_command_shields(bool testConds, bool runActions) {
 	bool percent = false;
 	int position = 0;
 	unitgroup g = libcrtx_utility_getselectedunits();
-	nextParam = StringWord( EventChatMessage(false), 2 );
+	nextParam = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
 
 	if( StringContains(nextParam, "%", c_stringAnywhere, c_stringCase) ) {
 		percent = true;
@@ -354,10 +354,10 @@ bool libcrtx_command_tint(bool testConds, bool runActions) {
 
 	unitgroup g = libcrtx_utility_getselectedunits();
 
-	paramOne = StringWord( EventChatMessage(false), 2 );
-	paramTwo = StringWord( EventChatMessage(false), 3 );
-	paramThree = StringWord( EventChatMessage(false), 4 );
-	paramFour = StringWord( EventChatMessage(false), 5 );
+	paramOne = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
+	paramTwo = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 3 );
+	paramThree = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 4 );
+	paramFour = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 5 );
 
 	if( StringContains(paramOne, "%", c_stringAnywhere, false) ) {
 		paramOne = StringSub(paramOne, 1, StringLength(paramOne)-1);
@@ -411,7 +411,7 @@ bool libcrtx_command_face(bool testConds, bool runActions) {
 	string nextParam;
 	unitgroup g = libcrtx_utility_getselectedunits();
 
-	nextParam = StringWord( EventChatMessage(false), 2 );
+	nextParam = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
 	if( nextParam != "" ) {
 		angleToFace = StringToFixed( nextParam );
 	}
@@ -438,9 +438,9 @@ bool libcrtx_command_height(bool testConds, bool runActions) {
 	fixed time;
 	string nextParam;
 	unitgroup g = libcrtx_utility_getselectedunits();
-	nextParam = StringWord( EventChatMessage(false), 2 );
+	nextParam = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
 	height = StringToFixed( nextParam );
-	nextParam = StringWord( EventChatMessage(false), 3 );
+	nextParam = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 3 );
 	time = StringToFixed( nextParam );
 
 	UnitGroupLoopBegin(g);
@@ -458,8 +458,8 @@ bool libcrtx_command_addweapon(bool testConds, bool runActions) {
 	string weapon;
 	string turret;
 	unitgroup g = libcrtx_utility_getselectedunits();
-	weapon = StringWord( EventChatMessage(false), 2 );
-	turret = StringWord( EventChatMessage(false), 3 );
+	weapon = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
+	turret = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 3 );
 	
 	if( turret == "" ) {
 		turret = "CTurret";
@@ -484,7 +484,7 @@ bool libcrtx_command_addweapon(bool testConds, bool runActions) {
 bool libcrtx_command_removeweapon(bool testConds, bool runActions) {
 	string weapon;
 	unitgroup g = libcrtx_utility_getselectedunits();
-	weapon = StringWord( EventChatMessage(false), 2 );
+	weapon = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
 
 	// use toolkit on weapon
 	weapon = libcrtx_toolkit_getweapon(weapon);
@@ -505,7 +505,7 @@ bool libcrtx_command_removeweapon(bool testConds, bool runActions) {
 bool libcrtx_command_maxlife(bool testConds, bool runActions) {
 	fixed val;
 	unitgroup g = libcrtx_utility_getselectedunits();
-	val = StringToFixed(StringWord( EventChatMessage(false), 2 ));
+	val = StringToFixed(StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 ));
 
 	if( val <= 0 ) { // Bad input!
 		return true;
@@ -524,7 +524,7 @@ bool libcrtx_command_maxlife(bool testConds, bool runActions) {
 bool libcrtx_command_maxenergy(bool testConds, bool runActions) {
 	fixed val;
 	unitgroup g = libcrtx_utility_getselectedunits();
-	val = StringToFixed(StringWord( EventChatMessage(false), 2 ));
+	val = StringToFixed(StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 ));
 
 	if( val <= 0 ) { // Bad input!
 		return true;
@@ -543,7 +543,7 @@ bool libcrtx_command_maxenergy(bool testConds, bool runActions) {
 bool libcrtx_command_maxshields(bool testConds, bool runActions) {
 	fixed val;
 	unitgroup g = libcrtx_utility_getselectedunits();
-	val = StringToFixed(StringWord( EventChatMessage(false), 2 ));
+	val = StringToFixed(StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 ));
 
 	if( val <= 0 ) { // Bad input!
 		return true;
@@ -562,7 +562,7 @@ bool libcrtx_command_maxshields(bool testConds, bool runActions) {
 bool libcrtx_command_speed(bool testConds, bool runActions) {
 	fixed val;
 	unitgroup g = libcrtx_utility_getselectedunits();
-	val = StringToFixed(StringWord( EventChatMessage(false), 2 ));
+	val = StringToFixed(StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 ));
 
 	if( val <= 0 ) { // Bad input!
 		return true;
@@ -581,7 +581,7 @@ bool libcrtx_command_speed(bool testConds, bool runActions) {
 bool libcrtx_command_kills(bool testConds, bool runActions) {
 	fixed val;
 	unitgroup g = libcrtx_utility_getselectedunits();
-	val = StringToFixed(StringWord( EventChatMessage(false), 2 ));
+	val = StringToFixed(StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 ));
 
 	if( val <= 0 ) { // Bad input!
 		return true;
@@ -603,7 +603,7 @@ bool libcrtx_command_level(bool testConds, bool runActions) {
 
 	unitgroup g = libcrtx_utility_getselectedunits();
 
-	val = StringToInt(StringWord( EventChatMessage(false), 2 ));
+	val = StringToInt(StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 ));
 
 	if( val <= 0 || val > libcrtx_toolkit_getmaxlevel()) { // Bad input!
 		return true;
@@ -640,7 +640,7 @@ bool libcrtx_command_adddamage(bool testConds, bool runActions) {
 	int looperMan;
 	int val;
 	unitgroup g = libcrtx_utility_getselectedunits();
-	val = StringToInt(StringWord( EventChatMessage(false), 2 ));
+	val = StringToInt(StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 ));
 	if(val > 9999) {
 	   val = 9999;
 	}
@@ -694,7 +694,7 @@ bool libcrtx_command_removedamage(bool testConds, bool runActions) {
 	int looperMan;
 	int val;
 	unitgroup g = libcrtx_utility_getselectedunits();
-	val = StringToInt(StringWord( EventChatMessage(false), 2 ));
+	val = StringToInt(StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 ));
 	if(val > 9999) {
 	   val = 9999;
 	}
@@ -745,8 +745,8 @@ bool libcrtx_command_attach(bool testConds, bool runActions) {
       	string apoint;
 	string scope;
 	unitgroup g = libcrtx_utility_getselectedunits();
-	actr = StringWord( EventChatMessage(false), 2 );
-      	apoint = StringWord( EventChatMessage(false), 3 );
+	actr = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
+      	apoint = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 3 );
 
 	// Look up this Actor and verify it is not CActorEventMacro
 	if( !CatalogEntryIsValid(c_gameCatalogActor, actr) ) {
@@ -773,7 +773,7 @@ bool libcrtx_command_attach(bool testConds, bool runActions) {
 bool libcrtx_command_removebehavior(bool testConds, bool runActions) {
 	string val;
 	unitgroup g = libcrtx_utility_getselectedunits();
-	val = StringWord( EventChatMessage(false), 2 );
+	val = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
 
 	UnitGroupLoopBegin(g);
 	while(!UnitGroupLoopDone())
@@ -788,7 +788,7 @@ bool libcrtx_command_removebehavior(bool testConds, bool runActions) {
 bool libcrtx_command_addbehavior(bool testConds, bool runActions) {
 	string val;
 	unitgroup g = libcrtx_utility_getselectedunits();
-	val = StringWord( EventChatMessage(false), 2 );
+	val = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
 
 	if( libcrtx_toolkit_isrestrictedbehavior(val) ) {
 		return true;
@@ -1001,10 +1001,10 @@ bool libcrtx_command_play(bool testConds, bool runActions) {
 	string val;
 	int flags = 0;
 	unitgroup g = libcrtx_utility_getselectedunits();
-	val = StringWord( EventChatMessage(false), 2 );
+	val = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
 	val = StringCase(StringSub(val, 1, 1), true) + StringSub(val, 2, StringLength(val));
 
-	if( StringEqual(StringWord( EventChatMessage(false), 3), "loop", false) ) {
+	if( StringEqual(StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 3), "loop", false) ) {
 		flags = c_animFlagPlayForever;
 	}
 
@@ -1025,7 +1025,7 @@ bool libcrtx_command_play(bool testConds, bool runActions) {
 bool libcrtx_command_renameall(bool testConds, bool runActions) {
 	string val;
 	unitgroup g = libcrtx_utility_getselectedunits();
-	val = EventChatMessage(false);
+	val = libcrtx_chat_get_parse_line(EventPlayer());
 	val = StringSub( val, StringFind(val, " ", c_stringCase)+1, StringLength(val)); // The remainder of the chat message.	
 
 	UnitGroupLoopBegin(g);

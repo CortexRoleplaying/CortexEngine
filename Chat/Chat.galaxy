@@ -10,6 +10,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+string[libcrtx_max_players] libcrtx_chat_current_msg;
 bank[libcrtx_max_players] libcrtx_alias_banks;
 string libcrtx_command_list;
 
@@ -79,3 +80,6 @@ string libcrtx_alias_getsource(string aliasName)
 {
 	return BankValueGetAsString( libcrtx_alias_banks[EventPlayer()], "aliases", aliasName );
 }
+
+include "Cortex/Chat/ChatParser.galaxy"
+include "Cortex/Chat/ChatHandler.galaxy"
