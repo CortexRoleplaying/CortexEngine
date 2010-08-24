@@ -644,10 +644,11 @@ bool libcrtx_command_adddamage(bool testConds, bool runActions) {
 	if(val > 9999) {
 	   val = 9999;
 	}
-	// Temporary exit until the global command queue is set up. When that's implemented, negative values should 
-	// call the removedamage command's function, passing it the parameter through the queue. -F
+
 	if(val < 0) {
-		return false;
+		// Use @removedamage and redirect the command.
+		libcrtx_chat_redirect_command( EventPlayer(), "@removedamage", IntToString(AbsI(val)) );
+		return true;
 	}
 
 	UnitGroupLoopBegin(g);
@@ -698,10 +699,11 @@ bool libcrtx_command_removedamage(bool testConds, bool runActions) {
 	if(val > 9999) {
 	   val = 9999;
 	}
-	// Temporary exit until the global command queue is set up. When that's implemented, negative values should 
-	// call the adddamage command's function, passing it the parameter through the queue. -F
+
 	if(val < 0) {
-		return false;
+		// Use @adddamage and redirect the command.
+		libcrtx_chat_redirect_command( EventPlayer(), "@adddamage", IntToString(AbsI(val)) );
+		return true;
 	}
 
 	UnitGroupLoopBegin(g);
