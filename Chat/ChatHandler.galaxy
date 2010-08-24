@@ -120,6 +120,18 @@ bool libcrtx_chat_parsechat(int lp_player, string lp_message, int lp_recursionLi
 		return true;
 	}
 
+	// Check every word for aliases.
+	x = 2;
+	while( StringWord(lp_message, x) != "" ) {
+		s = StringWord(lp_message, x);
+		if( libcrtx_alias_exists(s) ) { 
+			lp_message = StringReplaceWord( lp_message, s, libcrtx_alias_getsource(s), c_stringReplaceAll, false );
+			libcrtx_chat_parsechat( lp_player, lp_message, lp_recursionLimit - 1 );
+			return true;
+		}
+		x = x + 1;
+	}
+
 	// convert to lowercase.
 	sub = StringCase(sub, false);
 
