@@ -41,10 +41,12 @@ bool libcrtx_chat_parsechat(int lp_player, string lp_message, int lp_recursionLi
 	bool aliasCreate;
 	bool commandFound = false;
 
-	if( lp_recursionLimit == 50 ) {
+	if( lp_recursionLimit == libcrtx_chat_recursion_limit ) {
 		// This is the original command as issued before it's broken down.
 		// Reset our context to the default.
 		libcrtx_chat_set_context( lp_player, libcrtx_utility_getselectedunits() );
+		libcrtx_variable_assign_group( lp_player, libcrtx_variable_name_original_selection, libcrtx_utility_getselectedunits() );
+		libcrtx_variable_assign_group( lp_player, libcrtx_variable_name_all_spawned, UnitGroupEmpty() );
 	}
 	
 	if( lp_recursionLimit == 0 ) {

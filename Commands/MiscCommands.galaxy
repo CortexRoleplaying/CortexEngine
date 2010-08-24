@@ -1040,6 +1040,16 @@ bool libcrtx_command_renameall(bool testConds, bool runActions) {
 	return true;
 }
 
+bool libcrtx_command_context(bool testConds, bool runActions) {
+	string val = libcrtx_chat_get_parse_line(EventPlayer());
+	val = StringWord( val, 2 );
+
+	if( libcrtx_variable_exists( EventPlayer(), val, libcrtx_variable_type_unitgroup ) ) {
+		libcrtx_chat_set_context(EventPlayer(), libcrtx_variable_get_group(EventPlayer(), val));
+	}
+
+	return true;
+}
 
 
 

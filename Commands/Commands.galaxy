@@ -35,6 +35,7 @@ void libcrtx_commands_init()
 	libcrtx_command_create("roll", "libcrtx_command_roll");
 
 	// unit commands
+	libcrtx_command_create("@context", "libcrtx_command_context");
 	libcrtx_command_create("@spawn", "libcrtx_command_spawn");
 	libcrtx_command_create("@kill", 	"libcrtx_command_kill");
 	libcrtx_command_create("@remove", "libcrtx_command_remove");

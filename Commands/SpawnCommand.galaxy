@@ -90,6 +90,7 @@ void libcrtx_command_spawn_execute()
 	string uType;
 	unit u;
 	point p;
+	unitgroup g;
 	if( libcrtx_command_spawn_instances[EventPlayer()].count == 0 ) {
 		return; // count == 0, don't bother.
 	}
@@ -121,6 +122,9 @@ void libcrtx_command_spawn_execute()
 	UnitCreate( libcrtx_command_spawn_instances[EventPlayer()].count, uType, c_unitCreateIgnorePlacement, libcrtx_command_spawn_instances[EventPlayer()].player, p, 270.0);
 
 	libcrtx_variable_assign_group( EventPlayer(), libcrtx_variable_name_last_spawned, UnitLastCreatedGroup() );
+	g = libcrtx_variable_get_group( EventPlayer(), libcrtx_variable_name_all_spawned);
+	libNtve_gf_AddUnitGroupToUnitGroup( UnitLastCreatedGroup(), g );
+	libcrtx_variable_assign_group( EventPlayer(), libcrtx_variable_name_all_spawned, g );
 	libcrtx_chat_set_context( EventPlayer(), UnitLastCreatedGroup() );
 }
 
