@@ -119,6 +119,9 @@ void libcrtx_command_spawn_execute()
 	
 	//libcrtx_debug("creating " + IntToString(libcrtx_command_spawn_instances[EventPlayer()].count) + " " + libcrtx_command_spawn_instances[EventPlayer()].unitType);
 	UnitCreate( libcrtx_command_spawn_instances[EventPlayer()].count, uType, c_unitCreateIgnorePlacement, libcrtx_command_spawn_instances[EventPlayer()].player, p, 270.0);
+
+	libcrtx_variable_assign_group( EventPlayer(), libcrtx_variable_name_last_spawned, UnitLastCreatedGroup() );
+	libcrtx_chat_set_context( EventPlayer(), UnitLastCreatedGroup() );
 }
 
 bool libcrtx_command_spawn(bool testConds, bool runActions)

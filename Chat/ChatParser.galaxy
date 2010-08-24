@@ -12,6 +12,9 @@
 
 const int libcrtx_chat_recursion_limit = 50;
 
+// Context
+unitgroup[libcrtx_max_players] libcrtx_chat_current_context;
+
 // Parse Lines:
 // These commands are the basic, Cortex-supplied commands and language syntax.
 // Ex: sp 3 marine; sp immortal; translates to two parse lines:
@@ -35,4 +38,15 @@ bool libcrtx_chat_parsechat(int lp_player, string lp_message, int lp_recursionLi
 void libcrtx_chat_redirect_command(int player, string command, string params)
 {
 	libcrtx_chat_parsechat(player, command + " " + params, libcrtx_chat_recursion_limit);
+}
+
+// Set the current context of a command for a player
+void libcrtx_chat_set_context(int player, unitgroup c)
+{
+	libcrtx_chat_current_context[player] = c;
+}
+
+unitgroup libcrtx_chat_get_context(int player)
+{
+	return libcrtx_chat_current_context[player];
 }

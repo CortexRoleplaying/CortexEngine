@@ -71,5 +71,6 @@ string libcrtx_getspawnertype()
 // Footer includes due to required things being in this file. :(
 include "Cortex/Common/Debug.galaxy"
 include "Cortex/Common/Settings.galaxy"
+include "Cortex/Common/Variables.galaxy"
 include "Cortex/Common/Admin.galaxy"
 include "Cortex/Common/Utility.galaxy"

@@ -1,0 +1,59 @@
+// Cortex SC2 Roleplaying Engine
+// Copyright (C) 2009-2010 <http://www.cortexrp.com/>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; version 2 of the License.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// Some reserved variable names.
+const string libcrtx_variable_name_last_spawned = "LastSpawned";
+
+// Supported variable types
+const int libcrtx_variable_type_int = 0;
+const int libcrtx_variable_type_fixed = 1;
+const int libcrtx_variable_type_unitgroup = 2;
+const int libcrtx_variable_type_string = 3;
+
+// Builds the internal data-table storage name for a variable owned by a player with a specific name.
+static string libcrtx_variable_get_storage_name(int player, string name)
+{
+	return "variable_" + IntToString(player) + "_" + name;
+}
+
+// Marks a variable as having a specific type.
+static void libcrtx_variable_assign_type(int player, string name, int type)
+{
+	DataTableSetInt( true, libcrtx_variable_get_storage_name(player, name) + "_type", type);
+}
+
+// Returns whether or not a variable exists, owned by the correct player, and having the correct type.
+bool libcrtx_variable_exists(int player, string name, int type)
+{
+	if( !DataTableValueExists(true, libcrtx_variable_get_storage_name(player, name) + "_type") ) {
+		return false;
+	}
+
+	if( DataTableGetInt( true, libcrtx_variable_get_storage_name(player, name) + "_type" ) == type ) {
+		return true;
+	}
+
+	return false;
+}
+
+// Returns the type of the variable
+int libcrtx_variable_get_type(int player, string name)
+{
+	return DataTableGetInt( true, libcrtx_variable_get_storage_name(player, name) + "_type");
+}
+
+// Assigns/Creates a variable to be of type unitgroup and have a value of unitgroup g. 
+void libcrtx_variable_assign_group(int player, string name, unitgroup g)
+{
+	libcrtx_variable_assign_type( player, name, libcrtx_variable_type_unitgroup );
+	DataTableSetUnitGroup( true, libcrtx_variable_get_storage_name(player, name), g);
+}
