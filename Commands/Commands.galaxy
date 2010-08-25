@@ -13,7 +13,7 @@
 include "Cortex/Commands/SharedData.galaxy"
 include "Cortex/Commands/MainCommands.galaxy"
 include "Cortex/Commands/SpawnCommand.galaxy"
-include "Cortex/Commands/MiscCommands.galaxy"
+include "Cortex/Commands/UnitCommands.galaxy"
 include "Cortex/Commands/ChatCommands.galaxy"
 include "Cortex/Commands/AdminCommands.galaxy"
 include "Cortex/Commands/AliasCommands.galaxy"

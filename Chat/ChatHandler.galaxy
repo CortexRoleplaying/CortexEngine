@@ -83,7 +83,7 @@ bool libcrtx_chat_parsechat(int lp_player, string lp_message, int lp_recursionLi
 	}
 	
 	if( lp_recursionLimit == 0 ) {
-		return true;
+		return false;
 	}
 	lp_recursionLimit = lp_recursionLimit - 1;
 
