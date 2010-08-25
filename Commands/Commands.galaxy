@@ -33,6 +33,7 @@ void libcrtx_commands_init()
 	libcrtx_command_create("zoom", "libcrtx_command_zoom");
 	libcrtx_command_create("omega", "libcrtx_command_omega");
 	libcrtx_command_create("roll", "libcrtx_command_roll");
+	libcrtx_command_create("var", "libcrtx_command_var");
 
 	// unit commands
 	libcrtx_command_create("@context", "libcrtx_command_context");

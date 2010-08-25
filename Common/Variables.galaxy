@@ -14,6 +14,7 @@
 const string libcrtx_variable_name_last_spawned = "LastSpawned";
 const string libcrtx_variable_name_original_selection = "Selection";
 const string libcrtx_variable_name_all_spawned = "AllSpawned";
+const string libcrtx_variable_name_return = "ReturnValue"; // This variable is used for internal stuff.
 
 // Supported variable types
 const int libcrtx_variable_type_int = 0;

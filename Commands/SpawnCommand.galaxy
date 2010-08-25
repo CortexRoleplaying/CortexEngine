@@ -126,6 +126,9 @@ void libcrtx_command_spawn_execute()
 	libNtve_gf_AddUnitGroupToUnitGroup( UnitLastCreatedGroup(), g );
 	libcrtx_variable_assign_group( EventPlayer(), libcrtx_variable_name_all_spawned, g );
 	libcrtx_chat_set_context( EventPlayer(), UnitLastCreatedGroup() );
+
+	// Set return value
+	libcrtx_variable_assign_group( EventPlayer(), libcrtx_variable_name_return, UnitLastCreatedGroup() );
 }
 
 bool libcrtx_command_spawn(bool testConds, bool runActions)

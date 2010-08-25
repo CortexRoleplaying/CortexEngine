@@ -167,3 +167,35 @@ bool libcrtx_command_roll(bool testConds, bool runActions) {
 	
 	return true;
 }
+
+bool libcrtx_command_var(bool check, bool run)
+{
+	string command;
+	string var;
+	int equalPos;
+	int type;
+	string line = libcrtx_chat_get_parse_line(EventPlayer());
+	
+	var = StringWord( line, 2 );
+	var = libcrtx_string_trim(var);
+	
+	// Locate the equal sign!
+	equalPos = StringFind( line, "=", c_stringCase );
+	if( equalPos <= 0 ) {
+		return true;
+	}
+
+	command = StringSub( line, equalPos+1, StringLength(line));
+	command = libcrtx_string_trim(command);
+	
+	// Execute the command.
+	libcrtx_chat_redirect_command( EventPlayer(), command, "" );
+
+	// Now check the return value.
+	type = libcrtx_variable_get_type( EventPlayer(), libcrtx_variable_name_return);
+	if( type == libcrtx_variable_type_unitgroup ) {
+		libcrtx_variable_assign_group( EventPlayer(), var, libcrtx_variable_get_group(EventPlayer(), libcrtx_variable_name_return));
+	}
+	
+	return true;
+}
