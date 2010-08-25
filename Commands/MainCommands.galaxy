@@ -195,6 +195,21 @@ bool libcrtx_command_var(bool check, bool run)
 	type = libcrtx_variable_get_type( EventPlayer(), libcrtx_variable_name_return);
 	if( type == libcrtx_variable_type_unitgroup ) {
 		libcrtx_variable_assign_group( EventPlayer(), var, libcrtx_variable_get_group(EventPlayer(), libcrtx_variable_name_return));
+	} else if( type == libcrtx_variable_type_string ) {
+		libcrtx_variable_assign_string( EventPlayer(), var, libcrtx_variable_get_string(EventPlayer(), libcrtx_variable_name_return));
+	} else if( type == libcrtx_variable_type_fixed ) {
+		libcrtx_variable_assign_fixed( EventPlayer(), var, libcrtx_variable_get_fixed(EventPlayer(), libcrtx_variable_name_return));
+	} else if( type == libcrtx_variable_type_int ) {
+		libcrtx_variable_assign_int( EventPlayer(), var, libcrtx_variable_get_int(EventPlayer(), libcrtx_variable_name_return));
+	} else if( type == libcrtx_variable_type_none) {
+		// No return value. Perhaps we have a literal?
+		if( StringContains( command, ".", c_stringAnywhere, c_stringCase ) && StringToFixed(command) != StringToInt(command) ) {
+			libcrtx_variable_assign_fixed( EventPlayer(), var, StringToFixed(command) );
+		} else if( StringToInt(command) != 0 ) {
+			libcrtx_variable_assign_int( EventPlayer(), var, StringToInt(command) );
+		} else if( StringLength(command) > 0 ) {
+			libcrtx_variable_assign_string( EventPlayer(), var, command );
+		}
 	}
 	
 	return true;

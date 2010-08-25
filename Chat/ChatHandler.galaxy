@@ -28,12 +28,45 @@ void libcrtx_chat_init()
 	}
 }
 
+string libcrtx_chat_variablereplace( int player, string message )
+{
+	string s;
+	string v;
+	int i = 1;
+	
+	while( StringWord( message, i ) != "" ) {
+		s = StringWord(message, i);
+		if( StringSub(s, 1, 1) == "$" ) {
+			// Variable!
+			v = StringSub(s, 2, StringLength(s));
+			if( libcrtx_variable_exists( player, v, libcrtx_variable_type_int ) ) {
+				message = StringReplaceWord( message, s, IntToString(libcrtx_variable_get_int(player, v)), c_stringReplaceAll, c_stringCase );
+				return libcrtx_chat_variablereplace(player, message);
+			} else if( libcrtx_variable_exists( player, v, libcrtx_variable_type_fixed ) ) {
+				message = StringReplaceWord( message, s, FixedToString(libcrtx_variable_get_fixed(player, v), c_fixedPrecisionAny), c_stringReplaceAll, c_stringCase );
+				return libcrtx_chat_variablereplace(player, message);
+			} if( libcrtx_variable_exists( player, v, libcrtx_variable_type_string ) ) {
+				message = StringReplaceWord( message, s, libcrtx_variable_get_string(player, v), c_stringReplaceAll, c_stringCase );
+				return libcrtx_chat_variablereplace(player, message);
+			} else {
+				message = StringReplaceWord( message, s, "", c_stringReplaceAll, c_stringCase );
+				return libcrtx_chat_variablereplace(player, message);
+			}
+		}
+		i = i + 1;
+	}	
+
+
+	return message;
+}
+
 bool libcrtx_chat_parsechat(int lp_player, string lp_message, int lp_recursionLimit)
 {
 	trigger t;
 	int spaceIndex;
 	int currentCmd = 0;
 	string sub = "";
+	string rep;
 	int l;
 	int x;
 	string c;
@@ -138,12 +171,23 @@ bool libcrtx_chat_parsechat(int lp_player, string lp_message, int lp_recursionLi
 		x = x + 1;
 	}
 
+	// Out of aliases, find/convert all variables
+	rep = libcrtx_chat_variablereplace( lp_player, lp_message );
+	if( rep != lp_message ) {
+		lp_message = rep;
+		libcrtx_chat_parsechat( lp_player, lp_message, lp_recursionLimit - 1 );
+		return true;
+	}
+
 	// convert to lowercase.
 	sub = StringCase(sub, false);
 
 	t = DataTableGetTrigger( true, "libcrtx_commands_" + sub );
 	if( t )
 	{
+		// Reset return value.
+		libcrtx_variable_delete(lp_player, libcrtx_variable_name_return);
+
 		libcrtx_chat_set_parse_line( lp_player, lp_message );
 		TriggerExecute(t, false, false);
 		commandFound = true;
