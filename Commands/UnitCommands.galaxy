@@ -41,8 +41,8 @@ bool libcrtx_command_removearea(bool testConds, bool runActions) {
         radius = 5.0;
       }
 
-	g = UnitGroup( null, c_playerAny, RegionCircle( UnitGetPosition(libcrtx_utility_getspawner()), radius), null, 0 );
-      g = libcrtx_utility_enforce_unit_permissions(g);
+	g = UnitGroup( null, c_playerAny, RegionCircle( UnitGetPosition(libcrtx_spawner()), radius), null, 0 );
+      g = libcrtx_enforce_unit_permissions(g);
 
 	UnitGroupLoopBegin(g);
 
@@ -80,14 +80,14 @@ bool libcrtx_command_scale(bool testConds, bool runActions) {
 	}
 	
 	// Verify bounds.
-	scale = libcrtx_minFixed( libcrtx_setting_getfixed(libcrtx_setting_fixed_maxscale), scale );
-	scale = libcrtx_maxFixed( libcrtx_setting_getfixed(libcrtx_setting_fixed_minscale), scale );
+	scale = MinF( libcrtx_setting_getfixed(libcrtx_setting_fixed_maxscale), scale );
+	scale = MaxF( libcrtx_setting_getfixed(libcrtx_setting_fixed_minscale), scale );
 	
-	scaleY = libcrtx_minFixed( libcrtx_setting_getfixed(libcrtx_setting_fixed_maxscale), scaleY );
-	scaleY = libcrtx_maxFixed( libcrtx_setting_getfixed(libcrtx_setting_fixed_minscale), scaleY );
+	scaleY = MinF( libcrtx_setting_getfixed(libcrtx_setting_fixed_maxscale), scaleY );
+	scaleY = MaxF( libcrtx_setting_getfixed(libcrtx_setting_fixed_minscale), scaleY );
 	
-	scaleZ = libcrtx_minFixed( libcrtx_setting_getfixed(libcrtx_setting_fixed_maxscale), scaleZ );
-	scaleZ = libcrtx_maxFixed( libcrtx_setting_getfixed(libcrtx_setting_fixed_minscale), scaleZ );
+	scaleZ = MinF( libcrtx_setting_getfixed(libcrtx_setting_fixed_maxscale), scaleZ );
+	scaleZ = MaxF( libcrtx_setting_getfixed(libcrtx_setting_fixed_minscale), scaleZ );
 
 	// Translate to Blizzard SC2 system.
 	scale = scale * 100;
@@ -108,7 +108,7 @@ bool libcrtx_command_give(bool testConds, bool runActions) {
 	string nextParam;
 	unitgroup g = libcrtx_chat_get_context(EventPlayer());
 	nextParam = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
-	newOwner = libcrtx_utility_getplayerfromcolor(nextParam);
+	newOwner = libcrtx_color_to_player(nextParam);
 	if(newOwner == -1) { // invalid entry by user
 		return true;
 	}
@@ -129,7 +129,7 @@ bool libcrtx_command_givecolor(bool testConds, bool runActions) {
 	string nextParam;
 	unitgroup g = libcrtx_chat_get_context(EventPlayer());
 	nextParam = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
-	newOwner = libcrtx_utility_getplayerfromcolor(nextParam);
+	newOwner = libcrtx_color_to_player(nextParam);
 	if(newOwner == -1) { // invalid entry by user
 		return true;
 	}
@@ -149,7 +149,7 @@ bool libcrtx_command_color(bool testConds, bool runActions) {
 	string nextParam;
 	unitgroup g = libcrtx_chat_get_context(EventPlayer());
 	nextParam = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
-	newColour = libcrtx_utility_getplayerfromdefaultcolor(nextParam);
+	newColour = libcrtx_color_to_player(nextParam);
 	if(newColour == -1) { // invalid entry by user
 		return true;
 	}
@@ -421,7 +421,7 @@ bool libcrtx_command_face(bool testConds, bool runActions) {
 	{
 		// face spawner
 		if( nextParam == "" ) {
-			libNtve_gf_MakeUnitFacePoint( UnitGroupLoopCurrent(), UnitGetPosition(libcrtx_utility_getspawner()), 0.0 );
+			libNtve_gf_MakeUnitFacePoint( UnitGroupLoopCurrent(), UnitGetPosition(libcrtx_spawner()), 0.0 );
 		} else {
 			// face angle
 			UnitSetFacing( UnitGroupLoopCurrent(), angleToFace, 0.0 );

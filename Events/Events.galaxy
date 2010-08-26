@@ -32,7 +32,7 @@ bool libcrtx_event_map_init(bool checkConds, bool runActions) {
 		b = BankLoad( "CortexID", i );
 		x = BankValueGetAsString( b, "CortexID", "GUID" );
 		if( x == "" ) {
-			libcrtx_writetext(PlayerGroupAll(), libcrtx_utility_coloredplayername(i) + StringToText(" is playing for the first time today. Please welcome him and teach him how things work.") );
+			libcrtx_write_text(PlayerGroupAll(), libcrtx_colored_player_name(i) + StringToText(" is playing for the first time today. Please welcome him and teach him how things work.") );
 			// Set us up a new ID!
 			x = IntToString(RandomInt(10000, 500000));
 			BankValueSetFromString( b, "CortexID", "GUID", STARCODE_Encrypt(x, libcrtx_get_commitish()) );
@@ -56,7 +56,7 @@ bool libcrtx_event_dialog_clicked(bool checkConds, bool runActions) {
 	// Waygate teleport system
 	if( EventDialogControl() == libcrtx_waygate_dialogcontrol[EventPlayer()] ) {
 		// We must initiate teleport now!
-		g = libcrtx_utility_getselectedunits();
+		g = libcrtx_selected_units();
 		if( UnitGroupCount(g, c_unitCountAlive) > 0 ) {
 			i = 1;
 			while( i <= UnitGroupCount(g, c_unitCountAlive) ) {

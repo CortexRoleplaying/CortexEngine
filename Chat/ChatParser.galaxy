@@ -48,5 +48,5 @@ void libcrtx_chat_set_context(int player, unitgroup c)
 
 unitgroup libcrtx_chat_get_context(int player)
 {
-	return libcrtx_utility_enforce_unit_permissions(libcrtx_chat_current_context[player]);
+	return libcrtx_enforce_unit_permissions(libcrtx_chat_current_context[player]);
 }

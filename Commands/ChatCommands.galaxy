@@ -59,19 +59,19 @@ bool libcrtx_command_say(bool checkConds, bool runActions)
 	unit u;
 	text unitName;
 	text misc;
-	unitgroup g = libcrtx_utility_getselectedunits();
+	unitgroup g = libcrtx_chat_get_context(EventPlayer());
 	UnitGroupLoopBegin(g);
 	while(!UnitGroupLoopDone())
 	{
 		u = UnitGroupLoopCurrent();
-		unitName = libcrtx_utility_colortextbyplayer( EventPlayer(), libcrtx_get_name_from_unit(u));
+		unitName = libcrtx_color_text_by_player( EventPlayer(), libcrtx_get_name_from_unit(u));
 		
 		s = libcrtx_chat_get_parse_line(EventPlayer());
 		s = StringSub( s, StringFind(s, " ", c_stringCase)+1, StringLength(s)); // The remainder of the chat message.
 		s = ": " + s;
 		misc = unitName + StringToText(s);
 		
-		libcrtx_writetext(PlayerGroupAll(), misc);
+		libcrtx_write_text(PlayerGroupAll(), misc);
 
 		UnitGroupLoopStep();
 	}
@@ -88,7 +88,7 @@ bool libcrtx_command_sayoverhead(bool checkConds, bool runActions)
 	unit u;
 	text unitName;
 	text misc;
-	unitgroup g = libcrtx_utility_getselectedunits();
+	unitgroup g = libcrtx_chat_get_context(EventPlayer());
 	UnitGroupLoopBegin(g);
 	while(!UnitGroupLoopDone())
 	{
@@ -96,7 +96,7 @@ bool libcrtx_command_sayoverhead(bool checkConds, bool runActions)
 		
 		s = libcrtx_chat_get_parse_line(EventPlayer());
 		s = StringSub( s, StringFind(s, " ", c_stringCase)+1, StringLength(s)); // The remainder of the chat message.
-		misc = libcrtx_utility_colortextbyplayer(EventPlayer(), StringToText(s));
+		misc = libcrtx_color_text_by_player(EventPlayer(), StringToText(s));
 
 		if( UnitGetCustomValue( UnitGroupLoopCurrent(), libcrtx_unit_custom_value_texttag ) != 0.0 ) {
 			TextTagShow(  FixedToInt(UnitGetCustomValue( UnitGroupLoopCurrent(), libcrtx_unit_custom_value_texttag )), PlayerGroupAll(), false );
@@ -130,7 +130,7 @@ bool libcrtx_command_setname(bool checkConds, bool runActions)
 		return true;
 	}
 	
-	g = libcrtx_utility_getselectedunits();
+	g = libcrtx_chat_get_context(EventPlayer());
 	UnitGroupLoopBegin(g);
 	while(!UnitGroupLoopDone())
 	{

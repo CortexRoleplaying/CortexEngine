@@ -77,8 +77,8 @@ bool libcrtx_chat_parsechat(int lp_player, string lp_message, int lp_recursionLi
 	if( lp_recursionLimit == libcrtx_chat_recursion_limit ) {
 		// This is the original command as issued before it's broken down.
 		// Reset our context to the default.
-		libcrtx_chat_set_context( lp_player, libcrtx_utility_getselectedunits() );
-		libcrtx_variable_assign_group( lp_player, libcrtx_variable_name_original_selection, libcrtx_utility_getselectedunits() );
+		libcrtx_chat_set_context( lp_player, libcrtx_selected_units() );
+		libcrtx_variable_assign_group( lp_player, libcrtx_variable_name_original_selection, libcrtx_selected_units() );
 		libcrtx_variable_assign_group( lp_player, libcrtx_variable_name_all_spawned, UnitGroupEmpty() );
 	}
 	
@@ -110,13 +110,13 @@ bool libcrtx_chat_parsechat(int lp_player, string lp_message, int lp_recursionLi
 			} else {
 				c = StringSub(lp_message, l, StringLength(lp_message));
 			}
-			lp_message = libcrtx_string_trim( c );
+			lp_message = libcrtx_trim_string( c );
 			l = 1;
 			// This part finishes the recursion and runs us through the regular non-recursive parser.
 		} else if( s == ";" && StringSub(lp_message, x-1, x-1) != "\\" ) { 
 			// Everything from here on backwards, new command!
 			c = StringSub(lp_message, l, x-1);
-			c = libcrtx_string_trim( c );
+			c = libcrtx_trim_string( c );
 			libcrtx_chat_parsechat( lp_player, c, lp_recursionLimit );
 			l = x+1;
 		}
@@ -207,7 +207,7 @@ bool libcrtx_chat_receivedevent(bool testConds, bool runActions)
 	bool isCmd = false;
 	int triggerPlayer = EventPlayer();
 	string chatMsg = EventChatMessage(false);
-	chatMsg = libcrtx_string_trim(chatMsg);
+	chatMsg = libcrtx_trim_string(chatMsg);
 
 	if(!runActions)
 	{
@@ -221,11 +221,11 @@ bool libcrtx_chat_receivedevent(bool testConds, bool runActions)
 
 	if( !isCmd )
 	{
-		t = libcrtx_utility_colortextbyplayer( EventPlayer(), PlayerName( EventPlayer() ) + StringToText(" (OOC)") );
+		t = libcrtx_color_text_by_player( EventPlayer(), PlayerName( EventPlayer() ) + StringToText(" (OOC)") );
 		s = ": " + EventChatMessage(false);
 		t = t + StringToText(s);
 		// And now we write the pretty OOC chat!
-		libcrtx_writetext(PlayerGroupAll(), t);
+		libcrtx_write_text(PlayerGroupAll(), t);
 		
 	}
 	return true;			

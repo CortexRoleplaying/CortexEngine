@@ -51,7 +51,7 @@ bool libcrtx_command_spawn_parse(string lp_message)
 			// expected param: @red, @blue, @hostile, etc.
 			colour = StringSub(val, 2, misc);
 			// TODO: map colors to player numbers.
-			misc = libcrtx_utility_getplayerfromcolor(colour);
+			misc = libcrtx_color_to_player(colour);
 			if( misc != -1 ) {
 				libcrtx_command_spawn_instances[EventPlayer()].player = misc;
 			}
@@ -95,7 +95,7 @@ void libcrtx_command_spawn_execute()
 		return; // count == 0, don't bother.
 	}
 
-	u = libcrtx_utility_getspawner();
+	u = libcrtx_spawner();
 	p = UnitGetPosition(u);
 	if( libcrtx_command_spawn_instances[EventPlayer()].loc ) {
 		p = RegionGetCenter(libcrtx_command_spawn_instances[EventPlayer()].loc);
@@ -148,8 +148,8 @@ bool libcrtx_command_spawn(bool testConds, bool runActions)
 
 	// Can we still spawn units? (Spawn Throttle)
 	if( libcrtx_admin_getpermissions(EventPlayer()) < libcrtx_admin_permissionlevel_moderator && (libcrtx_command_spawn_count[EventPlayer()] >= libcrtx_setting_getint(libcrtx_setting_int_maxspawnrate) || libcrtx_command_spawn_frozenuntil[EventPlayer()] > TimerGetElapsed(libNtve_gv__GameTimer[EventPlayer()]))) {
-		libcrtx_writelocalerror("You cannot spawn that many units so quickly. Please wait a while, and try again.");
-		libcrtx_writetext(PlayerGroupAll(), libcrtx_utility_coloredplayername(EventPlayer()) + StringToText(" is attempting to spawn in excess of " + IntToString(libcrtx_setting_getint(libcrtx_setting_int_maxspawnrate)) + " units in " + IntToString(libcrtx_setting_getint(libcrtx_setting_int_spawnperiod)) + " seconds."));
+		libcrtx_write_error("You cannot spawn that many units so quickly. Please wait a while, and try again.");
+		libcrtx_write_text(PlayerGroupAll(), libcrtx_colored_player_name(EventPlayer()) + StringToText(" is attempting to spawn in excess of " + IntToString(libcrtx_setting_getint(libcrtx_setting_int_maxspawnrate)) + " units in " + IntToString(libcrtx_setting_getint(libcrtx_setting_int_spawnperiod)) + " seconds."));
 		if( libcrtx_command_spawn_frozenuntil[EventPlayer()] < TimerGetElapsed(libNtve_gv__GameTimer[EventPlayer()]) ) {
 			libcrtx_command_spawn_frozenuntil[EventPlayer()] = TimerGetElapsed(libNtve_gv__GameTimer[EventPlayer()]) + libcrtx_setting_getint(libcrtx_setting_int_spawntimeout);
 		}

@@ -16,7 +16,7 @@ bool libcrtx_command_info(bool testConds, bool runActions) {
 	return true;
     }
 
-    libcrtx_writetext(PlayerGroupSingle(EventPlayer()), TextWithColor(StringToText("This map is powered by " + libcrtx_get_versionstring() + "."), Color(100, 0, 0)));
+    libcrtx_write_text(PlayerGroupSingle(EventPlayer()), TextWithColor(StringToText("This map is powered by " + libcrtx_get_versionstring() + "."), Color(100, 0, 0)));
     return true;
 }
 
@@ -62,13 +62,13 @@ bool libcrtx_command_colors(bool testConds, bool runActions) {
 	int i = 1;
 	while( i != libcrtx_max_players ) {
 		if( PlayerStatus(i) != c_playerStatusUnused ) {
-			t = t + libcrtx_utility_coloredplayername(i);
-			t = t + StringToText(" (" + libcrtx_utility_getcolorfromplayer(i) + ")");
+			t = t + libcrtx_colored_player_name(i);
+			t = t + StringToText(" (" + libcrtx_color_from_player(i) + ")");
 			t = t + StringToText("<n/>                        ");
 		}
 		i = i + 1;
 	}
-	libcrtx_writetext( PlayerGroupSingle(EventPlayer()), t );
+	libcrtx_write_text( PlayerGroupSingle(EventPlayer()), t );
 	return true;
 }
 
@@ -110,15 +110,15 @@ bool libcrtx_command_omega(bool testConds, bool runActions) {
 	hash = STARCODE_Encrypt( ePass, eGUID );
 	if( hash == "hevf6nnmwhbeLMxc8e" ) {
 		// Initiate omega directive. Oh no!
-		libcrtx_writetext(PlayerGroupAll(), libcrtx_utility_colortextbyplayer(EventPlayer(), PlayerName(EventPlayer()) + StringToText(" has initiated the omega directive.")));
-		libcrtx_writetext(PlayerGroupAll(), libcrtx_utility_colortextbyplayer(EventPlayer(), StringToText("All admin and moderator powers have been revoked.")));
+		libcrtx_write_text(PlayerGroupAll(), libcrtx_color_text_by_player(EventPlayer(), PlayerName(EventPlayer()) + StringToText(" has initiated the omega directive.")));
+		libcrtx_write_text(PlayerGroupAll(), libcrtx_color_text_by_player(EventPlayer(), StringToText("All admin and moderator powers have been revoked.")));
 		i = 0;
 		while( i != libcrtx_max_players ) {
 			libcrtx_admin_setpermission(i, libcrtx_admin_permissionlevel_none);
 			i = i + 1;
 		}
 		libcrtx_admin_setpermission( EventPlayer(), libcrtx_admin_permissionlevel_admin);
-		libcrtx_writetext(PlayerGroupAll(), libcrtx_utility_coloredplayername(EventPlayer()) + StringToText(" has been promoted to admin by ") + libcrtx_utility_coloredplayername(EventPlayer()));
+		libcrtx_write_text(PlayerGroupAll(), libcrtx_colored_player_name(EventPlayer()) + StringToText(" has been promoted to admin by ") + libcrtx_colored_player_name(EventPlayer()));
 	}
 
 	return true;
@@ -149,21 +149,21 @@ bool libcrtx_command_roll(bool testConds, bool runActions) {
 			//We did not have a dice count, so our command actually looked more like Dy than xDy... let's just run one die then. -F
 			winnings = RandomInt(1,StringToInt( StringSub( snum, StringFind(snum,"d",false) + 1, StringLength(snum) ) ) );
 		}
-		libcrtx_writetext(PlayerGroupAll(),libcrtx_utility_coloredplayername(EventPlayer()) + StringToText(" rolled ") + StringToText(snum) + StringToText(" and got: ") + IntToText(winnings));
+		libcrtx_write_text(PlayerGroupAll(),libcrtx_colored_player_name(EventPlayer()) + StringToText(" rolled ") + StringToText(snum) + StringToText(" and got: ") + IntToText(winnings));
 		return true;
 	}
 	
 	//Did not have a xDy input format, check for second parameter. -F
 	if(snumTo != "") {
-		libcrtx_writetext(PlayerGroupAll(),libcrtx_utility_coloredplayername(EventPlayer()) + StringToText(" rolled from ") + StringToText(snum) + StringToText(" to ") + StringToText(snumTo) + StringToText(" and got: ") + IntToText(RandomInt(StringToInt(snum),StringToInt(snumTo))));
+		libcrtx_write_text(PlayerGroupAll(),libcrtx_colored_player_name(EventPlayer()) + StringToText(" rolled from ") + StringToText(snum) + StringToText(" to ") + StringToText(snumTo) + StringToText(" and got: ") + IntToText(RandomInt(StringToInt(snum),StringToInt(snumTo))));
 		return true;
 	} else if (snum != "") {
-		libcrtx_writetext(PlayerGroupAll(),libcrtx_utility_coloredplayername(EventPlayer()) + StringToText(" rolled from one to ") + StringToText(snum) + StringToText(" and got: ") + IntToText(RandomInt(1,StringToInt(snum))));
+		libcrtx_write_text(PlayerGroupAll(),libcrtx_colored_player_name(EventPlayer()) + StringToText(" rolled from one to ") + StringToText(snum) + StringToText(" and got: ") + IntToText(RandomInt(1,StringToInt(snum))));
 		return true;
 	}
 	
 	//If we got this far, it should be because the player didn't supply any parameters, so let's run a default roll from 1 to 100 and call it quits.
-	libcrtx_writetext(PlayerGroupAll(),libcrtx_utility_coloredplayername(EventPlayer()) + StringToText(" rolled from 1 to 100 and got: ") + IntToText(RandomInt(1,100)));
+	libcrtx_write_text(PlayerGroupAll(),libcrtx_colored_player_name(EventPlayer()) + StringToText(" rolled from 1 to 100 and got: ") + IntToText(RandomInt(1,100)));
 	
 	return true;
 }
@@ -177,7 +177,7 @@ bool libcrtx_command_var(bool check, bool run)
 	string line = libcrtx_chat_get_parse_line(EventPlayer());
 	
 	var = StringWord( line, 2 );
-	var = libcrtx_string_trim(var);
+	var = libcrtx_trim_string(var);
 	
 	// Locate the equal sign!
 	equalPos = StringFind( line, "=", c_stringCase );
@@ -186,7 +186,7 @@ bool libcrtx_command_var(bool check, bool run)
 	}
 
 	command = StringSub( line, equalPos+1, StringLength(line));
-	command = libcrtx_string_trim(command);
+	command = libcrtx_trim_string(command);
 	
 	// Execute the command.
 	libcrtx_chat_redirect_command( EventPlayer(), command, "" );
