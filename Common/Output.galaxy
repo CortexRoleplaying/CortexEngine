@@ -1,0 +1,77 @@
+// Cortex SC2 Roleplaying Engine
+// Copyright (C) 2009-2010 <http://www.cortexrp.com/>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; version 2 of the License.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+int libcrtx_output_dialog = 0;
+int libcrtx_output_messagearea = 0;
+
+const int libcrtx_output_maxmessages = 15;
+const int libcrtx_output_areawidth = 800;
+const int libcrtx_output_areaheight = 500;
+const int libcrtx_output_areaoffsetx = -200;
+const int libcrtx_output_areaoffsety = 220;
+
+
+text[libcrtx_output_maxmessages] libcrtx_output_messages;
+fixed[libcrtx_output_maxmessages] libcrtx_output_times;
+
+void libcrtx_output_init()
+{
+	libcrtx_output_dialog = DialogCreate(libcrtx_output_areawidth, libcrtx_output_areaheight, c_anchorTop, libcrtx_output_areaoffsetx, libcrtx_output_areaoffsety, true);
+	DialogSetImageVisible(libcrtx_output_dialog, false);
+	libcrtx_output_messagearea = libNtve_gf_CreateDialogItemLabel( libcrtx_output_dialog, libcrtx_output_areawidth, libcrtx_output_areaheight, c_anchorTopLeft, 0, 0, StringToText(""), Color(255, 255, 255), false, 0);
+	libNtve_gf_SetDialogItemStyle( libcrtx_output_messagearea, "ChatDisplay", PlayerGroupAll() );
+	DialogSetVisible( libcrtx_output_dialog, PlayerGroupAll(), true );
+	DialogControlSetVisible( libcrtx_output_messagearea, PlayerGroupAll(), true );
+}
+
+void libcrtx_output_refresh()
+{
+	text t;
+	int i;
+	fixed gt = libNtve_gf_GamePlayTime(1);
+	while( i != libcrtx_output_maxmessages ) {
+		if( libcrtx_output_messages[i] != null && gt - libcrtx_output_times[i] < 25 ) {
+			t = t + libcrtx_output_messages[i] + StringToText("<n/>");
+		}
+		i = i + 1;
+	}
+
+	DialogControlSetPropertyAsText( libcrtx_output_messagearea, c_triggerControlPropertyText, PlayerGroupAll(), t );
+}
+
+void libcrtx_output_addline(text t)
+{
+	int i;
+	// Find a place to fit us in.
+	while(i != libcrtx_output_maxmessages) {
+		if( libcrtx_output_messages[i] == null ) {
+			libcrtx_output_messages[i] = t;
+			libcrtx_output_times[i] = libNtve_gf_GamePlayTime(1);
+			libcrtx_output_refresh();
+			return;
+		}
+		i = i + 1;
+	} 
+
+	// We're full!
+	// Delete the last message and move everything back one to make room.
+	i = 1;
+	while(i != libcrtx_output_maxmessages) {
+		libcrtx_output_messages[i-1] = libcrtx_output_messages[i];
+		libcrtx_output_times[i-1] = libcrtx_output_times[i];
+		i = i + 1;
+	}
+
+	libcrtx_output_messages[ libcrtx_output_maxmessages-1 ] = t;
+	libcrtx_output_times[libcrtx_output_maxmessages-1] = libNtve_gf_GamePlayTime(1);
+	libcrtx_output_refresh();
+}
