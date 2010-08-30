@@ -182,3 +182,26 @@ bool libcrtx_command_seeall(bool testConds, bool runActions)
 	}
 	return true;	
 }
+
+
+bool libcrtx_command_smarthostile(bool check, bool run)
+{
+	string state;
+	state = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
+	if( libcrtx_admin_getpermissions( EventPlayer() ) < libcrtx_admin_permissionlevel_moderator ) {
+		return true;
+	}
+
+	if( state == "off" ) { 
+		libcrtx_ai_stop();
+	} else if( state == "on" ) {
+		libcrtx_ai_start();
+	} else {
+		if( libcrtx_ai_is_enabled() ) {
+			libcrtx_ai_stop();
+		} else {
+			libcrtx_ai_start();
+		}
+	}
+	return true;
+}

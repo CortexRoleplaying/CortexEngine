@@ -10,8 +10,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-int libcrtx_output_dialog = 0;
-int libcrtx_output_messagearea = 0;
+int[libcrtx_max_players] libcrtx_output_dialog;
+int[libcrtx_max_players] libcrtx_output_messagearea;
 
 const int libcrtx_output_maxmessages = 15;
 const int libcrtx_output_areawidth = 800;
@@ -20,58 +20,86 @@ const int libcrtx_output_areaoffsetx = -200;
 const int libcrtx_output_areaoffsety = 220;
 
 
-text[libcrtx_output_maxmessages] libcrtx_output_messages;
-fixed[libcrtx_output_maxmessages] libcrtx_output_times;
+text[libcrtx_max_players][libcrtx_output_maxmessages] libcrtx_output_messages;
+fixed[libcrtx_max_players][libcrtx_output_maxmessages] libcrtx_output_times;
 
 void libcrtx_output_init()
 {
-	libcrtx_output_dialog = DialogCreate(libcrtx_output_areawidth, libcrtx_output_areaheight, c_anchorTop, libcrtx_output_areaoffsetx, libcrtx_output_areaoffsety, true);
-	DialogSetImageVisible(libcrtx_output_dialog, false);
-	libcrtx_output_messagearea = libNtve_gf_CreateDialogItemLabel( libcrtx_output_dialog, libcrtx_output_areawidth, libcrtx_output_areaheight, c_anchorTopLeft, 0, 0, StringToText(""), Color(255, 255, 255), false, 0);
-	libNtve_gf_SetDialogItemStyle( libcrtx_output_messagearea, "ChatDisplay", PlayerGroupAll() );
-	DialogSetVisible( libcrtx_output_dialog, PlayerGroupAll(), true );
-	DialogControlSetVisible( libcrtx_output_messagearea, PlayerGroupAll(), true );
+	int i = 1;
+	while( i != libcrtx_max_players ) {
+		libcrtx_output_dialog[i] = DialogCreate(libcrtx_output_areawidth, libcrtx_output_areaheight, c_anchorTop, libcrtx_output_areaoffsetx, libcrtx_output_areaoffsety, true);
+		DialogSetImageVisible(libcrtx_output_dialog[i], false);
+		libcrtx_output_messagearea[i] = libNtve_gf_CreateDialogItemLabel( libcrtx_output_dialog[i], libcrtx_output_areawidth, libcrtx_output_areaheight, c_anchorTopLeft, 0, 0, StringToText(""), Color(255, 255, 255), false, 0);
+		libNtve_gf_SetDialogItemStyle( libcrtx_output_messagearea[i], "ChatDisplay", PlayerGroupSingle(i) );
+		DialogSetVisible( libcrtx_output_dialog[i], PlayerGroupSingle(i), true );
+		DialogControlSetVisible( libcrtx_output_messagearea[i], PlayerGroupSingle(i), true );
+
+		i = i + 1;
+	}
 }
 
 void libcrtx_output_refresh()
 {
 	text t;
 	int i;
+	int x = 1;
 	fixed gt = libNtve_gf_GamePlayTime(1);
-	while( i != libcrtx_output_maxmessages ) {
-		if( libcrtx_output_messages[i] != null && gt - libcrtx_output_times[i] < 25 ) {
-			t = t + libcrtx_output_messages[i] + StringToText("<n/>");
+	while( x != libcrtx_max_players ) {
+		gt = libNtve_gf_GamePlayTime(x);
+		while( i != libcrtx_output_maxmessages ) {
+			if( libcrtx_output_messages[x][i] != null && gt - libcrtx_output_times[x][i] < 25 ) {
+				t = t + libcrtx_output_messages[x][i] + StringToText("<n/>");
+			}
+			i = i + 1;
 		}
-		i = i + 1;
+		DialogControlSetPropertyAsText( libcrtx_output_messagearea[x], c_triggerControlPropertyText, PlayerGroupSingle(x), t );
+		t = StringToText("");
+		x = x + 1;
 	}
 
-	DialogControlSetPropertyAsText( libcrtx_output_messagearea, c_triggerControlPropertyText, PlayerGroupAll(), t );
 }
 
-void libcrtx_output_addline(text t)
+void libcrtx_output_addline(playergroup g, text t)
 {
 	int i;
-	// Find a place to fit us in.
-	while(i != libcrtx_output_maxmessages) {
-		if( libcrtx_output_messages[i] == null ) {
-			libcrtx_output_messages[i] = t;
-			libcrtx_output_times[i] = libNtve_gf_GamePlayTime(1);
-			libcrtx_output_refresh();
-			return;
+	bool cont = false;
+	int x = 1;
+	while( x != libcrtx_max_players ) {
+		if( !PlayerGroupHasPlayer(g, x) ) {
+			x = x + 1;
+			continue;
 		}
-		i = i + 1;
-	} 
 
-	// We're full!
-	// Delete the last message and move everything back one to make room.
-	i = 1;
-	while(i != libcrtx_output_maxmessages) {
-		libcrtx_output_messages[i-1] = libcrtx_output_messages[i];
-		libcrtx_output_times[i-1] = libcrtx_output_times[i];
-		i = i + 1;
+		// Find a place to fit us in.
+		while(i != libcrtx_output_maxmessages) {
+			cont = false;
+			if( libcrtx_output_messages[x][i] == null ) {
+				libcrtx_output_messages[x][i] = t;
+				libcrtx_output_times[x][i] = libNtve_gf_GamePlayTime(x);
+				libcrtx_output_refresh();
+				cont = true;
+				break;
+			}
+			i = i + 1;
+		} 
+
+		if( cont ) {
+			x = x + 1;
+			continue;
+		}
+
+		// We're full!
+		// Delete the last message and move everything back one to make room.
+		i = 1;
+		while(i != libcrtx_output_maxmessages) {
+			libcrtx_output_messages[x][i-1] = libcrtx_output_messages[x][i];
+			libcrtx_output_times[x][i-1] = libcrtx_output_times[x][i];
+			i = i + 1;
+		}
+
+		libcrtx_output_messages[x][ libcrtx_output_maxmessages-1 ] = t;
+		libcrtx_output_times[x][libcrtx_output_maxmessages-1] = libNtve_gf_GamePlayTime(x);
+		libcrtx_output_refresh();
+		x = x + 1;
 	}
-
-	libcrtx_output_messages[ libcrtx_output_maxmessages-1 ] = t;
-	libcrtx_output_times[libcrtx_output_maxmessages-1] = libNtve_gf_GamePlayTime(1);
-	libcrtx_output_refresh();
 }

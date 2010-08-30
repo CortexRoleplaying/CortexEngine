@@ -145,6 +145,8 @@ int libcrtx_color_to_player(string colour)
 		return libcrtx_setting_getint(libcrtx_setting_int_hostilecomputer);
 	} else if( colour == "neutral" ) {
 		return libcrtx_setting_getint(libcrtx_setting_int_neutralcomputer);
+	} else if( colour == "smarthostile" ) {
+		return libcrtx_setting_getint(libcrtx_setting_int_smarthostile);
 	} else if( colour == "me" ) {
 		return EventPlayer();
 	}
@@ -241,14 +243,14 @@ string libcrtx_color_to_string(color c)
 // writes to the Cortex chat area
 void libcrtx_write(playergroup p, string s)
 {
-	libcrtx_output_addline( StringToText(s) );
+	libcrtx_output_addline( p, StringToText(s) );
 	//UIDisplayMessage( p, c_messageAreaDebug, StringToText("                        " + s) );
 }
 
 // writes to the cortex chat area.
 void libcrtx_write_text(playergroup p, text t)
 {
-	libcrtx_output_addline( t );
+	libcrtx_output_addline( p, t );
 	//UIDisplayMessage( p, c_messageAreaDebug, StringToText("                        ") + t );
 }
 

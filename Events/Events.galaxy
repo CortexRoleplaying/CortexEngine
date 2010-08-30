@@ -131,6 +131,7 @@ bool libcrtx_event_periodic_tick(bool checkConds, bool runActions)
 	}
 
 	libcrtx_output_refresh();
+	libcrtx_ai_update();
 	return true;
 }
 
