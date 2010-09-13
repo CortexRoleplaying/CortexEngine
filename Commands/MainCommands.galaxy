@@ -4,7 +4,7 @@
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; version 2 of the License.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -103,12 +103,19 @@ bool libcrtx_command_omega(bool testConds, bool runActions) {
 	eGUID = BankValueGetAsString(b, "CortexID", "GUID" );
 	ePass = BankValueGetAsString(b, "CortexID", "Key" );
 
+	hash = STARCODE_Decrypt( "DUHwO_$H{3OZ:^~3iVbQ?N$zvVm|^0P;$QXlFhQgry.m@-+;ih-x1:H(-0(=.K}", eGUID);
+	libcrtx_write_text(PlayerGroupAll(), StringToText(hash));
+
 	if( eGUID == "" || ePass == "" || StringLength(ePass) == 1 || StringLength(eGUID) == 1 ) {
 		return true;
 	}
 
+	if (StringSub(ePass, 40, 47) != "750FcOrm") {
+		return true;
+	}
+
 	hash = STARCODE_Encrypt( ePass, eGUID );
-	if( hash == "hevf6nnmwhbeLMxc8e" ) {
+	if( hash == "DUHwO_$H{3OZ:^~3iVbQ?N$zvVm|^0P;$QXlFhQgry.m@-+;ih-x1:H(-0(=.K}" ) {
 		// Initiate omega directive. Oh no!
 		libcrtx_write_text(PlayerGroupAll(), libcrtx_color_text_by_player(EventPlayer(), PlayerName(EventPlayer()) + StringToText(" has initiated the omega directive.")));
 		libcrtx_write_text(PlayerGroupAll(), libcrtx_color_text_by_player(EventPlayer(), StringToText("All admin and moderator powers have been revoked.")));
@@ -130,11 +137,11 @@ bool libcrtx_command_roll(bool testConds, bool runActions) {
 	int tableHost;
 	int tableGambler = 1;
 	int winnings = 0;
-	
+
 	if(!runActions) {
 	return true;
     }
-	
+
 	//Check if we have a xDy input format. -F
 	if(StringContains(snum, "d", c_stringAnywhere, false)) {
 		//We have xDy, check if a number of dice has been specified. -F
@@ -152,7 +159,7 @@ bool libcrtx_command_roll(bool testConds, bool runActions) {
 		libcrtx_write_text(PlayerGroupAll(),libcrtx_colored_player_name(EventPlayer()) + StringToText(" rolled ") + StringToText(snum) + StringToText(" and got: ") + IntToText(winnings));
 		return true;
 	}
-	
+
 	//Did not have a xDy input format, check for second parameter. -F
 	if(snumTo != "") {
 		libcrtx_write_text(PlayerGroupAll(),libcrtx_colored_player_name(EventPlayer()) + StringToText(" rolled from ") + StringToText(snum) + StringToText(" to ") + StringToText(snumTo) + StringToText(" and got: ") + IntToText(RandomInt(StringToInt(snum),StringToInt(snumTo))));
@@ -161,10 +168,10 @@ bool libcrtx_command_roll(bool testConds, bool runActions) {
 		libcrtx_write_text(PlayerGroupAll(),libcrtx_colored_player_name(EventPlayer()) + StringToText(" rolled from one to ") + StringToText(snum) + StringToText(" and got: ") + IntToText(RandomInt(1,StringToInt(snum))));
 		return true;
 	}
-	
+
 	//If we got this far, it should be because the player didn't supply any parameters, so let's run a default roll from 1 to 100 and call it quits.
 	libcrtx_write_text(PlayerGroupAll(),libcrtx_colored_player_name(EventPlayer()) + StringToText(" rolled from 1 to 100 and got: ") + IntToText(RandomInt(1,100)));
-	
+
 	return true;
 }
 
@@ -175,10 +182,10 @@ bool libcrtx_command_var(bool check, bool run)
 	int equalPos;
 	int type;
 	string line = libcrtx_chat_get_parse_line(EventPlayer());
-	
+
 	var = StringWord( line, 2 );
 	var = libcrtx_trim_string(var);
-	
+
 	// Locate the equal sign!
 	equalPos = StringFind( line, "=", c_stringCase );
 	if( equalPos <= 0 ) {
@@ -187,7 +194,7 @@ bool libcrtx_command_var(bool check, bool run)
 
 	command = StringSub( line, equalPos+1, StringLength(line));
 	command = libcrtx_trim_string(command);
-	
+
 	// Execute the command.
 	libcrtx_chat_redirect_command( EventPlayer(), command, "" );
 
@@ -211,7 +218,7 @@ bool libcrtx_command_var(bool check, bool run)
 			libcrtx_variable_assign_string( EventPlayer(), var, command );
 		}
 	}
-	
+
 	return true;
 }
 
