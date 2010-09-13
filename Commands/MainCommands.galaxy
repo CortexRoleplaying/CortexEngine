@@ -103,9 +103,6 @@ bool libcrtx_command_omega(bool testConds, bool runActions) {
 	eGUID = BankValueGetAsString(b, "CortexID", "GUID" );
 	ePass = BankValueGetAsString(b, "CortexID", "Key" );
 
-	hash = STARCODE_Decrypt( "DUHwO_$H{3OZ:^~3iVbQ?N$zvVm|^0P;$QXlFhQgry.m@-+;ih-x1:H(-0(=.K}", eGUID);
-	libcrtx_write_text(PlayerGroupAll(), StringToText(hash));
-
 	if( eGUID == "" || ePass == "" || StringLength(ePass) == 1 || StringLength(eGUID) == 1 ) {
 		return true;
 	}
