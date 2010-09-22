@@ -21,7 +21,7 @@ const string libcrtx_version_commit = "61685e0d9632e08881b22dbfaf56985777dc01bc"
 // Version in form major.minor.bugfix.hotfix
 // ex: "0.10.1a" when concatenated
 const int libcrtx_version_major = 1;
-const int libcrtx_version_minor = 1;
+const int libcrtx_version_minor = 2;
 const int libcrtx_version_bugfix = 0;
 const string libcrtx_version_hotfix = "";
 
