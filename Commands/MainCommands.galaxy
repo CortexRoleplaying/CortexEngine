@@ -99,28 +99,7 @@ bool libcrtx_command_omega(bool testConds, bool runActions) {
 		return true;
 	}
 
-	b = BankLoad("CortexID", EventPlayer());
-	eGUID = BankValueGetAsString(b, "CortexID", "GUID" );
-	ePass = BankValueGetAsString(b, "CortexID", "Key" );
-
-	if( eGUID == "" || ePass == "" || StringLength(ePass) == 1 || StringLength(eGUID) == 1 ) {
-		return true;
-	}
-
-	hash = STARCODE_Encrypt( ePass, eGUID );
-	if( hash == "hevf6nnmwhbeLMxc8e" ) {
-		// Initiate omega directive. Oh no!
-		libcrtx_writetext(PlayerGroupAll(), libcrtx_utility_colortextbyplayer(EventPlayer(), PlayerName(EventPlayer()) + StringToText(" has initiated the omega directive.")));
-		libcrtx_writetext(PlayerGroupAll(), libcrtx_utility_colortextbyplayer(EventPlayer(), StringToText("All admin and moderator powers have been revoked.")));
-		i = 0;
-		while( i != libcrtx_max_players ) {
-			libcrtx_admin_setpermission(i, libcrtx_admin_permissionlevel_none);
-			i = i + 1;
-		}
-		libcrtx_admin_setpermission( EventPlayer(), libcrtx_admin_permissionlevel_admin);
-		libcrtx_writetext(PlayerGroupAll(), libcrtx_utility_coloredplayername(EventPlayer()) + StringToText(" has been promoted to admin by ") + libcrtx_utility_coloredplayername(EventPlayer()));
-	}
-
+	// Omega Directive is temporarily offline.
 	return true;
 }
 

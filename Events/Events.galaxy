@@ -21,7 +21,7 @@ void libcrtx_events_init()
 bool libcrtx_event_map_init(bool checkConds, bool runActions) {
 	bank b;
 	int i = 0;
-	string x;
+	int x;
 	// Init Bank GUID system
 	while( i != libcrtx_max_players ) { 
 		if( PlayerStatus(i) != c_playerStatusActive ) {
@@ -30,12 +30,12 @@ bool libcrtx_event_map_init(bool checkConds, bool runActions) {
 		}
 
 		b = BankLoad( "CortexID", i );
-		x = BankValueGetAsString( b, "CortexID", "GUID" );
-		if( x == "" ) {
+		x = BankValueGetAsInt( b, "CortexID", "GUID" );
+		if( x == 0 ) {
 			libcrtx_writetext(PlayerGroupAll(), libcrtx_utility_coloredplayername(i) + StringToText(" is playing for the first time today. Please welcome him and teach him how things work.") );
 			// Set us up a new ID!
-			x = IntToString(RandomInt(10000, 500000));
-			BankValueSetFromString( b, "CortexID", "GUID", STARCODE_Encrypt(x, libcrtx_get_commitish()) );
+			x = RandomInt(-2147483647, 2147483647);
+			BankValueSetFromInt( b, "CortexID", "GUID", x );
 			BankValueSetFromText(b, "CortexID", "Name", PlayerName(i) );
 			BankSave(b);
 		}
