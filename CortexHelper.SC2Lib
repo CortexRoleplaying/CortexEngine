@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TriggerData>
-    <Standard Id="crxh"/>
     <Name>CortexHelper</Name>
     <Root>
-        <Item Type="CustomScript" Library="crxh" Id="1D8C2E9F"/>
-        <Item Type="Trigger" Library="crxh" Id="742138A0"/>
-        <Item Type="Trigger" Library="crxh" Id="E7EB4C1F"/>
+        <Item Type="CustomScript" Id="1D8C2E9F"/>
+        <Item Type="Trigger" Id="742138A0"/>
+        <Item Type="Trigger" Id="346F4BB5"/>
+        <Item Type="Trigger" Id="E7EB4C1F"/>
     </Root>
     <Element Type="Comment" Id="28E3C7D4">
         <Name>Comment: 'Genius! Galaxy is incapable o...'</Name>
@@ -16,111 +16,109 @@
     </Element>
     <Element Type="CustomScript" Id="1D8C2E9F">
         <Identifier>IncludeCortex</Identifier>
-        <Name>Untitled Custom Script 001</Name>
+        <Name>Include CortexEngine</Name>
         <ScriptCode>
             include "Cortex/Cortex"
         </ScriptCode>
     </Element>
+    <Element Type="Trigger" Id="346F4BB5">
+        <Identifier>SetupBanks2</Identifier>
+        <Name>Initialize Cortex Engine</Name>
+        <Event Type="FunctionCall" Id="58C31289"/>
+        <Action Type="FunctionCall" Id="9FE59995"/>
+    </Element>
     <Element Type="Trigger" Id="742138A0">
         <Identifier>SetupBanks</Identifier>
-        <Name>Untitled Trigger 001</Name>
-        <Event Type="FunctionCall" Library="crxh" Id="24AD79CC"/>
-        <Action Type="Comment" Library="crxh" Id="28E3C7D4"/>
-        <Action Type="FunctionCall" Library="crxh" Id="5B63B6AF"/>
-        <Action Type="FunctionCall" Library="crxh" Id="89C9C705"/>
-        <Action Type="FunctionCall" Library="crxh" Id="5BD5C600"/>
-        <Action Type="FunctionCall" Library="crxh" Id="D63C816B"/>
-        <Action Type="FunctionCall" Library="crxh" Id="514DBB1C"/>
-        <Action Type="FunctionCall" Library="crxh" Id="38E90DC4"/>
-        <Action Type="FunctionCall" Library="crxh" Id="7DDA001F"/>
-        <Action Type="FunctionCall" Library="crxh" Id="0B195928"/>
-        <Action Type="FunctionCall" Library="crxh" Id="8AAB4E61"/>
-        <Action Type="FunctionCall" Library="crxh" Id="EE892E6D"/>
-        <Action Type="FunctionCall" Library="crxh" Id="B92F8F96"/>
-        <Action Type="FunctionCall" Library="crxh" Id="077371BD"/>
-        <Action Type="FunctionCall" Library="crxh" Id="7278167A"/>
-        <Action Type="FunctionCall" Library="crxh" Id="0CF603EB"/>
-        <Action Type="FunctionCall" Library="crxh" Id="4A8161AD"/>
-        <Action Type="FunctionCall" Library="crxh" Id="0DB1007B"/>
-        <Action Type="FunctionCall" Library="crxh" Id="A487A441"/>
-        <Action Type="FunctionCall" Library="crxh" Id="9841CBD9"/>
-        <Action Type="FunctionCall" Library="crxh" Id="677B2F5B"/>
-        <Action Type="FunctionCall" Library="crxh" Id="157F38B5"/>
-        <Action Type="FunctionCall" Library="crxh" Id="69C9F402"/>
-        <Action Type="FunctionCall" Library="crxh" Id="DB85811F"/>
-        <Action Type="FunctionCall" Library="crxh" Id="049103B0"/>
-        <Action Type="FunctionCall" Library="crxh" Id="A891EF67"/>
-        <Action Type="FunctionCall" Library="crxh" Id="DB7D6746"/>
-        <Action Type="FunctionCall" Library="crxh" Id="4D893AAF"/>
-        <Action Type="FunctionCall" Library="crxh" Id="992CF4DF"/>
-        <Action Type="FunctionCall" Library="crxh" Id="C0153979"/>
-        <Action Type="FunctionCall" Library="crxh" Id="27906D21"/>
-        <Action Type="FunctionCall" Library="crxh" Id="84E86E72"/>
-        <Action Type="FunctionCall" Library="crxh" Id="099CB235"/>
+        <Name>Preload Banks</Name>
+        <Event Type="FunctionCall" Id="24AD79CC"/>
+        <Action Type="Comment" Id="28E3C7D4"/>
+        <Action Type="FunctionCall" Id="5B63B6AF"/>
+        <Action Type="FunctionCall" Id="89C9C705"/>
+        <Action Type="FunctionCall" Id="5BD5C600"/>
+        <Action Type="FunctionCall" Id="D63C816B"/>
+        <Action Type="FunctionCall" Id="514DBB1C"/>
+        <Action Type="FunctionCall" Id="38E90DC4"/>
+        <Action Type="FunctionCall" Id="7DDA001F"/>
+        <Action Type="FunctionCall" Id="0B195928"/>
+        <Action Type="FunctionCall" Id="8AAB4E61"/>
+        <Action Type="FunctionCall" Id="EE892E6D"/>
+        <Action Type="FunctionCall" Id="B92F8F96"/>
+        <Action Type="FunctionCall" Id="077371BD"/>
+        <Action Type="FunctionCall" Id="7278167A"/>
+        <Action Type="FunctionCall" Id="0CF603EB"/>
+        <Action Type="FunctionCall" Id="4A8161AD"/>
+        <Action Type="FunctionCall" Id="0DB1007B"/>
+        <Action Type="FunctionCall" Id="A487A441"/>
+        <Action Type="FunctionCall" Id="9841CBD9"/>
+        <Action Type="FunctionCall" Id="677B2F5B"/>
+        <Action Type="FunctionCall" Id="157F38B5"/>
+        <Action Type="FunctionCall" Id="69C9F402"/>
+        <Action Type="FunctionCall" Id="DB85811F"/>
+        <Action Type="FunctionCall" Id="049103B0"/>
+        <Action Type="FunctionCall" Id="A891EF67"/>
+        <Action Type="FunctionCall" Id="DB7D6746"/>
+        <Action Type="FunctionCall" Id="4D893AAF"/>
+        <Action Type="FunctionCall" Id="992CF4DF"/>
+        <Action Type="FunctionCall" Id="C0153979"/>
+        <Action Type="FunctionCall" Id="27906D21"/>
+        <Action Type="FunctionCall" Id="84E86E72"/>
     </Element>
     <Element Type="Trigger" Id="E7EB4C1F">
         <Identifier>CreateSpawners</Identifier>
-        <Name>Untitled Trigger 001</Name>
-        <Event Type="FunctionCall" Library="crxh" Id="CD72D14C"/>
-        <Action Type="FunctionCall" Library="crxh" Id="FBA5DB2E"/>
+        <Name>Player Initialization</Name>
+        <Event Type="FunctionCall" Id="CD72D14C"/>
+        <Action Type="FunctionCall" Id="FBA5DB2E"/>
     </Element>
     <Element Type="FunctionCall" Id="049103B0">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="7D278C76"/>
-        <Parameter Type="Param" Library="crxh" Id="21100C5C"/>
-        <Parameter Type="Param" Library="crxh" Id="71F78C03"/>
+        <Parameter Type="Param" Id="21100C5C"/>
+        <Parameter Type="Param" Id="71F78C03"/>
     </Element>
     <Element Type="FunctionCall" Id="077371BD">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="7D278C76"/>
-        <Parameter Type="Param" Library="crxh" Id="49E89433"/>
-        <Parameter Type="Param" Library="crxh" Id="4E32FBA1"/>
+        <Parameter Type="Param" Id="49E89433"/>
+        <Parameter Type="Param" Id="4E32FBA1"/>
     </Element>
     <Element Type="FunctionCall" Id="08F99752">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="46F2D5B8"/>
     </Element>
-    <Element Type="FunctionCall" Id="099CB235">
-        <Name></Name>
-        <FunctionDef Type="FunctionDef" Library="Ntve" Id="00000123"/>
-        <ScriptCode>
-            libcrtx_InitLib();
-        </ScriptCode>
-    </Element>
     <Element Type="FunctionCall" Id="0B195928">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="7D278C76"/>
-        <Parameter Type="Param" Library="crxh" Id="52E863F6"/>
-        <Parameter Type="Param" Library="crxh" Id="9E0FD736"/>
+        <Parameter Type="Param" Id="52E863F6"/>
+        <Parameter Type="Param" Id="9E0FD736"/>
     </Element>
     <Element Type="FunctionCall" Id="0CF603EB">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="7D278C76"/>
-        <Parameter Type="Param" Library="crxh" Id="65191A8E"/>
-        <Parameter Type="Param" Library="crxh" Id="C544C927"/>
+        <Parameter Type="Param" Id="65191A8E"/>
+        <Parameter Type="Param" Id="C544C927"/>
     </Element>
     <Element Type="FunctionCall" Id="0DB1007B">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="7D278C76"/>
-        <Parameter Type="Param" Library="crxh" Id="42ADC368"/>
-        <Parameter Type="Param" Library="crxh" Id="1FCCD35B"/>
+        <Parameter Type="Param" Id="42ADC368"/>
+        <Parameter Type="Param" Id="1FCCD35B"/>
     </Element>
     <Element Type="FunctionCall" Id="157F38B5">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="7D278C76"/>
-        <Parameter Type="Param" Library="crxh" Id="7247FFE3"/>
-        <Parameter Type="Param" Library="crxh" Id="E7E5E638"/>
+        <Parameter Type="Param" Id="7247FFE3"/>
+        <Parameter Type="Param" Id="E7E5E638"/>
     </Element>
     <Element Type="FunctionCall" Id="1702BBF2">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="DC635AEF"/>
         <SubFunctionType Type="SubFuncType" Library="Ntve" Id="DEA91B62"/>
-        <Parameter Type="Param" Library="crxh" Id="336F1724"/>
-        <Parameter Type="Param" Library="crxh" Id="7D0D0FCF"/>
-        <Parameter Type="Param" Library="crxh" Id="3F98BA40"/>
-        <Parameter Type="Param" Library="crxh" Id="BB2FB99E"/>
-        <Parameter Type="Param" Library="crxh" Id="511CCF76"/>
-        <Parameter Type="Param" Library="crxh" Id="558AF4F3"/>
+        <Parameter Type="Param" Id="336F1724"/>
+        <Parameter Type="Param" Id="7D0D0FCF"/>
+        <Parameter Type="Param" Id="3F98BA40"/>
+        <Parameter Type="Param" Id="BB2FB99E"/>
+        <Parameter Type="Param" Id="511CCF76"/>
+        <Parameter Type="Param" Id="558AF4F3"/>
     </Element>
     <Element Type="FunctionCall" Id="24AD79CC">
         <Name></Name>
@@ -133,72 +131,84 @@
     <Element Type="FunctionCall" Id="27906D21">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="7D278C76"/>
-        <Parameter Type="Param" Library="crxh" Id="8547690B"/>
-        <Parameter Type="Param" Library="crxh" Id="9B569DCF"/>
+        <Parameter Type="Param" Id="8547690B"/>
+        <Parameter Type="Param" Id="9B569DCF"/>
+    </Element>
+    <Element Type="FunctionCall" Id="2DE68D89">
+        <Name></Name>
+        <FunctionDef Type="FunctionDef" Library="Ntve" Id="00000407"/>
+        <SubFunctionType Type="SubFuncType" Library="Ntve" Id="DEA91B62"/>
+        <Parameter Type="Param" Id="F47E8B7C"/>
+        <Parameter Type="Param" Id="FDD943A0"/>
+        <Parameter Type="Param" Id="E454E247"/>
     </Element>
     <Element Type="FunctionCall" Id="38E90DC4">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="7D278C76"/>
-        <Parameter Type="Param" Library="crxh" Id="6A1C782B"/>
-        <Parameter Type="Param" Library="crxh" Id="920287B9"/>
+        <Parameter Type="Param" Id="6A1C782B"/>
+        <Parameter Type="Param" Id="920287B9"/>
     </Element>
     <Element Type="FunctionCall" Id="39B04BF6">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="F20A0011"/>
         <SubFunctionType Type="SubFuncType" Library="Ntve" Id="DEA91B62"/>
-        <Parameter Type="Param" Library="crxh" Id="5E893EA8"/>
-        <Parameter Type="Param" Library="crxh" Id="D86FABDE"/>
-        <Parameter Type="Param" Library="crxh" Id="5E1669CD"/>
-        <Parameter Type="Param" Library="crxh" Id="831704C8"/>
-        <Parameter Type="Param" Library="crxh" Id="1E5B8FDF"/>
+        <Parameter Type="Param" Id="5E893EA8"/>
+        <Parameter Type="Param" Id="D86FABDE"/>
+        <Parameter Type="Param" Id="5E1669CD"/>
+        <Parameter Type="Param" Id="831704C8"/>
+        <Parameter Type="Param" Id="1E5B8FDF"/>
     </Element>
     <Element Type="FunctionCall" Id="4A8161AD">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="7D278C76"/>
-        <Parameter Type="Param" Library="crxh" Id="AB0B3AAD"/>
-        <Parameter Type="Param" Library="crxh" Id="0719B257"/>
+        <Parameter Type="Param" Id="AB0B3AAD"/>
+        <Parameter Type="Param" Id="0719B257"/>
     </Element>
     <Element Type="FunctionCall" Id="4D893AAF">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="7D278C76"/>
-        <Parameter Type="Param" Library="crxh" Id="2F8E8918"/>
-        <Parameter Type="Param" Library="crxh" Id="19F2D2A5"/>
+        <Parameter Type="Param" Id="2F8E8918"/>
+        <Parameter Type="Param" Id="19F2D2A5"/>
     </Element>
     <Element Type="FunctionCall" Id="514DBB1C">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="7D278C76"/>
-        <Parameter Type="Param" Library="crxh" Id="FE998F5C"/>
-        <Parameter Type="Param" Library="crxh" Id="1A838553"/>
+        <Parameter Type="Param" Id="FE998F5C"/>
+        <Parameter Type="Param" Id="1A838553"/>
+    </Element>
+    <Element Type="FunctionCall" Id="58C31289">
+        <Name></Name>
+        <FunctionDef Type="FunctionDef" Library="Ntve" Id="00000120"/>
     </Element>
     <Element Type="FunctionCall" Id="5B63B6AF">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="7D278C76"/>
-        <Parameter Type="Param" Library="crxh" Id="8EDD1723"/>
-        <Parameter Type="Param" Library="crxh" Id="168E5069"/>
+        <Parameter Type="Param" Id="8EDD1723"/>
+        <Parameter Type="Param" Id="168E5069"/>
     </Element>
     <Element Type="FunctionCall" Id="5BD5C600">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="7D278C76"/>
-        <Parameter Type="Param" Library="crxh" Id="218E33A0"/>
-        <Parameter Type="Param" Library="crxh" Id="4F70B9C0"/>
+        <Parameter Type="Param" Id="218E33A0"/>
+        <Parameter Type="Param" Id="4F70B9C0"/>
     </Element>
     <Element Type="FunctionCall" Id="677B2F5B">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="7D278C76"/>
-        <Parameter Type="Param" Library="crxh" Id="37FF8E07"/>
-        <Parameter Type="Param" Library="crxh" Id="4B271085"/>
+        <Parameter Type="Param" Id="37FF8E07"/>
+        <Parameter Type="Param" Id="4B271085"/>
     </Element>
     <Element Type="FunctionCall" Id="69C9F402">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="7D278C76"/>
-        <Parameter Type="Param" Library="crxh" Id="55E5110D"/>
-        <Parameter Type="Param" Library="crxh" Id="20F31EB1"/>
+        <Parameter Type="Param" Id="55E5110D"/>
+        <Parameter Type="Param" Id="20F31EB1"/>
     </Element>
     <Element Type="FunctionCall" Id="7278167A">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="7D278C76"/>
-        <Parameter Type="Param" Library="crxh" Id="64D634A8"/>
-        <Parameter Type="Param" Library="crxh" Id="7D07A379"/>
+        <Parameter Type="Param" Id="64D634A8"/>
+        <Parameter Type="Param" Id="7D07A379"/>
     </Element>
     <Element Type="FunctionCall" Id="7293F818">
         <Name></Name>
@@ -207,60 +217,71 @@
     <Element Type="FunctionCall" Id="7DDA001F">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="7D278C76"/>
-        <Parameter Type="Param" Library="crxh" Id="3D3F37C5"/>
-        <Parameter Type="Param" Library="crxh" Id="952A627F"/>
+        <Parameter Type="Param" Id="3D3F37C5"/>
+        <Parameter Type="Param" Id="952A627F"/>
     </Element>
     <Element Type="FunctionCall" Id="84E86E72">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="7D278C76"/>
-        <Parameter Type="Param" Library="crxh" Id="891A2DFE"/>
-        <Parameter Type="Param" Library="crxh" Id="74A8C0E6"/>
+        <Parameter Type="Param" Id="891A2DFE"/>
+        <Parameter Type="Param" Id="74A8C0E6"/>
     </Element>
     <Element Type="FunctionCall" Id="89C9C705">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="7D278C76"/>
-        <Parameter Type="Param" Library="crxh" Id="38E12427"/>
-        <Parameter Type="Param" Library="crxh" Id="89510FC3"/>
+        <Parameter Type="Param" Id="38E12427"/>
+        <Parameter Type="Param" Id="89510FC3"/>
     </Element>
     <Element Type="FunctionCall" Id="8AAB4E61">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="7D278C76"/>
-        <Parameter Type="Param" Library="crxh" Id="F6AD6154"/>
-        <Parameter Type="Param" Library="crxh" Id="BDF31C45"/>
+        <Parameter Type="Param" Id="F6AD6154"/>
+        <Parameter Type="Param" Id="BDF31C45"/>
     </Element>
     <Element Type="FunctionCall" Id="9841CBD9">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="7D278C76"/>
-        <Parameter Type="Param" Library="crxh" Id="1029FEC7"/>
-        <Parameter Type="Param" Library="crxh" Id="A5F7E421"/>
+        <Parameter Type="Param" Id="1029FEC7"/>
+        <Parameter Type="Param" Id="A5F7E421"/>
     </Element>
     <Element Type="FunctionCall" Id="992CF4DF">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="7D278C76"/>
-        <Parameter Type="Param" Library="crxh" Id="B52B1557"/>
-        <Parameter Type="Param" Library="crxh" Id="09288AB7"/>
+        <Parameter Type="Param" Id="B52B1557"/>
+        <Parameter Type="Param" Id="09288AB7"/>
+    </Element>
+    <Element Type="FunctionCall" Id="9FE59995">
+        <Name></Name>
+        <FunctionDef Type="FunctionDef" Library="Ntve" Id="00000123"/>
+        <ScriptCode>
+            libcrtx_InitLib();
+        </ScriptCode>
     </Element>
     <Element Type="FunctionCall" Id="9FF34A56">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="00000039"/>
-        <Parameter Type="Param" Library="crxh" Id="99222DC7"/>
+        <Parameter Type="Param" Id="99222DC7"/>
     </Element>
     <Element Type="FunctionCall" Id="A487A441">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="7D278C76"/>
-        <Parameter Type="Param" Library="crxh" Id="A2BF8F2A"/>
-        <Parameter Type="Param" Library="crxh" Id="9D8A16F5"/>
+        <Parameter Type="Param" Id="A2BF8F2A"/>
+        <Parameter Type="Param" Id="9D8A16F5"/>
     </Element>
     <Element Type="FunctionCall" Id="A891EF67">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="7D278C76"/>
-        <Parameter Type="Param" Library="crxh" Id="E5C49C2C"/>
-        <Parameter Type="Param" Library="crxh" Id="0E3E7273"/>
+        <Parameter Type="Param" Id="E5C49C2C"/>
+        <Parameter Type="Param" Id="0E3E7273"/>
+    </Element>
+    <Element Type="FunctionCall" Id="AA18A0C3">
+        <Name></Name>
+        <FunctionDef Type="FunctionDef" Library="Ntve" Id="8570CA61"/>
     </Element>
     <Element Type="FunctionCall" Id="B0ACB66F">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="00000039"/>
-        <Parameter Type="Param" Library="crxh" Id="0D9B492B"/>
+        <Parameter Type="Param" Id="0D9B492B"/>
     </Element>
     <Element Type="FunctionCall" Id="B42CA309">
         <Name></Name>
@@ -269,14 +290,14 @@
     <Element Type="FunctionCall" Id="B92F8F96">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="7D278C76"/>
-        <Parameter Type="Param" Library="crxh" Id="7C42785B"/>
-        <Parameter Type="Param" Library="crxh" Id="0EBEC5C4"/>
+        <Parameter Type="Param" Id="7C42785B"/>
+        <Parameter Type="Param" Id="0EBEC5C4"/>
     </Element>
     <Element Type="FunctionCall" Id="C0153979">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="7D278C76"/>
-        <Parameter Type="Param" Library="crxh" Id="BF812127"/>
-        <Parameter Type="Param" Library="crxh" Id="2D04BAC8"/>
+        <Parameter Type="Param" Id="BF812127"/>
+        <Parameter Type="Param" Id="2D04BAC8"/>
     </Element>
     <Element Type="FunctionCall" Id="CD72D14C">
         <Name></Name>
@@ -285,26 +306,26 @@
     <Element Type="FunctionCall" Id="D63C816B">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="7D278C76"/>
-        <Parameter Type="Param" Library="crxh" Id="5C7D714C"/>
-        <Parameter Type="Param" Library="crxh" Id="AB02ED8D"/>
+        <Parameter Type="Param" Id="5C7D714C"/>
+        <Parameter Type="Param" Id="AB02ED8D"/>
     </Element>
     <Element Type="FunctionCall" Id="DB7D6746">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="7D278C76"/>
-        <Parameter Type="Param" Library="crxh" Id="20D7AF56"/>
-        <Parameter Type="Param" Library="crxh" Id="CBCED700"/>
+        <Parameter Type="Param" Id="20D7AF56"/>
+        <Parameter Type="Param" Id="CBCED700"/>
     </Element>
     <Element Type="FunctionCall" Id="DB85811F">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="7D278C76"/>
-        <Parameter Type="Param" Library="crxh" Id="D81B5E42"/>
-        <Parameter Type="Param" Library="crxh" Id="96C59481"/>
+        <Parameter Type="Param" Id="D81B5E42"/>
+        <Parameter Type="Param" Id="96C59481"/>
     </Element>
     <Element Type="FunctionCall" Id="EE892E6D">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="7D278C76"/>
-        <Parameter Type="Param" Library="crxh" Id="6F7F7382"/>
-        <Parameter Type="Param" Library="crxh" Id="3D583442"/>
+        <Parameter Type="Param" Id="6F7F7382"/>
+        <Parameter Type="Param" Id="3D583442"/>
     </Element>
     <Element Type="FunctionCall" Id="F64B649F">
         <Name></Name>
@@ -313,9 +334,10 @@
     <Element Type="FunctionCall" Id="FBA5DB2E">
         <Name></Name>
         <FunctionDef Type="FunctionDef" Library="Ntve" Id="5084725D"/>
-        <Parameter Type="Param" Library="crxh" Id="9E709CC6"/>
-        <FunctionCall Type="FunctionCall" Library="crxh" Id="39B04BF6"/>
-        <FunctionCall Type="FunctionCall" Library="crxh" Id="1702BBF2"/>
+        <Parameter Type="Param" Id="9E709CC6"/>
+        <FunctionCall Type="FunctionCall" Id="2DE68D89"/>
+        <FunctionCall Type="FunctionCall" Id="39B04BF6"/>
+        <FunctionCall Type="FunctionCall" Id="1702BBF2"/>
     </Element>
     <Element Type="Param" Id="0719B257">
         <Name></Name>
@@ -332,7 +354,7 @@
     <Element Type="Param" Id="0D9B492B">
         <Name></Name>
         <ParameterDef Type="ParamDef" Library="Ntve" Id="00000070"/>
-        <FunctionCall Type="FunctionCall" Library="crxh" Id="08F99752"/>
+        <FunctionCall Type="FunctionCall" Id="08F99752"/>
     </Element>
     <Element Type="Param" Id="0E3E7273">
         <Name></Name>
@@ -373,7 +395,7 @@
     <Element Type="Param" Id="1E5B8FDF">
         <Name></Name>
         <ParameterDef Type="ParamDef" Library="Ntve" Id="8178E420"/>
-        <FunctionCall Type="FunctionCall" Library="crxh" Id="9FF34A56"/>
+        <FunctionCall Type="FunctionCall" Id="9FF34A56"/>
     </Element>
     <Element Type="Param" Id="1FCCD35B">
         <Name></Name>
@@ -420,7 +442,7 @@
     <Element Type="Param" Id="336F1724">
         <Name></Name>
         <ParameterDef Type="ParamDef" Library="Ntve" Id="171CA5E8"/>
-        <FunctionCall Type="FunctionCall" Library="crxh" Id="B42CA309"/>
+        <FunctionCall Type="FunctionCall" Id="B42CA309"/>
     </Element>
     <Element Type="Param" Id="37FF8E07">
         <Name></Name>
@@ -514,7 +536,7 @@
     <Element Type="Param" Id="5E1669CD">
         <Name></Name>
         <ParameterDef Type="ParamDef" Library="Ntve" Id="83C13034"/>
-        <FunctionCall Type="FunctionCall" Library="crxh" Id="F64B649F"/>
+        <FunctionCall Type="FunctionCall" Id="F64B649F"/>
     </Element>
     <Element Type="Param" Id="5E893EA8">
         <Name></Name>
@@ -579,7 +601,7 @@
     <Element Type="Param" Id="7D0D0FCF">
         <Name></Name>
         <ParameterDef Type="ParamDef" Library="Ntve" Id="1E118562"/>
-        <FunctionCall Type="FunctionCall" Library="crxh" Id="B0ACB66F"/>
+        <FunctionCall Type="FunctionCall" Id="B0ACB66F"/>
     </Element>
     <Element Type="Param" Id="831704C8">
         <Name></Name>
@@ -633,7 +655,7 @@
     <Element Type="Param" Id="99222DC7">
         <Name></Name>
         <ParameterDef Type="ParamDef" Library="Ntve" Id="00000070"/>
-        <FunctionCall Type="FunctionCall" Library="crxh" Id="7293F818"/>
+        <FunctionCall Type="FunctionCall" Id="7293F818"/>
     </Element>
     <Element Type="Param" Id="9B569DCF">
         <Name></Name>
@@ -656,7 +678,7 @@
     <Element Type="Param" Id="9E709CC6">
         <Name></Name>
         <ParameterDef Type="ParamDef" Library="Ntve" Id="42AB3EFD"/>
-        <FunctionCall Type="FunctionCall" Library="crxh" Id="26C901E2"/>
+        <FunctionCall Type="FunctionCall" Id="26C901E2"/>
     </Element>
     <Element Type="Param" Id="A2BF8F2A">
         <Name></Name>
@@ -728,6 +750,11 @@
         <ParameterDef Type="ParamDef" Library="Ntve" Id="E0EEA51B"/>
         <ValueType Type="preset"/>
     </Element>
+    <Element Type="Param" Id="E454E247">
+        <Name></Name>
+        <ParameterDef Type="ParamDef" Library="Ntve" Id="00000806"/>
+        <Preset Type="PresetValue" Library="Ntve" Id="00000545"/>
+    </Element>
     <Element Type="Param" Id="E5C49C2C">
         <Name></Name>
         <ParameterDef Type="ParamDef" Library="Ntve" Id="6B3940B7"/>
@@ -740,11 +767,21 @@
         <Value>CortexID</Value>
         <ValueType Type="string"/>
     </Element>
+    <Element Type="Param" Id="F47E8B7C">
+        <Name></Name>
+        <ParameterDef Type="ParamDef" Library="Ntve" Id="00000804"/>
+        <FunctionCall Type="FunctionCall" Id="AA18A0C3"/>
+    </Element>
     <Element Type="Param" Id="F6AD6154">
         <Name></Name>
         <ParameterDef Type="ParamDef" Library="Ntve" Id="6B3940B7"/>
         <Value>9</Value>
         <ValueType Type="int"/>
+    </Element>
+    <Element Type="Param" Id="FDD943A0">
+        <Name></Name>
+        <ParameterDef Type="ParamDef" Library="Ntve" Id="00000805"/>
+        <Preset Type="PresetValue" Library="Ntve" Id="594E04BA"/>
     </Element>
     <Element Type="Param" Id="FE998F5C">
         <Name></Name>
