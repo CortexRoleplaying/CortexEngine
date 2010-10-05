@@ -151,40 +151,28 @@ static color libactionbar_get_racial_tint(int player)
 } 
 
 // -- PRIVATE -------------------------------------------------------------- 
-// method by helral
-static string libactionbar_catalog_get_type(int catalogType, string entry, string matchValue) {
-    string value;
-
-    value = CatalogEntryParent(catalogType, entry);
-    if ( StringSub(value, 1, StringLength(matchValue)) == matchValue ) {
-        return value;
-    }
-    else {
-        if(value == entry) {
-            return "Error";
-        }
-        else {
-            return libactionbar_catalog_get_type(catalogType, value, matchValue);
-        }
-    }
-}
-
-// -- PRIVATE -------------------------------------------------------------- 
 static bool libactionbar_catalog_has_field(int lp_catalogType, string lp_entry, string lp_field) {
-	return (CatalogFieldValueCount(lp_catalogType, lp_entry, lp_field, c_playerAny) > 0);
-}
-
-static bool libactionbar_catalog_abilityscope_has_cost(string ability)
-{
-	int parent = AbilityClass(ability);
-	if( parent == c_classIdCAbilMerge || parent == c_classIdCAbilWarpable || parent == c_classIdCAbilTransport ||
-	    parent == c_classIdCAbilTrain || parent == c_classIdCAbilBuild || parent == c_classIdCAbilBuildable ||
-	    parent == c_classIdCAbilQueue || parent == c_classIdCAbilMorph || parent == c_classIdCAbilMorphPlacement ||
-	    parent == c_classIdCAbilResearch || parent == c_classIdCAbilArmMagazine || parent == c_classIdCAbilRally) {
-		return false;
+	string scope;
+	int i;
+	int x;
+	
+	scope = CatalogEntryScope(lp_catalogType, lp_entry);
+	
+	x = CatalogFieldCount( scope );
+	i = 0;
+	while( i != x ) {
+		if( CatalogFieldGet(scope, i) == lp_field ) {
+			// An empty array is a useless one, since we'll query it and get an error.
+			if( CatalogFieldIsArray(scope, lp_field) ) { 
+				return CatalogFieldValueCount(lp_catalogType, lp_entry, lp_field, c_playerAny) > 0;
+			} else {
+				return true;
+			}
+		}
+		i = i + 1;
 	}
-
-	return true;
+	
+	return false;
 }
 
 // -- PRIVATE -------------------------------------------------------------- 
@@ -196,6 +184,7 @@ static fixed libactionbar_get_cooldown_for_slot(int player, int slot)
 	string ability;
 	fixed c;
 	ability = AbilityCommandGetAbility(libactionbar_actionbars[slot][player].action);
+	abilType = CatalogEntryScope( c_gameCatalogAbil, ability );
 
 	if( !CatalogEntryIsValid(c_gameCatalogAbil, ability) ) {
 		return 0;
@@ -205,33 +194,21 @@ static fixed libactionbar_get_cooldown_for_slot(int player, int slot)
 	if( c != 0 ) {
 		return c;
 	}
-
-	// Does not support Cost entry.
-	if(!libactionbar_catalog_abilityscope_has_cost(ability)) { 
-		return 0;
-	}
-
+	
 	// Check to make sure the Cost entry exists.
 	if( !libactionbar_catalog_has_field( c_gameCatalogAbil, ability, "Cost" ) ) {
 		return 0;
 	}
-
-	abilType = libactionbar_catalog_get_type(c_gameCatalogAbil,  ability, "CAbil" );
-	if (abilType == "CAbilAugment"  || abilType == "CAbilMorph" || abilType == "CAbilMorphPlacement" ) {
-		if( !libactionbar_catalog_has_field(c_gameCatalogAbil, ability, "Cost.Cooldown") ) {
-			return 0;
-		}
-        	return UnitAbilityGetCooldown(libactionbar_active_unit[player], ability, CatalogFieldValueGet(c_gameCatalogAbil, ability, "Cost.Cooldown.Link", player));
-    	}
-    	else 
-	{
-        	if( abilType == "CAbilEffectTarget" || abilType == "CAbilEffect" || abilType == "CAbilEffectInstant" || abilType == "CAbilBehavior") {
-			if( !libactionbar_catalog_has_field(c_gameCatalogAbil, ability, "Cost[0].Cooldown") ) {
-				return 0;
-			}
-
-            		return UnitAbilityGetCooldown(libactionbar_active_unit[player], ability, CatalogFieldValueGet(c_gameCatalogAbil, ability, "Cost[0].Cooldown.Link", player));
-        	}
+	
+	if( CatalogFieldIsArray( abilType, "Cost" ) ) {
+		s = CatalogFieldValueGet( c_gameCatalogAbil, ability, "Cost[0].Cooldown.Link", player);
+	} else {
+		s = CatalogFieldValueGet( c_gameCatalogAbil, ability, "Cost.Cooldown.Link", player);
+	}
+	
+	if( s != "" ) {
+		c = UnitAbilityGetCooldown( libactionbar_active_unit[player], ability, s );
+		return c;
 	}
 	return 0;
 }
@@ -364,8 +341,6 @@ static abilcmd libactionbar_get_abilcmd_from_string(string abilwithcmd, string b
 	string fqCommandName;
 	string s;
 
-	int parent;
-
 	int x;
 	int i;
 	int periodPos = StringFind( abilwithcmd, ",", false );
@@ -381,18 +356,12 @@ static abilcmd libactionbar_get_abilcmd_from_string(string abilwithcmd, string b
 	if( !CatalogEntryIsValid(c_gameCatalogAbil, fqAbilityName) ) {
 		return null;
 	}
-	
-	// Determine how many CmdButtonArray entries there are.
-	// This doesn't have a freakin' CmdButtonArray!
-	parent = AbilityClass( fqAbilityName );
-	if( parent == c_classIdCAbilTrain || parent == c_classIdCAbilResearch || parent == c_classIdCAbilArmMagazine ) {
-		return null;
-	}
 
-	x = CatalogFieldValueCount( c_gameCatalogAbil, fqAbilityName, "CmdButtonArray", player );
-	if( x == 0 ) {
+	if( !libactionbar_catalog_has_field(c_gameCatalogAbil, fqAbilityName, "CmdButtonArray" ) ) {
 		return null;
 	}
+	
+	x = CatalogFieldValueCount(c_gameCatalogAbil, fqAbilityName, "CmdButtonArray", player);
 
 	while( i != x ) {
 		s = CatalogFieldValueGet(c_gameCatalogAbil, fqAbilityName, "CmdButtonArray[" + IntToString(i) + "].DefaultButtonFace", player );
@@ -436,16 +405,14 @@ static fixed libactionbar_get_ability_cost(string ability, int costType, int pla
 {
 	string field;
 	string abilType;
+	string r;
+		
+	abilType = CatalogEntryScope( c_gameCatalogAbil, ability );
 
 	if( !CatalogEntryIsValid(c_gameCatalogAbil, ability) ) {
 		return 0;
 	}
 
-	if( !libactionbar_catalog_abilityscope_has_cost(ability) ) {
-		return 0;
-	}
-
-	// Check if ability has any costs at all!
 	if( !libactionbar_catalog_has_field(c_gameCatalogAbil, ability, "Cost") ) {
 		return 0;
 	}
@@ -456,23 +423,14 @@ static fixed libactionbar_get_ability_cost(string ability, int costType, int pla
 		} else {
 			field = "Vespene";
 		}
-
-		abilType = libactionbar_catalog_get_type(c_gameCatalogAbil,  ability, "CAbil" );
-		if (abilType == "CAbilAugment"  || abilType == "CAbilMorph" || abilType == "CAbilMorphPlacement" ) {
-			if( !libactionbar_catalog_has_field(c_gameCatalogAbil, ability, "Cost.Resource") ) {
-				return 0;
-			}
-        		return StringToFixed(CatalogFieldValueGet(c_gameCatalogAbil, ability, "Cost.Resource[" + field + "]", player ));
-    		}
-    		else 
-		{
-        		if( abilType == "CAbilEffectTarget" || abilType == "CAbilEffect" || abilType == "CAbilEffectInstant" || abilType == "CAbilBehavior") {
-				if( !libactionbar_catalog_has_field(c_gameCatalogAbil, ability, "Cost[0].Resource") ) {
-					return 0;
-				}
-        	    		return StringToFixed(CatalogFieldValueGet(c_gameCatalogAbil, ability, "Cost[0].Resource[" + field + "]", player ));
-        		}
+		
+		if( CatalogFieldIsArray( CatalogEntryScope(c_gameCatalogAbil, ability), "Cost" ) ) {
+			r = CatalogFieldValueGet(c_gameCatalogAbil, ability, "Cost[0].Resource[" + field + "]", player);
+		} else {
+			r = CatalogFieldValueGet(c_gameCatalogAbil, ability, "Cost.Resource[" + field + "]", player);
 		}
+		
+		return StringToFixed(r);
 	}
 
 	if( costType == libactionbar_costtype_life ) {
@@ -482,12 +440,13 @@ static fixed libactionbar_get_ability_cost(string ability, int costType, int pla
 	} else {
 		field = "Shields";
 	}
-
-	if( !libactionbar_catalog_has_field(c_gameCatalogAbil, ability, "Cost[0].Vital") ) {
-		return 0;
+	if( CatalogFieldIsArray( CatalogEntryScope(c_gameCatalogAbil, ability), "Cost" ) ) {
+		r = CatalogFieldValueGet(c_gameCatalogAbil, ability, "Cost[0].Vital[" + field + "]", player);
+	} else {
+		r = CatalogFieldValueGet(c_gameCatalogAbil, ability, "Cost.Vital[" + field + "]", player);
 	}
-
-	return StringToFixed(CatalogFieldValueGet(c_gameCatalogAbil, ability, "Cost[0].Vital[" + field + "]", player));
+	
+	return StringToFixed(r);
 }
 
 static string libactionbar_get_race_string(int player)
@@ -509,27 +468,36 @@ static text libactionbar_build_tooltip_from_button(string buttonId, string abili
 	text ret;
 	string tooltipName;
 	fixed cost;
+	bool hadCost;
 	string tooltipButton = CatalogFieldValueGet(c_gameCatalogButton, buttonId, "Tooltip", c_playerAny);
 	tooltipName = CatalogFieldValueGet(c_gameCatalogButton, buttonId, "Name", c_playerAny);
 
 	ret = StringToText("<c val=\"ffcc11\">") + StringExternal(tooltipName) + StringToText("</c><n/>");
 	cost = libactionbar_get_ability_cost(abilityId, libactionbar_costtype_minerals, player);
 	if(cost) {
+		hadCost = true;
 		ret = ret + StringToText( "<img width=\"24\" height=\"24\" path=\"Assets/Textures/icon-mineral-" + libactionbar_get_race_string(player) + ".dds\"/> " + FixedToString(cost, c_fixedPrecisionAny));
 	}
 	cost = libactionbar_get_ability_cost(abilityId, libactionbar_costtype_gas, player);
 	if(cost) {
+		hadCost = true;
 		ret = ret + StringToText( "<img width=\"24\" height=\"24\" path=\"Assets/Textures/icon-gas-" + libactionbar_get_race_string(player) + ".dds\"/> " + FixedToString(cost, c_fixedPrecisionAny));
 	}
 	cost = libactionbar_get_ability_cost(abilityId, libactionbar_costtype_life, player);
 	if(cost) {
+		hadCost = true;
 		ret = ret + StringToText( "<img width=\"24\" height=\"24\" path=\"Assets/Textures/icon-health-" + libactionbar_get_race_string(player) + ".dds\"/> " + FixedToString(cost, c_fixedPrecisionAny));
 	}
 	cost = libactionbar_get_ability_cost(abilityId, libactionbar_costtype_energy, player);
 	if(cost) {
+		hadCost = true;
 		ret = ret + StringToText( "<img width=\"24\" height=\"24\" path=\"Assets/Textures/icon-energy-" + libactionbar_get_race_string(player) + ".dds\"/> " + FixedToString(cost, c_fixedPrecisionAny));
 	}
-	ret = ret + StringToText("<n/><n/>") + StringExternal(tooltipButton);
+	if( hadCost ) { 
+		ret = ret + StringToText("<n/>");
+	}
+	
+	ret = ret + StringToText("<n/>") + StringExternal(tooltipButton);
 	return ret;
 }
 
@@ -568,14 +536,6 @@ void libactionbar_set_active_unit(int player, unit u) {
 		return;
 	}
 
-	// Well, gee, this is incredibly stupid, eh?
-	// I mean how could a unit possibly spawned on the map not have a catalog entry?
-	// ASK BLIZZARD.
-	if( !CatalogEntryIsValid(c_gameCatalogUnit, UnitGetType(u)) ) {
-		return;
-	}
-
-	
 	n = CatalogFieldValueCount( c_gameCatalogUnit, UnitGetType(u), "CardLayouts", player );
 	if(n == 0) {
 		libactionbar_redraw_actionbar(player);
@@ -598,7 +558,7 @@ void libactionbar_set_active_unit(int player, unit u) {
 	// Lets iterate over the command card!
 	x = n;
 	n = 0;
-	while(n != x) {Ê
+	while(n != x) {
 		
 		s = CatalogFieldValueGet(c_gameCatalogUnit, UnitGetType(u), "CardLayouts[0].LayoutButtons[" + IntToString(n) + "].Face", player );
 		if( StringEqual(s, "Move", false) || StringEqual(s, "Stop", false) || StringEqual(s, "MoveHold", false) || StringEqual(s, "Attack", false) || StringEqual(s, "MovePatrol", false) || StringEqual(s, "MoveHoldPosition", false) || StringEqual(s, "Rally", false) || StringEqual(s, "AcquireMove", false)) {
@@ -618,7 +578,7 @@ void libactionbar_set_active_unit(int player, unit u) {
 
 		
 
-		if( libactionbar_catalog_has_field(c_gameCatalogButton, f, "TintRacially") && CatalogFieldValueGet(c_gameCatalogButton, f, "TintRacially", player) == "1" ) {
+		if( CatalogFieldValueGet(c_gameCatalogButton, f, "TintRacially", player) == "1" ) {
 			r = true;
 		} else {
 			r = false;
