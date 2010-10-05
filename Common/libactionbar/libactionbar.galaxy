@@ -214,7 +214,7 @@ static fixed libactionbar_get_cooldown_for_slot(int player, int slot)
 }
 
 // Redraw the actionbar for a player (if he is active)
-void libactionbar_redraw_actionbar(int player) {
+void libactionbar_redraw_actionbar(int player, bool forceRedraw) {
 	int usedBars;
 	int x;
 	int y;
@@ -224,7 +224,7 @@ void libactionbar_redraw_actionbar(int player) {
 	bool disabled;
 
 	// Main actor bar area
-	if( libactionbar_dialogs[player] ) {
+	if( forceRedraw ) {
 		i = 0;
 		while(i != libactionbar_max_actions ) {
 			if( libactionbar_dialogitems_buttons[i][player] != 0 ) {
@@ -256,13 +256,18 @@ void libactionbar_redraw_actionbar(int player) {
 	x = 80 * usedBars + 40;
 	y = 117;
 
-	libactionbar_dialogs[player] = DialogCreate(x, y, c_anchorBottom, 0, 0, true);
+	if( forceRedraw ) {
+		libactionbar_dialogs[player] = DialogCreate(x, y, c_anchorBottom, 0, 0, true);
+	}
+	
 	DialogSetVisible(libactionbar_dialogs[player], PlayerGroupSingle(player), true);
 
 	i = 0;
 	while( i < usedBars ) {
 		// First off: make buttons
-		libactionbar_dialogitems_buttons[i][player] = DialogControlCreate( libactionbar_dialogs[player], c_triggerControlTypeButton );
+		if( forceRedraw ) {
+			libactionbar_dialogitems_buttons[i][player] = DialogControlCreate( libactionbar_dialogs[player], c_triggerControlTypeButton );
+		}
 		DialogControlSetSize( libactionbar_dialogitems_buttons[i][player], PlayerGroupSingle(player), 76, 76 );
 		if( i == 0 ) {
 			DialogControlSetPosition( libactionbar_dialogitems_buttons[i][player], PlayerGroupSingle(player), c_anchorLeft, 20+2, 0 );
@@ -272,14 +277,14 @@ void libactionbar_redraw_actionbar(int player) {
 		libNtve_gf_SetDialogItemTooltip( libactionbar_dialogitems_buttons[i][player], libactionbar_actionbars[i][player].tooltip, PlayerGroupSingle(player) );
 		// Disable this button if necessary
 		disabled = !UnitOrderIsValid(libactionbar_active_unit[player], libactionbar_guess_order(player, i));
-		if( disabled ) {
-			DialogControlSetEnabled( libactionbar_dialogitems_buttons[i][player], PlayerGroupSingle(player), false );
-		}
+		DialogControlSetEnabled( libactionbar_dialogitems_buttons[i][player], PlayerGroupSingle(player), !disabled );
 		
 		DialogControlSetVisible( libactionbar_dialogitems_buttons[i][player], PlayerGroupSingle(player), true );
 
 		// Images to make buttons look like actual command card actions.
-		libactionbar_dialogitems_images[i][player] = DialogControlCreate( libactionbar_dialogs[player], c_triggerControlTypeImage );
+		if( forceRedraw ) {
+			libactionbar_dialogitems_images[i][player] = DialogControlCreate( libactionbar_dialogs[player], c_triggerControlTypeImage );
+		}
 		DialogControlSetSize( libactionbar_dialogitems_images[i][player], PlayerGroupSingle(player), 76, 76 );
 		libNtve_gf_SetDialogItemImage( libactionbar_dialogitems_images[i][player], libactionbar_actionbars[i][player].icon, PlayerGroupSingle(player) );
 		if( i == 0 ) {
@@ -290,6 +295,8 @@ void libactionbar_redraw_actionbar(int player) {
 		
 		if( !disabled && libactionbar_actionbars[i][player].needsRacialTint ) { 
 			libNtve_gf_SetDialogItemColor( libactionbar_dialogitems_images[i][player], libactionbar_get_racial_tint(player), PlayerGroupSingle(player) );
+		} else if( disabled ) {
+			libNtve_gf_SetDialogItemColor( libactionbar_dialogitems_images[i][player], Color(255,255,255), PlayerGroupSingle(player) );
 		}
 		DialogControlSetVisible( libactionbar_dialogitems_images[i][player], PlayerGroupSingle(player), true );
 
@@ -308,7 +315,9 @@ void libactionbar_redraw_actionbar(int player) {
 			libactionbar_debug("Cooldown at " + FixedToString(pctComplete, c_fixedPrecisionAny));
 			// We'll have it scale vertically so that the bar will "grow" as cooldown completes
 			
-			libactionbar_dialogitems_cooldownlabels[i][player] = DialogControlCreate( libactionbar_dialogs[player], c_triggerControlTypeImage );
+			if( forceRedraw || libactionbar_dialogitems_cooldownlabels[i][player] == 0) {
+				libactionbar_dialogitems_cooldownlabels[i][player] = DialogControlCreate( libactionbar_dialogs[player], c_triggerControlTypeImage );
+			}
 			DialogControlSetSize( libactionbar_dialogitems_cooldownlabels[i][player], PlayerGroupSingle(player), FixedToInt(76*pctComplete), 74 );
 			if( i == 0 ) {
 				DialogControlSetPosition(libactionbar_dialogitems_cooldownlabels[i][player], PlayerGroupSingle(player), c_anchorLeft, 20+2, 0 );
@@ -324,9 +333,15 @@ void libactionbar_redraw_actionbar(int player) {
 				libNtve_gf_SetDialogItemImage( libactionbar_dialogitems_cooldownlabels[i][player], "Assets/Textures/glow_greenhaze1.dds", PlayerGroupSingle(player) );
 				DialogControlFadeTransparency( libactionbar_dialogitems_cooldownlabels[i][player], PlayerGroupSingle(player), 0.0, 0.2 );
 				libNtve_gf_SetDialogItemBlendMode(libactionbar_dialogitems_cooldownlabels[i][player], c_triggerBlendModeAdd, PlayerGroupSingle(player) );
+			} else {
+				libNtve_gf_SetDialogItemImage( libactionbar_dialogitems_cooldownlabels[i][player], "", PlayerGroupSingle(player) );
+				DialogControlFadeTransparency( libactionbar_dialogitems_cooldownlabels[i][player], PlayerGroupSingle(player), 0.0, 0.5 );
+				libNtve_gf_SetDialogItemBlendMode(libactionbar_dialogitems_cooldownlabels[i][player], c_triggerBlendModeMultiply, PlayerGroupSingle(player) );
 			}
 			libNtve_gf_SetDialogItemColor( libactionbar_dialogitems_cooldownlabels[i][player], Color(0, 255, 0), PlayerGroupSingle(player) );
 			DialogControlSetVisible( libactionbar_dialogitems_cooldownlabels[i][player], PlayerGroupSingle(player), true );
+		} else {
+			DialogControlSetVisible( libactionbar_dialogitems_cooldownlabels[i][player], PlayerGroupSingle(player), false );
 		}
 		i = i + 1;
 	}
@@ -394,7 +409,7 @@ static void libactionbar_attempt_add_ability(int player, string icon, bool tintR
 		libactionbar_actionbars[i][player].needsRacialTint = tintRacially;
 		libactionbar_actionbars[i][player].tooltip = tooltip;
 		libactionbar_actionbars[i][player].cooldownHighest = 0;
-		libactionbar_redraw_actionbar(player);
+		libactionbar_redraw_actionbar(player, true);
 		break;
 	}
 }
@@ -538,7 +553,7 @@ void libactionbar_set_active_unit(int player, unit u) {
 
 	n = CatalogFieldValueCount( c_gameCatalogUnit, UnitGetType(u), "CardLayouts", player );
 	if(n == 0) {
-		libactionbar_redraw_actionbar(player);
+		libactionbar_redraw_actionbar(player, true);
 		return;
 	}
 
@@ -550,7 +565,7 @@ void libactionbar_set_active_unit(int player, unit u) {
 	if(n == 0) {
 		// All done, no actions on the command card.
 		// Redraw to remove.
-		libactionbar_redraw_actionbar(player);
+		libactionbar_redraw_actionbar(player, true);
 		return;
 	}
 
@@ -619,7 +634,7 @@ bool libactionbar_update(bool check, bool run)
 {
 	int i = 0;
 	while( i != libactionbar_max_players ) {
-		libactionbar_redraw_actionbar(i);
+		libactionbar_redraw_actionbar(i, false);
 		i = i + 1;
 	}
 	return true;
