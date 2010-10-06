@@ -71,11 +71,12 @@ void libcrtx_output_addline(playergroup g, text t)
 		}
 
 		// Find a place to fit us in.
+		i = 0;
 		while(i != libcrtx_output_maxmessages) {
 			cont = false;
 			if( libcrtx_output_messages[x][i] == null ) {
 				libcrtx_output_messages[x][i] = t;
-				libcrtx_output_times[x][i] = libNtve_gf_GamePlayTime(x);
+				libcrtx_output_times[x][i] = GameGetMissionTime();
 				libcrtx_output_refresh();
 				cont = true;
 				break;
@@ -98,7 +99,7 @@ void libcrtx_output_addline(playergroup g, text t)
 		}
 
 		libcrtx_output_messages[x][ libcrtx_output_maxmessages-1 ] = t;
-		libcrtx_output_times[x][libcrtx_output_maxmessages-1] = libNtve_gf_GamePlayTime(x);
+		libcrtx_output_times[x][libcrtx_output_maxmessages-1] = GameGetMissionTime();
 		libcrtx_output_refresh();
 		x = x + 1;
 	}
