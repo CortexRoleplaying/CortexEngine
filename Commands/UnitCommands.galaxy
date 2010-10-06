@@ -467,7 +467,7 @@ bool libcrtx_command_addweapon(bool testConds, bool runActions) {
 	
 	// use toolkit on weapon
 	weapon = libcrtx_toolkit_getweapon(weapon);
-	if (!CatalogEntryIsValid(c_gameCatalogWeapon, weapon)) {
+	if (!CatalogEntryIsValid(c_gameCatalogWeapon, weapon) || CatalogEntryScope(c_gameCatalogWeapon, weapon) == weapon) {
 		return true;
 	}
 
