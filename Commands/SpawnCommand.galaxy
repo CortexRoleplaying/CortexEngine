@@ -91,36 +91,42 @@ void libcrtx_command_spawn_execute()
 	unit u;
 	point p;
 	unitgroup g;
+	
+	// Are we actually spawning any units at all?
 	if( libcrtx_command_spawn_instances[EventPlayer()].count == 0 ) {
 		return; // count == 0, don't bother.
 	}
 
+	// Establish the spawn point
 	u = libcrtx_spawner();
 	p = UnitGetPosition(u);
 	if( libcrtx_command_spawn_instances[EventPlayer()].loc ) {
 		p = RegionGetCenter(libcrtx_command_spawn_instances[EventPlayer()].loc);
 	}
 	
-
+	// What unit are we spawning?
+	// Make sure this is a valid entry in the game catalog.
 	uType = UnitTypeFromString(libcrtx_command_spawn_instances[EventPlayer()].unitType);
-	if( uType == "" || uType == libcrtx_getspawnertype() || libcrtx_toolkit_isrestrictedunit(uType) )
+	if( uType == "" || uType == libcrtx_getspawnertype() || libcrtx_toolkit_isrestrictedunit(uType) || !CatalogEntryIsValid(c_gameCatalogUnit, uType) )
 	{
 		return;
 	}
 
+	// Increment the spawn count throttle.
 	libcrtx_command_spawn_count[EventPlayer()] = libcrtx_command_spawn_count[EventPlayer()] + libcrtx_command_spawn_instances[EventPlayer()].count;
 	if( GameGetMissionTime() - libcrtx_command_spawn_lastevent[EventPlayer()] > libcrtx_setting_getint(libcrtx_setting_int_spawnperiod) ) {
 		libcrtx_command_spawn_lastevent[EventPlayer()] = FixedToInt(GameGetMissionTime());
 	}
 
-	// Frozen command.
+	// Can we spawn at the moment (spawn throttle)?
 	if( libcrtx_command_spawn_frozenuntil[EventPlayer()] > GameGetMissionTime() ) {
 		return;
 	}
 	
-	//libcrtx_debug("creating " + IntToString(libcrtx_command_spawn_instances[EventPlayer()].count) + " " + libcrtx_command_spawn_instances[EventPlayer()].unitType);
+	// Create the units
 	UnitCreate( libcrtx_command_spawn_instances[EventPlayer()].count, uType, c_unitCreateIgnorePlacement, libcrtx_command_spawn_instances[EventPlayer()].player, p, 270.0);
 
+	// Assign temporary/internal variables for the units we've just spawned.
 	libcrtx_variable_assign_group( EventPlayer(), libcrtx_variable_name_last_spawned, UnitLastCreatedGroup() );
 	g = libcrtx_variable_get_group( EventPlayer(), libcrtx_variable_name_all_spawned);
 	libNtve_gf_AddUnitGroupToUnitGroup( UnitLastCreatedGroup(), g );
