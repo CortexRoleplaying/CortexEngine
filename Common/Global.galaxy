@@ -20,8 +20,8 @@ const string libcrtx_version_commit = "61685e0d9632e08881b22dbfaf56985777dc01bc"
 
 // Version in form major.minor.bugfix.hotfix
 // ex: "0.10.1a" when concatenated
-const int libcrtx_version_major = 1;
-const int libcrtx_version_minor = 2;
+const int libcrtx_version_major = 2;
+const int libcrtx_version_minor = 0;
 const int libcrtx_version_bugfix = 0;
 const string libcrtx_version_hotfix = "";
 
@@ -71,5 +71,8 @@ string libcrtx_getspawnertype()
 // Footer includes due to required things being in this file. :(
 include "Cortex/Common/Debug.galaxy"
 include "Cortex/Common/Settings.galaxy"
+include "Cortex/Common/Variables.galaxy"
 include "Cortex/Common/Admin.galaxy"
+include "Cortex/Common/Output.galaxy"
 include "Cortex/Common/Utility.galaxy"
+include "Cortex/Common/ComputerAI.galaxy"

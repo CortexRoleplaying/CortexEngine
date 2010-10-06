@@ -28,19 +28,117 @@ void libcrtx_chat_init()
 	}
 }
 
-bool libcrtx_chat_parsechat(int lp_player, string lp_message)
+string libcrtx_chat_variablereplace( int player, string message )
+{
+	string s;
+	string v;
+	int i = 1;
+	
+	while( StringWord( message, i ) != "" ) {
+		s = StringWord(message, i);
+		if( StringSub(s, 1, 1) == "$" ) {
+			// Variable!
+			v = StringSub(s, 2, StringLength(s));
+			if( libcrtx_variable_exists( player, v, libcrtx_variable_type_int ) ) {
+				message = StringReplaceWord( message, s, IntToString(libcrtx_variable_get_int(player, v)), c_stringReplaceAll, c_stringCase );
+				return libcrtx_chat_variablereplace(player, message);
+			} else if( libcrtx_variable_exists( player, v, libcrtx_variable_type_fixed ) ) {
+				message = StringReplaceWord( message, s, FixedToString(libcrtx_variable_get_fixed(player, v), c_fixedPrecisionAny), c_stringReplaceAll, c_stringCase );
+				return libcrtx_chat_variablereplace(player, message);
+			} if( libcrtx_variable_exists( player, v, libcrtx_variable_type_string ) ) {
+				message = StringReplaceWord( message, s, libcrtx_variable_get_string(player, v), c_stringReplaceAll, c_stringCase );
+				return libcrtx_chat_variablereplace(player, message);
+			} else {
+				message = StringReplaceWord( message, s, "", c_stringReplaceAll, c_stringCase );
+				return libcrtx_chat_variablereplace(player, message);
+			}
+		}
+		i = i + 1;
+	}	
+
+
+	return message;
+}
+
+bool libcrtx_chat_parsechat(int lp_player, string lp_message, int lp_recursionLimit)
 {
 	trigger t;
 	int spaceIndex;
 	int currentCmd = 0;
 	string sub = "";
+	string rep;
+	int l;
+	int x;
+	string c;
+	string s;
+	bool aliasCreate;
 	bool commandFound = false;
+
+	if( lp_recursionLimit == libcrtx_chat_recursion_limit ) {
+		// This is the original command as issued before it's broken down.
+		// Reset our context to the default.
+		libcrtx_chat_set_context( lp_player, libcrtx_selected_units() );
+		libcrtx_variable_assign_group( lp_player, libcrtx_variable_name_original_selection, libcrtx_selected_units() );
+		libcrtx_variable_assign_group( lp_player, libcrtx_variable_name_all_spawned, UnitGroupEmpty() );
+	}
+	
+	if( lp_recursionLimit == 0 ) {
+		return false;
+	}
+	lp_recursionLimit = lp_recursionLimit - 1;
 
 	libcrtx_debug("libcrtx_chat_parsechat()");
 
 	// disabled players: all chat is routed to OOC.
 	if( libcrtx_admin_isplayerdisabled(lp_player) ) {
 		return false;
+	}
+
+	// Parse normally so we don't have to escape the ;'s
+	if( StringEqual(StringSub(lp_message, 1, 12), "alias create", false) ) {
+		aliasCreate = true;
+	}
+
+	l = 1;
+	x = 1;
+	while( x <= StringLength(lp_message) && !aliasCreate ) {
+		s = StringSub(lp_message, x, x);
+
+		if( x >= StringLength(lp_message) ) {
+			if( StringSub(lp_message, StringLength(lp_message), StringLength(lp_message)) == ";" ) {
+				c = StringSub(lp_message, l, StringLength(lp_message)-1);
+			} else {
+				c = StringSub(lp_message, l, StringLength(lp_message));
+			}
+			lp_message = libcrtx_trim_string( c );
+			l = 1;
+			// This part finishes the recursion and runs us through the regular non-recursive parser.
+		} else if( s == ";" && StringSub(lp_message, x-1, x-1) != "\\" ) { 
+			// Everything from here on backwards, new command!
+			c = StringSub(lp_message, l, x-1);
+			c = libcrtx_trim_string( c );
+			libcrtx_chat_parsechat( lp_player, c, lp_recursionLimit );
+			l = x+1;
+		}
+		x = x + 1;
+	}
+	if( l != 1 ) {
+		// Using recursion: skip!
+		return true;
+	}
+
+	// Strip out all escaped semicolons
+	x = 1;
+	while( x <= StringLength(lp_message) ) {
+		if( StringSub(lp_message, x, x) == ";" ) {
+			if( StringSub(lp_message, x-1, x-1) == "\\" ) {
+				// We must remove these!
+				s = StringSub(lp_message, 1, x-2);
+				lp_message = s + StringSub(lp_message, x, StringLength(lp_message));
+				x = 1; // Restart!
+	 		}
+		}
+		x = x + 1;
 	}
 
 	spaceIndex = StringFind( lp_message, " ", c_stringCase );
@@ -54,13 +152,43 @@ bool libcrtx_chat_parsechat(int lp_player, string lp_message)
 	// alias system, if we're running an alias command, stop, no need to do more.
 	if( libcrtx_alias_exists( sub ) ) {
 		sub = libcrtx_alias_getsource(sub);
+		// Rewrite this and re-parse recursively.
+		// We must do this to ensure that complex aliases will function.
+		lp_message = sub + " " + StringSub(lp_message, StringFind( lp_message, " ", c_stringCase ), StringLength(lp_message));
+		libcrtx_chat_parsechat( lp_player, lp_message, lp_recursionLimit );
+		return true;
+	}
+
+	// Check every word for aliases.
+	x = 2;
+	while( StringWord(lp_message, x) != "" ) {
+		s = StringWord(lp_message, x);
+		if( libcrtx_alias_exists(s) ) { 
+			lp_message = StringReplaceWord( lp_message, s, libcrtx_alias_getsource(s), c_stringReplaceAll, false );
+			libcrtx_chat_parsechat( lp_player, lp_message, lp_recursionLimit - 1 );
+			return true;
+		}
+		x = x + 1;
+	}
+
+	// Out of aliases, find/convert all variables
+	rep = libcrtx_chat_variablereplace( lp_player, lp_message );
+	if( rep != lp_message ) {
+		lp_message = rep;
+		libcrtx_chat_parsechat( lp_player, lp_message, lp_recursionLimit - 1 );
+		return true;
 	}
 
 	// convert to lowercase.
 	sub = StringCase(sub, false);
 
 	t = DataTableGetTrigger( true, "libcrtx_commands_" + sub );
-	if( t ) {
+	if( t )
+	{
+		// Reset return value.
+		libcrtx_variable_delete(lp_player, libcrtx_variable_name_return);
+
+		libcrtx_chat_set_parse_line( lp_player, lp_message );
 		TriggerExecute(t, false, false);
 		commandFound = true;
 	}
@@ -71,28 +199,33 @@ bool libcrtx_chat_parsechat(int lp_player, string lp_message)
 bool libcrtx_chat_receivedevent(bool testConds, bool runActions)
 {
 	text t;
+	int i;
+	int x;
+	int l;
+	string c;
 	string s;
 	bool isCmd = false;
 	int triggerPlayer = EventPlayer();
 	string chatMsg = EventChatMessage(false);
+	chatMsg = libcrtx_trim_string(chatMsg);
 
 	if(!runActions)
 	{
 		return true;
 	}
 
-	isCmd = libcrtx_chat_parsechat( triggerPlayer, chatMsg );
+	isCmd = libcrtx_chat_parsechat( triggerPlayer, chatMsg, libcrtx_chat_recursion_limit );
 
 	// Clear everyone's chat of the filth. FILTH I SAY.
 	UIClearMessages( PlayerGroupAll(), c_messageAreaChat );
 
 	if( !isCmd )
 	{
-		t = libcrtx_utility_colortextbyplayer( EventPlayer(), PlayerName( EventPlayer() ) + StringToText(" (OOC)") );
+		t = libcrtx_color_text_by_player( EventPlayer(), PlayerName( EventPlayer() ) + StringToText(" (OOC)") );
 		s = ": " + EventChatMessage(false);
 		t = t + StringToText(s);
 		// And now we write the pretty OOC chat!
-		libcrtx_writetext(PlayerGroupAll(), t);
+		libcrtx_write_text(PlayerGroupAll(), t);
 		
 	}
 	return true;			

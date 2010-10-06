@@ -11,9 +11,8 @@
 // GNU General Public License for more details.
 
 // This will only return the units that are owned by the current player
-
 // OR, they are hostile/neutral units.
-unitgroup libcrtx_utility_enforce_unit_permissions(unitgroup g)
+unitgroup libcrtx_enforce_unit_permissions(unitgroup g)
 {
     unit u;
     int count;
@@ -36,17 +35,17 @@ unitgroup libcrtx_utility_enforce_unit_permissions(unitgroup g)
     return g;
 }
 
-// This will only return the units that are owned by the current player
-// OR, they are hostile/neutral units.
-unitgroup libcrtx_utility_getselectedunits()
+// This will only return the units that are selected by the triggering player and enforces permissions on them.
+unitgroup libcrtx_selected_units()
 {
 	unitgroup g = UnitGroupSelected(EventPlayer());
-	g = libcrtx_utility_enforce_unit_permissions(g);
+	g = libcrtx_enforce_unit_permissions(g);
 
 	return g;
 }
 
-string libcrtx_utility_getcolorfromplayerdefault(int plr)
+// Returns the default string color name of a player slot. Ex: 1 - Red
+string libcrtx_color_from_player_default(int plr)
 {
 	if( plr == 0 ) {
 		return "white";
@@ -85,12 +84,15 @@ string libcrtx_utility_getcolorfromplayerdefault(int plr)
 	return "";
 }
 
-string libcrtx_utility_getcolorfromplayer(int plr)
+// Returns the string name of the color a player currently is
+string libcrtx_color_from_player(int plr)
 {
-	return libcrtx_utility_getcolorfromplayerdefault(PlayerGetColorIndex(plr, false));
+	return libcrtx_color_from_player_default(PlayerGetColorIndex(plr, false));
 }
 
-int libcrtx_utility_getplayerfromdefaultcolor(string colour)
+// Takes a color and returns the ID of the player it is, by default.
+// Ex: "red" - 1
+int libcrtx_color_to_player_default(string colour)
 {
 	if( colour == "white" ) {
 		return 0;
@@ -134,7 +136,7 @@ int libcrtx_utility_getplayerfromdefaultcolor(string colour)
 }
 
 // This function takes a colour described as a string and returns the player id of that colour.
-int libcrtx_utility_getplayerfromcolor(string colour)
+int libcrtx_color_to_player(string colour)
 {
 	int i;
 
@@ -143,6 +145,8 @@ int libcrtx_utility_getplayerfromcolor(string colour)
 		return libcrtx_setting_getint(libcrtx_setting_int_hostilecomputer);
 	} else if( colour == "neutral" ) {
 		return libcrtx_setting_getint(libcrtx_setting_int_neutralcomputer);
+	} else if( colour == "smarthostile" ) {
+		return libcrtx_setting_getint(libcrtx_setting_int_smarthostile);
 	} else if( colour == "me" ) {
 		return EventPlayer();
 	}
@@ -150,7 +154,7 @@ int libcrtx_utility_getplayerfromcolor(string colour)
 	i = libcrtx_max_players - 1;
 	while( i != -1 )
 	{
-		if( PlayerGetColorIndex( i, false ) == libcrtx_utility_getplayerfromdefaultcolor(colour) && PlayerStatus(i) != c_playerStatusUnused) {
+		if( PlayerGetColorIndex( i, false ) == libcrtx_color_to_player_default(colour) && PlayerStatus(i) != c_playerStatusUnused) {
 			return i;
 		}
 
@@ -160,27 +164,31 @@ int libcrtx_utility_getplayerfromcolor(string colour)
 	return -1;
 }
 
-text libcrtx_utility_colortextbyplayer(int player, text colorme)
+// Colors a 'text' depending on the current color of the player
+text libcrtx_color_text_by_player(int player, text colorme)
 {
 	return TextWithColor(colorme, ColorFromIndex((PlayerGetColorIndex(player, false)), c_teamColorDiffuse));		
 }
 
-text libcrtx_utility_colortext(text colorme, color c)
+// Colors a text with color c.
+text libcrtx_color_text(text colorme, color c)
 {
 	return TextWithColor(colorme, c);
 }
 
-text libcrtx_utility_coloredplayername(int player)
+// Returns a player's name colored to match his current player color.
+text libcrtx_colored_player_name(int player)
 {
 	text pName = PlayerName(player);
 	if( PlayerStatus(player) == c_playerStatusUnused ) {
 		pName = StringToText("Unnamed");
 	}
 
-	return libcrtx_utility_colortextbyplayer(player, pName);
+	return libcrtx_color_text_by_player(player, pName);
 }
 
-unit libcrtx_utility_getspawner()
+// Returns the spawner of the EventPlayer() or null.
+unit libcrtx_spawner()
 {
 	unitgroup g;
 	unit u;
@@ -196,42 +204,7 @@ unit libcrtx_utility_getspawner()
 	return u;
 }
 
-int libcrtx_minInt(int a, int b)
-{
-	if( a > b ) {
-		return b;
-	} else {
-		return a;
-	}
-}
-
-fixed libcrtx_minFixed(fixed a, fixed b)
-{
-	if( a > b ) {
-		return b;
-	} else {
-		return a;
-	}
-}
-
-int libcrtx_maxInt(int a, int b)
-{
-	if( a > b ) {
-		return a;
-	} else {
-		return b;
-	}
-}
-
-fixed libcrtx_maxFixed(fixed a, fixed b)
-{
-	if( a > b ) {
-		return a;
-	} else {
-		return b;
-	}
-}
-
+// Clamps an int between min and max.
 int libcrtx_boundsInt(int src, int min, int max)
 {
 	if( src < min ) {
@@ -244,6 +217,7 @@ int libcrtx_boundsInt(int src, int min, int max)
 	return src;
 }
 
+// Clamps a fixed between min and max.
 fixed libcrtx_boundsFixed(fixed src, fixed min, fixed max)
 {
 	if( src < min ) {
@@ -256,6 +230,8 @@ fixed libcrtx_boundsFixed(fixed src, fixed min, fixed max)
 	return src;
 }
 
+// Takes a color and turns it into a string that can be sent through an actormsg.
+// Format: r,g,b
 string libcrtx_color_to_string(color c)
 {
         return IntToString(Color255FromFixed(ColorGetComponent(c, c_colorComponentRed))) + "," +
@@ -264,27 +240,53 @@ string libcrtx_color_to_string(color c)
 }
 
 // hacky code because blizzard sucked at implementing chat stuff. :(
+// writes to the Cortex chat area
 void libcrtx_write(playergroup p, string s)
 {
-	UIDisplayMessage( p, c_messageAreaDebug, StringToText("                        " + s) );
+	libcrtx_output_addline( p, StringToText(s) );
+	//UIDisplayMessage( p, c_messageAreaDebug, StringToText("                        " + s) );
 }
 
-void libcrtx_writetext(playergroup p, text t)
+// writes to the cortex chat area.
+void libcrtx_write_text(playergroup p, text t)
 {
-	UIDisplayMessage( p, c_messageAreaDebug, StringToText("                        ") + t );
+	libcrtx_output_addline( p, t );
+	//UIDisplayMessage( p, c_messageAreaDebug, StringToText("                        ") + t );
 }
 
-void libcrtx_writelocalerror(string s)
+// Writes an error in the EventPlayer() context.
+void libcrtx_write_error(string s)
 {
-	libcrtx_writetext( PlayerGroupSingle(EventPlayer()), libcrtx_utility_colortext(StringToText(s), Color(255,0,0)) );
+	libcrtx_write_text( PlayerGroupSingle(EventPlayer()), libcrtx_color_text(StringToText(s), Color(255,0,0)) );
 }
 
-void libcrtx_writelocalsuccess(string s)
+// Writes a success message in the EventPlayer() context.
+void libcrtx_write_success(string s)
 {
-	libcrtx_writetext( PlayerGroupSingle(EventPlayer()), libcrtx_utility_colortext(StringToText(s), Color(0,255,0)) );
+	libcrtx_write_text( PlayerGroupSingle(EventPlayer()), libcrtx_color_text(StringToText(s), Color(0,255,0)) );
 }
 
+// Generates a bossbar id for the player. 
+// NOTE: btype < 3!
 int libcrtx_generate_bossbar_id(int player, int btype)
 {
 	return (player * 3) + btype;
+}
+
+// Trims all whitespace in front of and after a string.
+string libcrtx_trim_string( string s )
+{
+	int x = 1;
+	int y = StringLength(s);
+	// Trim front
+	while( StringSub(s, x, x) == " " ) {
+		x = x + 1;
+	}
+
+	// Trim back
+	while( StringSub(s, y, y) == " " ) {
+		y = y - 1;
+	}
+
+	return StringSub(s, x, y);
 }

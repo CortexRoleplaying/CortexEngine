@@ -16,29 +16,29 @@ bool libcrtx_command_regioncreate(bool checkConds, bool runActions)
 	fixed radius;
 	string name;
 	
-	name = StringWord(EventChatMessage(false), 2);
-	radius = StringToFixed(StringWord(EventChatMessage(false), 3));
+	name = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2);
+	radius = StringToFixed(StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 3));
 	if( radius == 0.0 ) {
 		radius = 2;
 	}
 
 	if( DataTableGetRegion( true, libcrtx_command_region_buildidentifier(name) ) ) {
-		libcrtx_writelocalerror("A region with that name already exists!");
+		libcrtx_write_error("A region with that name already exists!");
 		return true;
 	}
 
-	r = RegionCircle( UnitGetPosition(libcrtx_utility_getspawner()), radius );
+	r = RegionCircle( UnitGetPosition(libcrtx_spawner()), radius );
 
 	// and save it…
 	DataTableSetRegion( true, libcrtx_command_region_buildidentifier(name), r );
 
-	libcrtx_writelocalsuccess("Region \"" + name + "\" has been created.");
+	libcrtx_write_success("Region \"" + name + "\" has been created.");
 	return true;
 }
 
 bool libcrtx_command_regionremove(bool checkConds, bool runActions)
 {
-	string name = StringWord(EventChatMessage(false), 2);
+	string name = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2);
 
 	if( DataTableGetRegion( true, libcrtx_command_region_buildidentifier(name) ) ) {
 		DataTableValueRemove( true, libcrtx_command_region_buildidentifier(name) );
@@ -65,9 +65,9 @@ bool libcrtx_command_regionremove(bool checkConds, bool runActions)
 			// our job here is done. Someone should rewrite this stuff seomday to not be so incredibly leapfroggy and nested.
 		}
 		
-		libcrtx_writelocalsuccess("Region \"" + name + "\" has been removed.");
+		libcrtx_write_success("Region \"" + name + "\" has been removed.");
 	} else {
-		libcrtx_writelocalerror("No region with that name exists!");
+		libcrtx_write_error("No region with that name exists!");
 	}
 	
 	return true;
@@ -94,9 +94,9 @@ bool libcrtx_command_regionremoveall(bool checkConds, bool runActions)
 	}
 	
 	if(removeCount) {
-		libcrtx_writelocalsuccess("All your regions have been removed.");
+		libcrtx_write_success("All your regions have been removed.");
 	} else {
-		libcrtx_writelocalerror("You have no regions to remove.");
+		libcrtx_write_error("You have no regions to remove.");
 	}
 	
 	return true;
@@ -149,8 +149,8 @@ bool libcrtx_command_teleport(bool checkConds, bool runActions)
 	int g2;
 
 	// Take two regions we own, and read 'em.
-	rn1 = StringWord(EventChatMessage(false), 2);
-	rn2 = StringWord(EventChatMessage(false), 3);
+	rn1 = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2);
+	rn2 = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 3);
 	
 	rn1 = libcrtx_command_region_buildidentifier(rn1);
 	rn2 = libcrtx_command_region_buildidentifier(rn2);
@@ -181,7 +181,7 @@ bool libcrtx_command_teleport(bool checkConds, bool runActions)
 	r2 = DataTableGetRegion(true, rn2);
 	
 	if( r1 == null || r2 == null ) {
-		libcrtx_writelocalerror("One or more invalid regions were entered.");
+		libcrtx_write_error("One or more invalid regions were entered.");
 		return true;
 	}
 

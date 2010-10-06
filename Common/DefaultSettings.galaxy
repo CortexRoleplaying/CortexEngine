@@ -13,6 +13,7 @@
 // Initiate the default settings for Cortex.
 void libcrtx_settings_initdefault()
 {
+	int i;
 	libcrtx_set_spawner("spawner");
 
 	libcrtx_setting_setint(libcrtx_setting_int_maxspawncount, 24);
@@ -23,7 +24,18 @@ void libcrtx_settings_initdefault()
 	libcrtx_setting_setint(libcrtx_setting_int_hostilecomputer, 15);
 	libcrtx_setting_setint(libcrtx_setting_int_rootadminplayer, 1);
 
+	// Ok, so Blizzard decided to be stupid and not guarantee player IDs on Battle.net 2.0 only.
+	libcrtx_setting_setint(libcrtx_setting_int_smarthostile, -1 );
+	i = 1; // skip 0 and 15, they are neutral/hostile
+	while(i != libcrtx_max_players - 1 ) {
+		if( PlayerType(i) == c_playerTypeComputer ) {
+			libcrtx_setting_setint(libcrtx_setting_int_smarthostile, i );
+		}
+		i = i + 1;
+	}
+
 	libcrtx_setting_setint(libcrtx_setting_int_maxspawnrate, 100);
 	libcrtx_setting_setint(libcrtx_setting_int_spawnperiod, 60);
 	libcrtx_setting_setint(libcrtx_setting_int_spawntimeout, 30);
+
 }

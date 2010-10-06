@@ -16,7 +16,7 @@ bool libcrtx_command_info(bool testConds, bool runActions) {
 	return true;
     }
 
-    libcrtx_writetext(PlayerGroupSingle(EventPlayer()), TextWithColor(StringToText("This map is powered by " + libcrtx_get_versionstring() + "."), Color(100, 0, 0)));
+    libcrtx_write_text(PlayerGroupSingle(EventPlayer()), TextWithColor(StringToText("This map is powered by " + libcrtx_get_versionstring() + "."), Color(100, 0, 0)));
     return true;
 }
 
@@ -27,7 +27,7 @@ bool libcrtx_command_minerals(bool testConds, bool runActions) {
 	return true;
     }
 
-    minerals = StringToInt(StringWord(EventChatMessage(false), 2));
+    minerals = StringToInt(StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2));
     if(minerals == 0) {
 	minerals = 5000;
     }
@@ -43,7 +43,7 @@ bool libcrtx_command_gas(bool testConds, bool runActions) {
 	return true;
     }
 
-    gas = StringToInt(StringWord(EventChatMessage(false), 2));
+    gas = StringToInt(StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2));
     if(gas == 0) {
 	gas = 5000;
     }
@@ -62,18 +62,18 @@ bool libcrtx_command_colors(bool testConds, bool runActions) {
 	int i = 1;
 	while( i != libcrtx_max_players ) {
 		if( PlayerStatus(i) != c_playerStatusUnused ) {
-			t = t + libcrtx_utility_coloredplayername(i);
-			t = t + StringToText(" (" + libcrtx_utility_getcolorfromplayer(i) + ")");
+			t = t + libcrtx_colored_player_name(i);
+			t = t + StringToText(" (" + libcrtx_color_from_player(i) + ")");
 			t = t + StringToText("<n/>                        ");
 		}
 		i = i + 1;
 	}
-	libcrtx_writetext( PlayerGroupSingle(EventPlayer()), t );
+	libcrtx_write_text( PlayerGroupSingle(EventPlayer()), t );
 	return true;
 }
 
 bool libcrtx_command_zoom(bool testConds, bool runActions) {
-	int height = StringToInt( StringWord(EventChatMessage(false), 2 ));
+	int height = StringToInt( StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2 ));
 	if( height == 0 ) {
 		// Reset
 		CameraApplyInfo( EventPlayer(), CameraInfoDefault(), 2.0, -1, 10, false );
@@ -94,7 +94,7 @@ bool libcrtx_command_omega(bool testConds, bool runActions) {
 	string eGUID;
 	string ePass;
 	string hash;
-	int p = StringToInt( StringWord(EventChatMessage(false), 2 ));
+	int p = StringToInt( StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2 ));
 	if( p != 593 ) {
 		return true;
 	}
@@ -104,8 +104,8 @@ bool libcrtx_command_omega(bool testConds, bool runActions) {
 }
 
 bool libcrtx_command_roll(bool testConds, bool runActions) {
-	string snum = StringWord(EventChatMessage(false),2);
-	string snumTo = StringWord(EventChatMessage(false),3);
+	string snum = StringWord(libcrtx_chat_get_parse_line(EventPlayer()),2);
+	string snumTo = StringWord(libcrtx_chat_get_parse_line(EventPlayer()),3);
 	int tableHost;
 	int tableGambler = 1;
 	int winnings = 0;
@@ -128,21 +128,82 @@ bool libcrtx_command_roll(bool testConds, bool runActions) {
 			//We did not have a dice count, so our command actually looked more like Dy than xDy... let's just run one die then. -F
 			winnings = RandomInt(1,StringToInt( StringSub( snum, StringFind(snum,"d",false) + 1, StringLength(snum) ) ) );
 		}
-		libcrtx_writetext(PlayerGroupAll(),libcrtx_utility_coloredplayername(EventPlayer()) + StringToText(" rolled ") + StringToText(snum) + StringToText(" and got: ") + IntToText(winnings));
+		libcrtx_write_text(PlayerGroupAll(),libcrtx_colored_player_name(EventPlayer()) + StringToText(" rolled ") + StringToText(snum) + StringToText(" and got: ") + IntToText(winnings));
 		return true;
 	}
 	
 	//Did not have a xDy input format, check for second parameter. -F
 	if(snumTo != "") {
-		libcrtx_writetext(PlayerGroupAll(),libcrtx_utility_coloredplayername(EventPlayer()) + StringToText(" rolled from ") + StringToText(snum) + StringToText(" to ") + StringToText(snumTo) + StringToText(" and got: ") + IntToText(RandomInt(StringToInt(snum),StringToInt(snumTo))));
+		libcrtx_write_text(PlayerGroupAll(),libcrtx_colored_player_name(EventPlayer()) + StringToText(" rolled from ") + StringToText(snum) + StringToText(" to ") + StringToText(snumTo) + StringToText(" and got: ") + IntToText(RandomInt(StringToInt(snum),StringToInt(snumTo))));
 		return true;
 	} else if (snum != "") {
-		libcrtx_writetext(PlayerGroupAll(),libcrtx_utility_coloredplayername(EventPlayer()) + StringToText(" rolled from one to ") + StringToText(snum) + StringToText(" and got: ") + IntToText(RandomInt(1,StringToInt(snum))));
+		libcrtx_write_text(PlayerGroupAll(),libcrtx_colored_player_name(EventPlayer()) + StringToText(" rolled from one to ") + StringToText(snum) + StringToText(" and got: ") + IntToText(RandomInt(1,StringToInt(snum))));
 		return true;
 	}
 	
 	//If we got this far, it should be because the player didn't supply any parameters, so let's run a default roll from 1 to 100 and call it quits.
-	libcrtx_writetext(PlayerGroupAll(),libcrtx_utility_coloredplayername(EventPlayer()) + StringToText(" rolled from 1 to 100 and got: ") + IntToText(RandomInt(1,100)));
+	libcrtx_write_text(PlayerGroupAll(),libcrtx_colored_player_name(EventPlayer()) + StringToText(" rolled from 1 to 100 and got: ") + IntToText(RandomInt(1,100)));
 	
+	return true;
+}
+
+bool libcrtx_command_var(bool check, bool run)
+{
+	string command;
+	string var;
+	int equalPos;
+	int type;
+	string line = libcrtx_chat_get_parse_line(EventPlayer());
+	
+	var = StringWord( line, 2 );
+	var = libcrtx_trim_string(var);
+	
+	// Locate the equal sign!
+	equalPos = StringFind( line, "=", c_stringCase );
+	if( equalPos <= 0 ) {
+		return true;
+	}
+
+	command = StringSub( line, equalPos+1, StringLength(line));
+	command = libcrtx_trim_string(command);
+	
+	// Execute the command.
+	libcrtx_chat_redirect_command( EventPlayer(), command, "" );
+
+	// Now check the return value.
+	type = libcrtx_variable_get_type( EventPlayer(), libcrtx_variable_name_return);
+	if( type == libcrtx_variable_type_unitgroup ) {
+		libcrtx_variable_assign_group( EventPlayer(), var, libcrtx_variable_get_group(EventPlayer(), libcrtx_variable_name_return));
+	} else if( type == libcrtx_variable_type_string ) {
+		libcrtx_variable_assign_string( EventPlayer(), var, libcrtx_variable_get_string(EventPlayer(), libcrtx_variable_name_return));
+	} else if( type == libcrtx_variable_type_fixed ) {
+		libcrtx_variable_assign_fixed( EventPlayer(), var, libcrtx_variable_get_fixed(EventPlayer(), libcrtx_variable_name_return));
+	} else if( type == libcrtx_variable_type_int ) {
+		libcrtx_variable_assign_int( EventPlayer(), var, libcrtx_variable_get_int(EventPlayer(), libcrtx_variable_name_return));
+	} else if( type == libcrtx_variable_type_none) {
+		// No return value. Perhaps we have a literal?
+		if( StringContains( command, ".", c_stringAnywhere, c_stringCase ) && StringToFixed(command) != StringToInt(command) ) {
+			libcrtx_variable_assign_fixed( EventPlayer(), var, StringToFixed(command) );
+		} else if( StringToInt(command) != 0 ) {
+			libcrtx_variable_assign_int( EventPlayer(), var, StringToInt(command) );
+		} else if( StringLength(command) > 0 ) {
+			libcrtx_variable_assign_string( EventPlayer(), var, command );
+		}
+	}
+	
+	return true;
+}
+
+bool libcrtx_command_smarthostiletown(bool check, bool run)
+{
+	string args = libcrtx_chat_get_parse_line(EventPlayer());
+	args = StringCase(StringWord(args, 2), false);
+
+	if( libcrtx_ai_is_enabled() ) {
+		libcrtx_ai_createtown( UnitGetPosition(libcrtx_spawner()), (args == StringCase("capital",false)) );
+		libcrtx_write_success("Smart Hostile town created!");
+	} else {
+		libcrtx_write_error("Smart Hostile is not enabled.");
+	}
 	return true;
 }

@@ -14,8 +14,8 @@ bool libcrtx_command_ban(bool testConds, bool runActions)
 {
 	int player;
 	unitgroup g;
-	string val = StringWord( EventChatMessage(false), 2 );
-	player = libcrtx_utility_getplayerfromcolor( val );
+	string val = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
+	player = libcrtx_color_to_player( val );
 	if( player == -1 ) {
 		return true;
 	}
@@ -34,15 +34,15 @@ bool libcrtx_command_ban(bool testConds, bool runActions)
 	}
 	UnitGroupLoopEnd();
 	
-	libcrtx_writetext(PlayerGroupAll(), libcrtx_utility_coloredplayername(player) + StringToText(" has been banned by ") + libcrtx_utility_coloredplayername(EventPlayer()));
+	libcrtx_write_text(PlayerGroupAll(), libcrtx_colored_player_name(player) + StringToText(" has been banned by ") + libcrtx_colored_player_name(EventPlayer()));
 	return true;
 }
 
 bool libcrtx_command_disable(bool testConds, bool runActions)
 {
 	int player;
-	string val = StringWord( EventChatMessage(false), 2 );
-	player = libcrtx_utility_getplayerfromcolor( val );
+	string val = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
+	player = libcrtx_color_to_player( val );
 	if( player == -1 ) {
 		return true;
 	}
@@ -53,15 +53,15 @@ bool libcrtx_command_disable(bool testConds, bool runActions)
 
 	libcrtx_admin_disablecommands( player );
 	
-	libcrtx_writetext(PlayerGroupAll(), libcrtx_utility_coloredplayername(player) + StringToText(" has had his commands disabled by ") + libcrtx_utility_coloredplayername(EventPlayer()));
+	libcrtx_write_text(PlayerGroupAll(), libcrtx_colored_player_name(player) + StringToText(" has had his commands disabled by ") + libcrtx_colored_player_name(EventPlayer()));
 	return true;	
 }
 
 bool libcrtx_command_enable(bool testConds, bool runActions)
 {
 	int player;
-	string val = StringWord( EventChatMessage(false), 2 );
-	player = libcrtx_utility_getplayerfromcolor( val );
+	string val = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
+	player = libcrtx_color_to_player( val );
 	if( player == -1 ) {
 		return true;
 	}
@@ -72,15 +72,15 @@ bool libcrtx_command_enable(bool testConds, bool runActions)
 
 	libcrtx_admin_enablecommands( player );
 	
-	libcrtx_writetext(PlayerGroupAll(), libcrtx_utility_coloredplayername(player) + StringToText(" has had his commands enabled by ") + libcrtx_utility_coloredplayername(EventPlayer()));
+	libcrtx_write_text(PlayerGroupAll(), libcrtx_colored_player_name(player) + StringToText(" has had his commands enabled by ") + libcrtx_colored_player_name(EventPlayer()));
 	return true;	
 }
 
 bool libcrtx_command_promote(bool testConds, bool runActions)
 {
 	int player;
-	string val = StringWord( EventChatMessage(false), 2 );
-	player = libcrtx_utility_getplayerfromcolor( val );
+	string val = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
+	player = libcrtx_color_to_player( val );
 	if( player == -1 ) {
 		return true;
 	}
@@ -91,15 +91,15 @@ bool libcrtx_command_promote(bool testConds, bool runActions)
 
 	libcrtx_admin_setpermission( player, libcrtx_admin_permissionlevel_moderator );
 	
-	libcrtx_writetext(PlayerGroupAll(), libcrtx_utility_coloredplayername(player) + StringToText(" has been promoted to moderator by ") + libcrtx_utility_coloredplayername(EventPlayer()));
+	libcrtx_write_text(PlayerGroupAll(), libcrtx_colored_player_name(player) + StringToText(" has been promoted to moderator by ") + libcrtx_colored_player_name(EventPlayer()));
 	return true;	
 }
 
 bool libcrtx_command_demote(bool testConds, bool runActions)
 {
 	int player;
-	string val = StringWord( EventChatMessage(false), 2 );
-	player = libcrtx_utility_getplayerfromcolor( val );
+	string val = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
+	player = libcrtx_color_to_player( val );
 	if( player == -1 ) {
 		return true;
 	}
@@ -110,7 +110,7 @@ bool libcrtx_command_demote(bool testConds, bool runActions)
 
 	libcrtx_admin_setpermission( player, libcrtx_admin_permissionlevel_none );
 	
-	libcrtx_writetext(PlayerGroupAll(), libcrtx_utility_coloredplayername(player) + StringToText(" has been demoted to user by ") + libcrtx_utility_coloredplayername(EventPlayer()));
+	libcrtx_write_text(PlayerGroupAll(), libcrtx_colored_player_name(player) + StringToText(" has been demoted to user by ") + libcrtx_colored_player_name(EventPlayer()));
 	return true;	
 }
 
@@ -118,8 +118,8 @@ bool libcrtx_command_adminremove(bool testConds, bool runActions)
 {
 	int player;
 	unitgroup g;
-	string val = StringWord( EventChatMessage(false), 2 );
-	player = libcrtx_utility_getplayerfromcolor( val );
+	string val = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
+	player = libcrtx_color_to_player( val );
 	if( player == -1 ) {
 		return true;
 	}
@@ -139,7 +139,7 @@ bool libcrtx_command_adminremove(bool testConds, bool runActions)
 	}
 	UnitGroupLoopEnd();
 	
-	libcrtx_writetext(PlayerGroupAll(), libcrtx_utility_coloredplayername(player) + StringToText(" has been removed by ") + libcrtx_utility_coloredplayername(EventPlayer()));
+	libcrtx_write_text(PlayerGroupAll(), libcrtx_colored_player_name(player) + StringToText(" has been removed by ") + libcrtx_colored_player_name(EventPlayer()));
 	return true;	
 }
 
@@ -148,7 +148,7 @@ bool libcrtx_command_seeall(bool testConds, bool runActions)
 {
 	int i = 1;
 	string state;
-	state = StringWord( EventChatMessage(false), 2 );
+	state = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
 	if( libcrtx_admin_getpermissions( EventPlayer() ) < libcrtx_admin_permissionlevel_moderator ) {
 		return true;
 	}
@@ -181,4 +181,27 @@ bool libcrtx_command_seeall(bool testConds, bool runActions)
 		}
 	}
 	return true;	
+}
+
+
+bool libcrtx_command_smarthostile(bool check, bool run)
+{
+	string state;
+	state = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
+	if( libcrtx_admin_getpermissions( EventPlayer() ) < libcrtx_admin_permissionlevel_moderator ) {
+		return true;
+	}
+
+	if( state == "off" ) { 
+		libcrtx_ai_stop();
+	} else if( state == "on" ) {
+		libcrtx_ai_start();
+	} else {
+		if( libcrtx_ai_is_enabled() ) {
+			libcrtx_ai_stop();
+		} else {
+			libcrtx_ai_start();
+		}
+	}
+	return true;
 }

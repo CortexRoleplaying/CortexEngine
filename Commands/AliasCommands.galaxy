@@ -15,11 +15,18 @@ bool libcrtx_command_alias(bool checkConds, bool runActions)
 	// Alias uses a subcommand tree. Woo!
 	string parameter;
 	string parameterTwo;
-	string subCommand = StringWord( EventChatMessage(false), 2 );
+	int x;
+	string subCommand = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
 	if( subCommand == "create" ) {
 		// create an alias!
-		parameter = StringWord( EventChatMessage(false), 3 ); // the new command 
-		parameterTwo = StringWord( EventChatMessage(false), 4 ); // the old command's name.
+		parameter = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 3 ); // the new command 
+		x = 4;
+		while( StringWord( libcrtx_chat_get_parse_line(EventPlayer()), x) != "" ) {
+			parameterTwo = parameterTwo + StringWord( libcrtx_chat_get_parse_line(EventPlayer()), x) + " ";
+			x = x + 1;
+		}
+		parameterTwo = libcrtx_trim_string(parameterTwo);
+
 		if( parameterTwo == "alias" ) { // do not allow aliasing the alias command.
 			return true;
 		}
@@ -32,17 +39,17 @@ bool libcrtx_command_alias(bool checkConds, bool runActions)
 		return true;
 	} else if ( subCommand == "remove" ) {
 		// destroy an alias! oh noes.
-		parameter = StringWord( EventChatMessage(false), 3); // the alias to remove.
+		parameter = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 3); // the alias to remove.
 
 		if( libcrtx_alias_exists(parameter) ) {
-			libcrtx_writelocalsuccess("Removed alias: " + parameter );
+			libcrtx_write_success("Removed alias: " + parameter );
 			libcrtx_alias_destroy(parameter);
 		} else {
-			libcrtx_writelocalerror("No such alias.");
+			libcrtx_write_error("No such alias.");
 		}
 	} else if( subCommand == "removeall" ) {
 		libcrtx_alias_destroyall();
-		libcrtx_writelocalsuccess("All aliases have been removed.");
+		libcrtx_write_success("All aliases have been removed.");
 	} else if( subCommand == "list" ) {
 		parameterTwo = libcrtx_alias_list();
 		libcrtx_write(PlayerGroupSingle(EventPlayer()), parameterTwo);

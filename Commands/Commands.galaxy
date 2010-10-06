@@ -13,7 +13,7 @@
 include "Cortex/Commands/SharedData.galaxy"
 include "Cortex/Commands/MainCommands.galaxy"
 include "Cortex/Commands/SpawnCommand.galaxy"
-include "Cortex/Commands/MiscCommands.galaxy"
+include "Cortex/Commands/UnitCommands.galaxy"
 include "Cortex/Commands/ChatCommands.galaxy"
 include "Cortex/Commands/AdminCommands.galaxy"
 include "Cortex/Commands/AliasCommands.galaxy"
@@ -33,8 +33,11 @@ void libcrtx_commands_init()
 	libcrtx_command_create("zoom", "libcrtx_command_zoom");
 	libcrtx_command_create("omega", "libcrtx_command_omega");
 	libcrtx_command_create("roll", "libcrtx_command_roll");
+	libcrtx_command_create("var", "libcrtx_command_var");
+	libcrtx_command_create("town", "libcrtx_command_smarthostiletown");
 
 	// unit commands
+	libcrtx_command_create("@context", "libcrtx_command_context");
 	libcrtx_command_create("@spawn", "libcrtx_command_spawn");
 	libcrtx_command_create("@kill", 	"libcrtx_command_kill");
 	libcrtx_command_create("@remove", "libcrtx_command_remove");
@@ -83,6 +86,7 @@ void libcrtx_commands_init()
 	libcrtx_command_create("!demote", "libcrtx_command_demote");
 	libcrtx_command_create("!remove", "libcrtx_command_adminremove");
 	libcrtx_command_create("!seeall", "libcrtx_command_seeall");
+	libcrtx_command_create("!smarthostile", "libcrtx_command_smarthostile");
 
 	// region commands
 	libcrtx_command_create("#create", "libcrtx_command_regioncreate");

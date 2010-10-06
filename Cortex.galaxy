@@ -13,9 +13,42 @@
 include "Cortex/Common/Global.galaxy"
 include "Cortex/Toolkit/Toolkit.galaxy"
 include "Cortex/Chat/Chat.galaxy"
-include "Cortex/Chat/ChatHandler.galaxy"
 include "Cortex/Commands/Commands.galaxy"
 include "Cortex/Events/Events.galaxy"
+
+bool libcrtx_MapCheck()
+{
+	bool r = true;
+	// Check for map configuration errors that will degrade quality.
+
+	if( MeleeGetOption(1, c_meleeOptionDefeat) || MeleeGetOption(1, c_meleeOptionVictory) ) {
+		libcrtx_write(PlayerGroupAll(), "Melee trigger usage has been detected.");
+		r = false;
+	}
+
+	if( PlayerType(libcrtx_setting_getint(libcrtx_setting_int_neutralcomputer)) != c_playerTypeNeutral ) {
+		libcrtx_write(PlayerGroupAll(), "Incorrect neutral player settings.");
+		r = false;
+	}
+
+	if( PlayerType(libcrtx_setting_getint(libcrtx_setting_int_hostilecomputer)) != c_playerTypeHostile ) {
+		libcrtx_write(PlayerGroupAll(), "Incorrect hostile player settings.");
+		r = false;
+	}
+
+	if( PlayerType(libcrtx_setting_getint(libcrtx_setting_int_smarthostile)) != c_playerTypeComputer ) {
+		libcrtx_write(PlayerGroupAll(), "Incorrect smarthostile player settings.");
+		r = false;
+	}
+	
+	if( !r ) {
+		libcrtx_write(PlayerGroupAll(), "One or more errors detected. Cortex has failed to startup.");
+		libcrtx_write(PlayerGroupAll(), "Engine Version: " + libcrtx_get_versionstring());
+		libcrtx_write_text(PlayerGroupAll(), StringToText("Please correct your settings, or contact the author of ") + GameMapName() );
+	}
+
+	return r;
+}
 
 void libcrtx_InitLib()
 {
@@ -27,9 +60,13 @@ void libcrtx_InitLib()
 
 	// cortex main init.
 	libcrtx_settings_initdefault();
-	libcrtx_toolkit_init();
-	libcrtx_commands_init();
-	libcrtx_chat_init();
-	libcrtx_admin_init();
-	libcrtx_events_init();
+	libcrtx_output_init();
+
+	if( libcrtx_MapCheck() ) {
+		libcrtx_toolkit_init();
+		libcrtx_commands_init();
+		libcrtx_chat_init();
+		libcrtx_admin_init();
+		libcrtx_events_init();
+	}
 }
