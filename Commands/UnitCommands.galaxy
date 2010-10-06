@@ -1033,7 +1033,7 @@ bool libcrtx_command_renameall(bool testConds, bool runActions) {
 	UnitGroupLoopBegin(g);
 	while(!UnitGroupLoopDone())
 	{
-		CatalogFieldValueSet(c_gameCatalogUnit, UnitGetType(UnitGroupLoopCurrent()), "Name", EventPlayer(), val);
+		CatalogFieldValueSet(c_gameCatalogUnit, UnitGetType(UnitGroupLoopCurrent()), "Name", UnitGetOwner(UnitGroupLoopCurrent()), val);
 		UnitGroupLoopStep();
 	}
 	UnitGroupLoopEnd();
