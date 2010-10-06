@@ -637,7 +637,8 @@ bool libcrtx_command_level(bool testConds, bool runActions) {
 }
 
 bool libcrtx_command_adddamage(bool testConds, bool runActions) {
-	int looperMan;
+	int damageIndex;
+	int amt;
 	int val;
 	unitgroup g = libcrtx_chat_get_context(EventPlayer());
 	val = StringToInt(StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 ));
@@ -650,35 +651,39 @@ bool libcrtx_command_adddamage(bool testConds, bool runActions) {
 		libcrtx_chat_redirect_command( EventPlayer(), "@removedamage", IntToString(AbsI(val)) );
 		return true;
 	}
+	
+	amt = val;
 
 	UnitGroupLoopBegin(g);
 	while(!UnitGroupLoopDone())
 	{
 		// First remove all damage bonuses and maluses, since we're now treating this as a "strictly positive setdamagebonus" command. -F
-		looperMan = 1;
-		while(looperMan < 9) {
-			UnitBehaviorRemove( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(looperMan), 9);
-			looperMan = looperMan + 1;
+		damageIndex = 1;
+		while(damageIndex < 9) {
+			UnitBehaviorRemove( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(damageIndex), 9);
+			damageIndex = damageIndex + 1;
 		}
 		
-			// Now do the magic - keep adding the appropriate behaviors until they reach the desired total damage bonus. -F
-			looperMan = 0;
-			while(val >= 1000) {
-				UnitBehaviorAdd( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(4), UnitGroupLoopCurrent(), 1 );
-				val = val - 1000;
-				looperMan = looperMan + 1;
-			}
-			while(val >= 100) {
-				UnitBehaviorAdd( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(3), UnitGroupLoopCurrent(), 1 );
-				val = val - 100;
-				looperMan = looperMan + 1;
-			}
-			while(val >= 10) {
-				UnitBehaviorAdd( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(2), UnitGroupLoopCurrent(), 1 );
-				val = val - 10;
-				looperMan = looperMan + 1;
-			}
-			UnitBehaviorAdd( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(1), UnitGroupLoopCurrent(), val );
+		val = amt;
+		
+		// Now do the magic - keep adding the appropriate behaviors until they reach the desired total damage bonus. -F
+		damageIndex = 0;
+		while(val >= 1000) {
+			UnitBehaviorAdd( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(4), UnitGroupLoopCurrent(), 1 );
+			val = val - 1000;
+			damageIndex = damageIndex + 1;
+		}
+		while(val >= 100) {
+			UnitBehaviorAdd( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(3), UnitGroupLoopCurrent(), 1 );
+			val = val - 100;
+			damageIndex = damageIndex + 1;
+		}
+		while(val >= 10) {
+			UnitBehaviorAdd( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(2), UnitGroupLoopCurrent(), 1 );
+			val = val - 10;
+			damageIndex = damageIndex + 1;
+		}
+		UnitBehaviorAdd( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(1), UnitGroupLoopCurrent(), val );
 			
 		UnitGroupLoopStep();
 	}
@@ -692,7 +697,8 @@ bool libcrtx_command_removedamage(bool testConds, bool runActions) {
 	// Pay particular attention to the numbers passed to libcrtx_toolkit_getdamagebehavior()
 	// when editing. -F
 	
-	int looperMan;
+	int damageIndex;
+	int amt;
 	int val;
 	unitgroup g = libcrtx_chat_get_context(EventPlayer());
 	val = StringToInt(StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 ));
@@ -706,34 +712,37 @@ bool libcrtx_command_removedamage(bool testConds, bool runActions) {
 		return true;
 	}
 
+	amt = val;
 	UnitGroupLoopBegin(g);
 	while(!UnitGroupLoopDone())
 	{
 		// First remove all damage bonuses and maluses, since we're now treating this as a "strictly positive setdamagemalus" command. -F
-		looperMan = 1;
-		while(looperMan < 9) {
-			UnitBehaviorRemove( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(looperMan), 9);
-			looperMan = looperMan + 1;
+		damageIndex = 1;
+		while(damageIndex < 9) {
+			UnitBehaviorRemove( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(damageIndex), 9);
+			damageIndex = damageIndex + 1;
 		}
 		
-			// Now do the magic - keep adding the appropriate behaviors until they reach the desired total damage bonus. -F
-			looperMan = 0;
-			while(val >= 1000) {
-				UnitBehaviorAdd( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(8), UnitGroupLoopCurrent(), 1 );
-				val = val - 1000;
-				looperMan = looperMan + 1;
-			}
-			while(val >= 100) {
-				UnitBehaviorAdd( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(7), UnitGroupLoopCurrent(), 1 );
-				val = val - 100;
-				looperMan = looperMan + 1;
-			}
-			while(val >= 10) {
-				UnitBehaviorAdd( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(6), UnitGroupLoopCurrent(), 1 );
-				val = val - 10;
-				looperMan = looperMan + 1;
-			}
-			UnitBehaviorAdd( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(5), UnitGroupLoopCurrent(), val );
+		val = amt;
+		
+		// Now do the magic - keep adding the appropriate behaviors until they reach the desired total damage bonus. -F
+		damageIndex = 0;
+		while(val >= 1000) {
+			UnitBehaviorAdd( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(8), UnitGroupLoopCurrent(), 1 );
+			val = val - 1000;
+			damageIndex = damageIndex + 1;
+		}
+		while(val >= 100) {
+			UnitBehaviorAdd( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(7), UnitGroupLoopCurrent(), 1 );
+			val = val - 100;
+			damageIndex = damageIndex + 1;
+		}
+		while(val >= 10) {
+			UnitBehaviorAdd( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(6), UnitGroupLoopCurrent(), 1 );
+			val = val - 10;
+			damageIndex = damageIndex + 1;
+		}
+		UnitBehaviorAdd( UnitGroupLoopCurrent(), libcrtx_toolkit_getdamagebehavior(5), UnitGroupLoopCurrent(), val );
 			
 		UnitGroupLoopStep();
 	}
