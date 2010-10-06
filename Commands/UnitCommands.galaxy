@@ -865,8 +865,30 @@ bool libcrtx_command_attach(bool testConds, bool runActions) {
 
 bool libcrtx_command_removebehavior(bool testConds, bool runActions) {
 	string val;
+	string s;
+	int i;
+	int x;
 	unitgroup g = libcrtx_chat_get_context(EventPlayer());
 	val = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
+
+	// Check for an invalid behavior name, and attempt to compensate.
+	if( !CatalogEntryIsValid(c_gameCatalogBehavior, val) ) {
+		x = CatalogEntryCount(c_gameCatalogBehavior);
+		i = 1;
+		while( i != x ) {
+			s = CatalogEntryGet(c_gameCatalogBehavior, i);
+			if( StringEqual(s, val, false) ) {
+				val = s;
+				break;
+			}
+			i = i + 1;
+		}
+		
+	}
+	
+	if( libcrtx_toolkit_isrestrictedbehavior(val) ) {
+		return true;
+	}
 
 	UnitGroupLoopBegin(g);
 	while(!UnitGroupLoopDone())
@@ -880,8 +902,26 @@ bool libcrtx_command_removebehavior(bool testConds, bool runActions) {
 
 bool libcrtx_command_addbehavior(bool testConds, bool runActions) {
 	string val;
+	int x;
+	int i;
+	string s;
 	unitgroup g = libcrtx_chat_get_context(EventPlayer());
 	val = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
+	
+	// Check for an invalid behavior name, and attempt to compensate.
+	if( !CatalogEntryIsValid(c_gameCatalogBehavior, val) ) {
+		x = CatalogEntryCount(c_gameCatalogBehavior);
+		i = 1;
+		while( i != x ) {
+			s = CatalogEntryGet(c_gameCatalogBehavior, i);
+			if( StringEqual(s, val, false) ) {
+				val = s;
+				break;
+			}
+			i = i + 1;
+		}
+		
+	}
 
 	if( libcrtx_toolkit_isrestrictedbehavior(val) ) {
 		return true;
