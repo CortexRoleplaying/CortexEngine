@@ -599,7 +599,6 @@ bool libcrtx_command_kills(bool testConds, bool runActions) {
 
 bool libcrtx_command_level(bool testConds, bool runActions) {
 	int val;
-      int vval;
 
 	unitgroup g = libcrtx_chat_get_context(EventPlayer());
 
@@ -613,22 +612,17 @@ bool libcrtx_command_level(bool testConds, bool runActions) {
 	UnitGroupLoopBegin(g);
 	while(!UnitGroupLoopDone())
 	{
-		vval = val;
+        // Give the level behavior to the unit so that it can level.
+        if( !UnitHasBehavior(UnitGroupLoopCurrent(), libcrtx_toolkit_getlevelbehavior()) ) {
+            UnitBehaviorAdd( UnitGroupLoopCurrent(), libcrtx_toolkit_getlevelbehavior(), UnitGroupLoopCurrent(), 1);
+        }
+		
+        if( UnitLevel(UnitGroupLoopCurrent()) == val ) {
+            UnitGroupLoopStep();
+            continue;
+        }
 
-            // game crashes otherwise. silly blizzard.
-            if( !UnitHasBehavior(UnitGroupLoopCurrent(), libcrtx_toolkit_getlevelbehavior()) ) {
-                UnitGroupLoopStep();
-                continue;
-            }
-
-            if( UnitLevel(UnitGroupLoopCurrent()) >= vval ) {
-                UnitGroupLoopStep();
-                continue;
-            }
-
-            while( UnitLevel(UnitGroupLoopCurrent()) < vval ) {
-                UnitCreateEffectUnit( UnitGroupLoopCurrent(), libcrtx_toolkit_getxpincrementbehavior(), UnitGroupLoopCurrent() );
-            }
+        UnitSetPropertyFixed(UnitGroupLoopCurrent(), c_unitPropLevel, val);
 		UnitGroupLoopStep();
 	}
 
