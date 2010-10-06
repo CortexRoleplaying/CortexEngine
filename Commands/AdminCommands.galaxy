@@ -148,6 +148,7 @@ bool libcrtx_command_seeall(bool testConds, bool runActions)
 {
 	int i = 1;
 	string state;
+	bool revealed;
 	state = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
 	if( libcrtx_admin_getpermissions( EventPlayer() ) < libcrtx_admin_permissionlevel_moderator ) {
 		return true;
@@ -161,6 +162,7 @@ bool libcrtx_command_seeall(bool testConds, bool runActions)
 			}
 			i = i + 1;
 		}
+		libcrtx_write_text(PlayerGroupAll(), StringToText("The map has been hidden by ") + libcrtx_colored_player_name(EventPlayer()) + StringToText("."));
 	} else if( state == "on" ) {
 		while( i != libcrtx_max_players ) {
 			if( libcrtx_command_seeall_revealers[i] == null ) {
@@ -168,16 +170,25 @@ bool libcrtx_command_seeall(bool testConds, bool runActions)
 			}
 			i = i + 1;
 		}
+		libcrtx_write_text(PlayerGroupAll(), StringToText("The map has been revealed by ") + libcrtx_colored_player_name(EventPlayer()) + StringToText("."));
 	} else {
 		// toggle.
 		while( i != libcrtx_max_players ) {
 			if( libcrtx_command_seeall_revealers[i] == null ) {
 				libcrtx_command_seeall_revealers[i] = VisRevealerCreate( i, RegionEntireMap() );
+				revealed = true;
 			} else {
 				VisRevealerDestroy( libcrtx_command_seeall_revealers[i] );
 				libcrtx_command_seeall_revealers[i] = null;
+				revealed = false;
 			}
 			i = i + 1;
+		}
+		
+		if( revealed ) {
+			libcrtx_write_text(PlayerGroupAll(), StringToText("The map has been revealed by ") + libcrtx_colored_player_name(EventPlayer()) + StringToText("."));
+		} else {
+			libcrtx_write_text(PlayerGroupAll(), StringToText("The map has been hidden by ") + libcrtx_colored_player_name(EventPlayer()) + StringToText("."));
 		}
 	}
 	return true;	
@@ -194,13 +205,17 @@ bool libcrtx_command_smarthostile(bool check, bool run)
 
 	if( state == "off" ) { 
 		libcrtx_ai_stop();
+		libcrtx_write_text(PlayerGroupAll(), StringToText("Smart Hostile computer has been disabled by ") + libcrtx_colored_player_name(EventPlayer()) + StringToText("."));
 	} else if( state == "on" ) {
 		libcrtx_ai_start();
+		libcrtx_write_text(PlayerGroupAll(), StringToText("Smart Hostile computer has been enabled by ") + libcrtx_colored_player_name(EventPlayer()) + StringToText("."));
 	} else {
 		if( libcrtx_ai_is_enabled() ) {
 			libcrtx_ai_stop();
+			libcrtx_write_text(PlayerGroupAll(), StringToText("Smart Hostile computer has been disabled by ") + libcrtx_colored_player_name(EventPlayer()) + StringToText("."));
 		} else {
 			libcrtx_ai_start();
+			libcrtx_write_text(PlayerGroupAll(), StringToText("Smart Hostile computer has been enabled by ") + libcrtx_colored_player_name(EventPlayer()) + StringToText("."));
 		}
 	}
 	return true;
