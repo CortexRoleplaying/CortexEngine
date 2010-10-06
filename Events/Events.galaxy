@@ -61,6 +61,11 @@ bool libcrtx_event_dialog_clicked(bool checkConds, bool runActions) {
 			i = 1;
 			while( i <= UnitGroupCount(g, c_unitCountAlive) ) {
 				u = UnitGroupUnit(g, i);
+				if( UnitTypeTestAttribute(UnitGetType(u), c_unitAttributeStructure) ) {
+					i = i + 1;
+					continue;
+				}
+				
 				x = FixedToInt(UnitGetCustomValue(u, libcrtx_unit_custom_value_waygate));
 
 				if( x != 0 ) {
@@ -111,6 +116,12 @@ bool libcrtx_event_periodic_tick(bool checkConds, bool runActions)
 		x = 1;
 		while( x <= UnitGroupCount(g, c_unitCountAlive) ) {
 			u = UnitGroupUnit(g, x);
+			// Check if this unit isn't a structure
+			if( UnitTypeTestAttribute(UnitGetType(u), c_unitAttributeStructure) ) {
+				x = x + 1;
+				continue;
+			}
+			
 			p = FixedToInt(UnitGetCustomValue(u, libcrtx_unit_custom_value_waygate));
 			if( p == 0 ) {
 				x = x + 1;
