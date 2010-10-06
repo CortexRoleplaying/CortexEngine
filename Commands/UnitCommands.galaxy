@@ -457,6 +457,9 @@ bool libcrtx_command_height(bool testConds, bool runActions) {
 bool libcrtx_command_addweapon(bool testConds, bool runActions) {
 	string weapon;
 	string turret;
+	int i;
+	int x;
+	string s;
 	unitgroup g = libcrtx_chat_get_context(EventPlayer());
 	weapon = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
 	turret = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 3 );
@@ -467,7 +470,23 @@ bool libcrtx_command_addweapon(bool testConds, bool runActions) {
 	
 	// use toolkit on weapon
 	weapon = libcrtx_toolkit_getweapon(weapon);
-	if (!CatalogEntryIsValid(c_gameCatalogWeapon, weapon) || CatalogEntryScope(c_gameCatalogWeapon, weapon) == weapon) {
+	
+	// But the toolkit sucks :P
+	if( !CatalogEntryIsValid(c_gameCatalogWeapon, weapon) ) {
+		// Let's try to locate the weapon they meant to type if they got case wrong.
+		x = CatalogEntryCount(c_gameCatalogWeapon);
+		i = 1;
+		while( i != x ) {
+			s = CatalogEntryGet(c_gameCatalogWeapon, i);
+			if( StringEqual(s, weapon, false) ) {
+				weapon = s;
+				break;
+			}
+			i = i + 1;
+		}
+	}
+	
+	if ( !CatalogEntryIsValid(c_gameCatalogWeapon, weapon) || CatalogEntryScope(c_gameCatalogWeapon, weapon) == weapon) {
 		return true;
 	}
 
@@ -483,12 +502,31 @@ bool libcrtx_command_addweapon(bool testConds, bool runActions) {
 
 bool libcrtx_command_removeweapon(bool testConds, bool runActions) {
 	string weapon;
+	int i;
+	int x;
+	string s;
 	unitgroup g = libcrtx_chat_get_context(EventPlayer());
 	weapon = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
 
 	// use toolkit on weapon
 	weapon = libcrtx_toolkit_getweapon(weapon);
-	if (!CatalogEntryIsValid(c_gameCatalogWeapon, weapon)) {
+	
+	// But the toolkit sucks :P
+	if( !CatalogEntryIsValid(c_gameCatalogWeapon, weapon) ) {
+		// Let's try to locate the weapon they meant to type if they got case wrong.
+		x = CatalogEntryCount(c_gameCatalogWeapon);
+		i = 1;
+		while( i != x ) {
+			s = CatalogEntryGet(c_gameCatalogWeapon, i);
+			if( StringEqual(s, weapon, false) ) {
+				weapon = s;
+				break;
+			}
+			i = i + 1;
+		}
+	}
+	
+	if ( !CatalogEntryIsValid(c_gameCatalogWeapon, weapon) || CatalogEntryScope(c_gameCatalogWeapon, weapon) == weapon) {
 		return true;
 	}
 	
