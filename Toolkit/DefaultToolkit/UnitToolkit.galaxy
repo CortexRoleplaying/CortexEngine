@@ -18,7 +18,6 @@ void libcrtx_toolkit_default_initunittools()
     libcrtx_toolkit_setmaxlevel(10);
     libcrtx_toolkit_setlevelbehavior("Levels");
     libcrtx_toolkit_setexperiencegiverbehavior("GiveExperience");
-    libcrtx_toolkit_setxpincrementbehavior("IncrementXP100");
 	
 	// Setting up damage behaviors with completely arbitrary index numbers.
 	// The same arbitrary numbers have to be used in the corresponding loops in 

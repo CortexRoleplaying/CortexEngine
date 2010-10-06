@@ -18,7 +18,6 @@ static string libcrtx_toolkit_levelbehavior = "";
 static string libcrtx_toolkit_experiencegiverbehavior = "";
 static string[10] libcrtx_toolkit_damagebehavior;
 static int libcrtx_toolkit_maxlevel = 10;
-static string libcrtx_toolkit_xpincrementbehavior = "";
 
 void libcrtx_toolkit_addrestrictedbehavior(string restrictedBehavior)
 {
@@ -100,14 +99,4 @@ void libcrtx_toolkit_setmaxlevel(int i)
 int libcrtx_toolkit_getmaxlevel()
 {
     return libcrtx_toolkit_maxlevel;
-}
-
-void libcrtx_toolkit_setxpincrementbehavior(string beh)
-{
-    libcrtx_toolkit_xpincrementbehavior = beh;
-}
-
-string libcrtx_toolkit_getxpincrementbehavior()
-{
-	return libcrtx_toolkit_xpincrementbehavior;
 }
