@@ -34,7 +34,7 @@ string libcrtx_chat_get_parse_line(int player)
 }
 
 // Redirect a command to execute another command.
-bool libcrtx_chat_parsechat(int lp_player, string lp_message, int lp_recursionLimit);
+void libcrtx_chat_parsechat(int lp_player, string lp_message, int lp_recursionLimit);
 void libcrtx_chat_redirect_command(int player, string command, string params)
 {
 	libcrtx_chat_parsechat(player, command + " " + params, libcrtx_chat_recursion_limit);

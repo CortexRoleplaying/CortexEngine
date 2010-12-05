@@ -60,7 +60,7 @@ string libcrtx_chat_variablereplace( int player, string message )
 	return message;
 }
 
-bool libcrtx_chat_parsechat(int lp_player, string lp_message, int lp_recursionLimit)
+void libcrtx_chat_parsechat(int lp_player, string lp_message, int lp_recursionLimit)
 {
 	trigger t;
 	int spaceIndex;
@@ -72,7 +72,8 @@ bool libcrtx_chat_parsechat(int lp_player, string lp_message, int lp_recursionLi
 	string c;
 	string s;
 	bool aliasCreate;
-	bool commandFound = false;
+	text tex;
+	string st;
 
 	if( lp_recursionLimit == libcrtx_chat_recursion_limit ) {
 		// This is the original command as issued before it's broken down.
@@ -83,7 +84,7 @@ bool libcrtx_chat_parsechat(int lp_player, string lp_message, int lp_recursionLi
 	}
 	
 	if( lp_recursionLimit == 0 ) {
-		return false;
+		return;
 	}
 	lp_recursionLimit = lp_recursionLimit - 1;
 
@@ -91,7 +92,7 @@ bool libcrtx_chat_parsechat(int lp_player, string lp_message, int lp_recursionLi
 
 	// disabled players: all chat is routed to OOC.
 	if( libcrtx_admin_isplayerdisabled(lp_player) ) {
-		return false;
+		return;
 	}
 
 	// Parse normally so we don't have to escape the ;'s
@@ -124,7 +125,7 @@ bool libcrtx_chat_parsechat(int lp_player, string lp_message, int lp_recursionLi
 	}
 	if( l != 1 ) {
 		// Using recursion: skip!
-		return true;
+		return;
 	}
 
 	// Strip out all escaped semicolons
@@ -156,7 +157,7 @@ bool libcrtx_chat_parsechat(int lp_player, string lp_message, int lp_recursionLi
 		// We must do this to ensure that complex aliases will function.
 		lp_message = sub + " " + StringSub(lp_message, StringFind( lp_message, " ", c_stringCase ), StringLength(lp_message));
 		libcrtx_chat_parsechat( lp_player, lp_message, lp_recursionLimit );
-		return true;
+		return;
 	}
 
 	// Check every word for aliases.
@@ -166,7 +167,7 @@ bool libcrtx_chat_parsechat(int lp_player, string lp_message, int lp_recursionLi
 		if( libcrtx_alias_exists(s) ) { 
 			lp_message = StringReplaceWord( lp_message, s, libcrtx_alias_getsource(s), c_stringReplaceAll, false );
 			libcrtx_chat_parsechat( lp_player, lp_message, lp_recursionLimit - 1 );
-			return true;
+			return;
 		}
 		x = x + 1;
 	}
@@ -176,7 +177,7 @@ bool libcrtx_chat_parsechat(int lp_player, string lp_message, int lp_recursionLi
 	if( rep != lp_message ) {
 		lp_message = rep;
 		libcrtx_chat_parsechat( lp_player, lp_message, lp_recursionLimit - 1 );
-		return true;
+		return;
 	}
 
 	// convert to lowercase.
@@ -190,10 +191,14 @@ bool libcrtx_chat_parsechat(int lp_player, string lp_message, int lp_recursionLi
 
 		libcrtx_chat_set_parse_line( lp_player, lp_message );
 		TriggerExecute(t, false, false);
-		commandFound = true;
+	} else {
+		// No such command for this iteration
+		tex = libcrtx_color_text_by_player( lp_player, PlayerName( lp_player ) + StringToText(" (OOC)") );
+		st = ": " + lp_message;
+		tex = tex + StringToText(st);
+		// And now we write the pretty OOC chat!
+		libcrtx_write_text(PlayerGroupAll(), tex);
 	}
-
-	return commandFound;
 }
 
 bool libcrtx_chat_receivedevent(bool testConds, bool runActions)
@@ -214,19 +219,9 @@ bool libcrtx_chat_receivedevent(bool testConds, bool runActions)
 		return true;
 	}
 
-	isCmd = libcrtx_chat_parsechat( triggerPlayer, chatMsg, libcrtx_chat_recursion_limit );
+	libcrtx_chat_parsechat( triggerPlayer, chatMsg, libcrtx_chat_recursion_limit );
 
 	// Clear everyone's chat of the filth. FILTH I SAY.
 	UIClearMessages( PlayerGroupAll(), c_messageAreaChat );
-
-	if( !isCmd )
-	{
-		t = libcrtx_color_text_by_player( EventPlayer(), PlayerName( EventPlayer() ) + StringToText(" (OOC)") );
-		s = ": " + EventChatMessage(false);
-		t = t + StringToText(s);
-		// And now we write the pretty OOC chat!
-		libcrtx_write_text(PlayerGroupAll(), t);
-		
-	}
 	return true;			
 }
