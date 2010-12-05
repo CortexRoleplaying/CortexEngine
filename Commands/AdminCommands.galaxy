@@ -24,7 +24,7 @@ bool libcrtx_command_ban(bool testConds, bool runActions)
 		return true;
 	}
 
-	GameOver( player, c_gameOverDefeat, false, false );
+	GameOver( player, c_gameOverDefeat, false, true );
 	g = UnitGroup( null, player, RegionEntireMap(), UnitFilter(0, 0, 0, 0), 0 );
 	UnitGroupLoopBegin(g);
 	while( !UnitGroupLoopDone() )
