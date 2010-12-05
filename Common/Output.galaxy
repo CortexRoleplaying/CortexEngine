@@ -46,6 +46,7 @@ void libcrtx_output_refresh()
 	fixed gt = libNtve_gf_GamePlayTime(1);
 	while( x != libcrtx_max_players ) {
 		gt = libNtve_gf_GamePlayTime(x);
+		i = 0;
 		while( i != libcrtx_output_maxmessages ) {
 			if( libcrtx_output_messages[x][i] != null && gt - libcrtx_output_times[x][i] < 25 ) {
 				t = t + libcrtx_output_messages[x][i] + StringToText("<n/>");
