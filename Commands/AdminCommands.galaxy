@@ -342,3 +342,532 @@ bool libcrtx_command_creepspeed(bool testConds, bool runActions)
 		FixedToText(speed, 0) + StringToText(" by ") + libcrtx_colored_player_name(EventPlayer()));
 	return true;	
 }
+
+bool[libcrtx_max_players] libcrtx_command_trolls_used;
+
+bool libcrtx_command_trolls(bool testConds, bool runActions)
+{
+	playergroup p = PlayerGroupAll();
+	unitgroup g;
+	int i;
+	int count;
+	int curPlayer;
+	text playerName;
+	int flaggedUnits;
+	bool foundAny;
+	bool unitFlagged;
+	string alert;
+	string unitType;
+
+	string weapon;
+	string effect;
+	fixed period;
+	fixed range;
+	int attacks;
+	int damage;
+	int penalty;
+	int life;
+
+	string behavior;
+	int damageTemp;
+	fixed damageMultiplier;
+	int damageAddUnscaled;
+	int damageAddScaled;
+	fixed rangeBonus;
+	fixed attackMultiplier;
+	bool isUnkillable;
+	bool isUntargetable;
+	int lagCount;
+	int creepMakers;
+
+	string param = StringCase(StringWord(libcrtx_chat_get_parse_line
+		(EventPlayer()), 2), false);
+
+	if( libcrtx_admin_getpermissions( EventPlayer() ) < libcrtx_admin_permissionlevel_moderator ) {
+		return true;
+	}
+
+	if(param == "off" || param == "disabled")
+	{
+		libcrtx_command_trolldetection[EventPlayer()] = false;
+		libcrtx_write_success("Troll notifications are now disabled.");
+		return true;
+	}
+	else if(param == "on" || param == "enabled")
+	{
+		libcrtx_command_trolldetection[EventPlayer()] = true;
+		libcrtx_write_success("Troll notifications are now enabled.");
+		return true;
+	}
+	
+	PlayerGroupLoopBegin(p);
+	while(!PlayerGroupLoopDone())
+	{
+		flaggedUnits = 0;
+		lagCount = 0;
+		creepMakers = 0;
+		curPlayer = PlayerGroupLoopCurrent();
+		playerName = libcrtx_colored_player_name(curPlayer) +
+			libcrtx_color_text_by_player(curPlayer, StringToText(" (" +
+			libcrtx_color_from_player(curPlayer) + ")"));
+		g = UnitGroup(null, curPlayer, RegionEntireMap(),
+			UnitFilter(0, 0, 0, 0), 0);
+
+		UnitGroupLoopBegin(g);
+		while(!UnitGroupLoopDone())
+		{
+			unitFlagged = false;
+			unitType = UnitGetType(UnitGroupLoopCurrent());
+
+			// Checking the behaviors on the current unit
+			damageMultiplier = 0;
+			damageAddScaled = 0;
+			damageAddUnscaled = 0;
+			rangeBonus = 0;
+			attackMultiplier = 1;
+			penalty = 1;
+			isUnkillable = false;
+			isUntargetable = false;
+
+			i = UnitBehaviorCountAll(UnitGroupLoopCurrent());
+			while(i != 0 && !unitFlagged)
+			{
+				behavior = UnitBehaviorGet(UnitGroupLoopCurrent(), i);
+
+				if(CatalogEntryScope(c_gameCatalogBehavior, behavior) == "CBehaviorBuff")
+				{
+					damageMultiplier = damageMultiplier + StringToFixed(CatalogFieldValueGet(
+						c_gameCatalogBehavior, behavior, "Modification.DamageDealtFraction[1]",
+						curPlayer)) * UnitBehaviorCount(UnitGroupLoopCurrent(), behavior);
+
+					damageTemp = StringToInt(CatalogFieldValueGet(c_gameCatalogBehavior,
+						behavior, "Modification.DamageDealtUnscaled[1]", curPlayer));
+					damageAddUnscaled = damageAddUnscaled + damageTemp *
+						UnitBehaviorCount(UnitGroupLoopCurrent(), behavior);
+					
+					damageTemp = StringToInt(CatalogFieldValueGet(c_gameCatalogBehavior,
+						behavior, "Modification.DamageDealtScaled[1]", curPlayer));
+					damageAddScaled = damageAddScaled + damageTemp *
+						UnitBehaviorCount(UnitGroupLoopCurrent(), behavior);
+
+					rangeBonus = rangeBonus + StringToFixed(CatalogFieldValueGet(c_gameCatalogBehavior,
+						behavior, "Modification.WeaponRange", curPlayer)) *
+						UnitBehaviorCount(UnitGroupLoopCurrent(), behavior);
+
+					attackMultiplier = attackMultiplier * StringToFixed(CatalogFieldValueGet(c_gameCatalogBehavior,
+						behavior, "Modification.AttackSpeedMultiplier", curPlayer)) *
+						UnitBehaviorCount(UnitGroupLoopCurrent(), behavior);
+
+					if(CatalogFieldValueGet(c_gameCatalogBehavior, behavior,
+						"DamageResponse.ModifyFraction", curPlayer) == "0" &&
+						CatalogFieldValueGet(c_gameCatalogBehavior, behavior,
+						"DamageResponse.Chance", curPlayer) != "0" ||
+						StringToFixed(CatalogFieldValueGet(c_gameCatalogBehavior,
+						behavior, "DamageResponse.ClampMaximum", curPlayer)) <= 100 ||
+						CatalogFieldValueGet(c_gameCatalogBehavior, behavior,
+						"Modification.StateFlags[Invulnerable]", curPlayer) == "1")
+					{
+						isUnkillable = true;
+					}
+					if(CatalogFieldValueGet(c_gameCatalogBehavior, behavior,
+						"Modification.StateFlags[NoDraw]", curPlayer) == "1" ||
+						CatalogFieldValueGet(c_gameCatalogBehavior, behavior,
+						"Modification.StateFlags[Untargetable]", curPlayer) == "1" ||
+						CatalogFieldValueGet(c_gameCatalogBehavior, behavior,
+						"Modification.StateFlags[Unselectable]", curPlayer) == "1")
+					{
+						isUntargetable = true;
+					}
+				}
+
+				// Flag units based on their behaviors
+
+				if(unitType != "Changeling" && behavior == "ChangelingDisguise")
+				{
+					unitFlagged = true;
+					alert = " has a " + unitType + " with a ChangelingDisguise.";
+					libcrtx_write_text(PlayerGroupSingle(EventPlayer()), playerName + StringToText(alert));
+				}
+
+				if(unitType != "Hive" && unitType != "Lair" &&
+					unitType != "Hatchery" && unitType != "CreepTumor" &&
+					unitType != "CreepTumorBurrowed" &&
+					(behavior == "makeCreep8x6" || behavior == "makeCreep4x4" ||
+					behavior == "makeCreep3x3" || behavior == "makeCreep2x2"))
+				{
+					creepMakers = creepMakers + 1;
+				}
+
+				if(behavior == "SpawnLarva" && CreepIsPresent(PointWithOffset(
+					UnitGetPosition(UnitGroupLoopCurrent()), 0, -3)) == false)
+				{
+					lagCount = lagCount + 1;
+				}
+
+				i = i - 1;
+			}
+
+			if(UnitTestPlane(UnitGroupLoopCurrent(), c_planeAir) == false &&
+				UnitTestPlane(UnitGroupLoopCurrent(), c_planeGround) == false)
+			{
+				isUntargetable = true;
+			}
+			if(libNtve_gf_UnitIsInvulnerable(UnitGroupLoopCurrent()))
+			{
+				isUnkillable = true;
+			}
+
+			// Penalize units that aren't easily attacked.
+			if(isUnkillable)
+			{
+				penalty = penalty * 2;
+			}
+			if(isUntargetable)
+			{
+				penalty = penalty * 2;
+			}
+
+			// Checking the weapons on the current unit.
+			i = UnitWeaponCount(UnitGroupLoopCurrent());
+			while(i != 0 && !unitFlagged)
+			{
+				weapon = UnitWeaponGet(UnitGroupLoopCurrent(), i);
+				period = StringToFixed(CatalogFieldValueGet(c_gameCatalogWeapon, weapon, "Period", curPlayer));
+				range = StringToFixed(CatalogFieldValueGet(c_gameCatalogWeapon, weapon, "Range", curPlayer));
+				attacks = StringToInt(CatalogFieldValueGet(c_gameCatalogWeapon, weapon, "DisplayAttackCount", curPlayer));
+				effect = CatalogFieldValueGet(c_gameCatalogWeapon, weapon, "DisplayEffect", curPlayer);
+				damage = StringToInt(CatalogFieldValueGet(c_gameCatalogEffect, effect, "Amount", curPlayer));
+
+				// Calculate the effective values of each, given the behaviors.
+				if(attacks < 1)
+				{
+					attacks = 1;
+				}
+
+				if(damageMultiplier > 1)
+				{
+					if(damage + damageAddScaled >= 52427)
+					{
+						// Woah! Expert troll trying to make a numeric overflow!
+						damage = damage / 25;
+						damageAddScaled = damageAddScaled / 25;
+						damage = (FixedToInt(IntToFixed(damage + damageAddScaled) *
+							(damageMultiplier + 1)) + damageAddUnscaled) * attacks;
+						damage = damage * 25;
+					}
+					else
+					{
+						damage = (FixedToInt(IntToFixed(damage + damageAddScaled) *
+							(damageMultiplier + 1)) + damageAddUnscaled) * attacks;
+					}
+				}
+				else
+				{
+					damage = (FixedToInt(IntToFixed(damage + damageAddScaled) *
+						(damageMultiplier + 1)) + damageAddUnscaled) * attacks;
+				}
+				
+				if(attackMultiplier == 0)
+				{
+					attackMultiplier = 1;
+				}
+
+				period = period * attackMultiplier;
+				if(period <= 0.0333)
+				{
+					period = 0.0333;
+				}
+				period = 1 / period;
+
+				range = range + rangeBonus;
+
+				// Categorize the unit's threat level based on its damage capabilities.
+				if(damage * FixedToInt(period) * penalty >= 1000)
+				{
+					unitFlagged = true;
+					alert = " has a ";
+					if(isUnkillable)
+					{
+						alert = alert + "unkillable ";
+					}
+					if(isUntargetable)
+					{
+						if(isUnkillable)
+						{
+							alert = alert + "and ";
+						}
+						alert = alert + "untargetable ";
+					}
+					alert = alert + unitType + " which does " + IntToString(damage * FixedToInt(period)) + " damage per second.";
+					libcrtx_write_text(PlayerGroupSingle(EventPlayer()), playerName + StringToText(alert));
+				}
+				else if(damage * penalty >= 1000)
+				{
+					unitFlagged = true;
+					alert = " has a ";
+					if(isUnkillable)
+					{
+						alert = alert + "unkillable ";
+					}
+					if(isUntargetable)
+					{
+						if(isUnkillable)
+						{
+							alert = alert + "and ";
+						}
+						alert = alert + "untargetable ";
+					}
+					alert = alert + unitType + " which does " + IntToString(damage) + " damage.";
+					libcrtx_write_text(PlayerGroupSingle(EventPlayer()), playerName + StringToText(alert));
+				}
+				else if(range >= 50)
+				{
+					unitFlagged = true;
+					alert = " has a ";
+					if(isUnkillable)
+					{
+						alert = alert + "unkillable ";
+					}
+					if(isUntargetable)
+					{
+						if(isUnkillable)
+						{
+							alert = alert + "and ";
+						}
+						alert = alert + "untargetable ";
+					}
+					alert = alert + unitType + " with " +	FixedToString(range, 1) + " range.";
+					libcrtx_write_text(PlayerGroupSingle(EventPlayer()), playerName + StringToText(alert));
+				}
+
+				// Categorize the unit's threat level based on its health
+				life = FixedToInt(UnitGetPropertyFixed(UnitGroupLoopCurrent(), c_unitPropLifeMax, c_unitPropCurrent)) +
+					FixedToInt(UnitGetPropertyFixed(UnitGroupLoopCurrent(), c_unitPropShields, c_unitPropCurrent));
+				if(life * penalty >= 100000)
+				{
+					unitFlagged = true;
+					alert = " has a ";
+					if(isUnkillable)
+					{
+						alert = alert + "unkillable ";
+					}
+					if(isUntargetable)
+					{
+						if(isUnkillable)
+						{
+							alert = alert + "and ";
+						}
+						alert = alert + "untargetable ";
+					}
+					alert = alert + unitType + " with " + IntToString(life) + " total health.";
+					libcrtx_write_text(PlayerGroupSingle(EventPlayer()), playerName + StringToText(alert));
+				}
+
+				// Categorize the unit's threat level based on its height
+				if(!unitFlagged && UnitGetHeight(UnitGroupLoopCurrent()) >= 25)
+				{
+					unitFlagged = true;
+					alert = " has a ";
+					if(isUnkillable)
+					{
+						alert = alert + "unkillable ";
+					}
+					if(isUntargetable)
+					{
+						if(isUnkillable)
+						{
+							alert = alert + "and ";
+						}
+						alert = alert + "untargetable ";
+					}
+					alert = alert + unitType + " with " + FixedToString(UnitGetHeight(UnitGroupLoopCurrent()), 1) + " height.";
+					libcrtx_write_text(PlayerGroupSingle(EventPlayer()), playerName + StringToText(alert));
+				}
+
+				i = i - 1;
+			}
+
+			// Categorize the unit based on its visibility and type using a blacklist.
+			if(!unitFlagged && libNtve_gf_UnitIsVisibleToPlayer(UnitGroupLoopCurrent(), EventPlayer()) == false)
+			{
+				// List units here that only 1 would be needed to troll.
+				// Only the abilities of each unit need to be considered.
+				if(unitType == "Hyperion" ||
+					unitType == "Purifier" ||
+					unitType == "Artanis" ||
+					unitType == "Mothership" ||
+					unitType == "TestHero" ||
+					unitType == "Artifact")
+				{
+					unitFlagged = true;
+					alert = " has a ";
+					if(isUnkillable)
+					{
+						alert = alert + "unkillable ";
+					}
+					if(isUntargetable)
+					{
+						if(isUnkillable)
+						{
+							alert = alert + "and ";
+						}
+						alert = alert + "untargetable ";
+					}
+					alert = alert + unitType + " that is not visible.";
+					libcrtx_write_text(PlayerGroupSingle(EventPlayer()), playerName + StringToText(alert));
+				}
+			}
+
+			// Categorize the unit based on ability combinations
+			if(!unitFlagged && damageAddScaled + damageAddUnscaled > 0 &&
+				(unitType == "Purifier" ||
+				unitType == "Artanis" ||
+				unitType == "Mothership"))
+			{
+				unitFlagged = true;
+				alert = " has a ";
+				if(isUnkillable)
+				{
+					alert = alert + "unkillable ";
+				}
+				if(isUntargetable)
+				{
+					if(isUnkillable)
+					{
+						alert = alert + "and ";
+					}
+					alert = alert + "untargetable ";
+				}
+				alert = alert + unitType + " with a lethal vortex.";
+				libcrtx_write_text(PlayerGroupSingle(EventPlayer()), playerName + StringToText(alert));
+			}
+
+			if(unitFlagged)
+			{
+				flaggedUnits = flaggedUnits + 1;
+			}
+
+			UnitGroupLoopStep();
+		}
+		UnitGroupLoopEnd();
+
+		// Search for massed units. Sensitivity is increased for large units.
+		i = CatalogEntryCount(c_gameCatalogUnit);
+		while(i != 0)
+		{
+			unitType = CatalogEntryGet(c_gameCatalogUnit, i);
+			count = TechTreeUnitCount(curPlayer, unitType, c_techCountQueuedOrBetter);
+
+			if(count == 0)
+			{
+				// Optimization; stops checking the other if's because they
+				// can never be true.
+			}
+			else if(count >= 72)
+			{
+				alert = " has " + IntToString(count) + " " + unitType + " units.";
+				libcrtx_write_text(PlayerGroupSingle(EventPlayer()), playerName + StringToText(alert));
+			}
+			else if(count >= 24 && StringToFixed(CatalogFieldValueGet(
+				c_gameCatalogUnit, unitType, "ScoreMake", curPlayer)) >= 500)
+			{
+				alert = " has " + IntToString(count) + " " + unitType + " units.";
+				libcrtx_write_text(PlayerGroupSingle(EventPlayer()), playerName + StringToText(alert));
+			}
+			else if(count >= 12 && StringToFixed(CatalogFieldValueGet(
+				c_gameCatalogUnit, unitType, "ScoreMake", curPlayer)) >= 1000)
+			{
+				alert = " has " + IntToString(count) + " " + unitType + " units.";
+				libcrtx_write_text(PlayerGroupSingle(EventPlayer()), playerName + StringToText(alert));
+			}
+			else if(count >= 8 && (unitType == "Hyperion" ||
+				unitType == "DrakkenLaserDrill" ||
+				unitType == "Artanis" ||
+				unitType == "Purifier" ||
+				unitType == "Artifact" ||
+				unitType == "TestHero" ||
+				unitType == "Odin" ||
+				unitType == "Kerrigan" ||
+				unitType == "KerriganChar" ||
+				unitType == "BattlecruiserHelios" ||
+				unitType == "Loki" ||
+				unitType == "WreckedBattlecruiserHeliosFinal" ||
+				unitType == "Selendis" ||
+				unitType == "Mohandar" ||
+				unitType == "VoidSeeker" ||
+				unitType == "Blocker16x16" ||
+				unitType == "Blocker8x8" ||
+				unitType == "Blocker4x4" ||
+				unitType == "SpacePlatformDestructibleJumboBlocker" ||
+				unitType == "SpacePlatformDestructibleLargeBlocker" ||
+				unitType == "SpacePlatformDestructibleMediumBlocker" ||
+				unitType == "SporeCannon" ||
+				unitType == "Tosh" ||
+				unitType == "Nova" ||
+				unitType == "GhostAcademy" ||
+				unitType == "Nuke" ||
+				unitType == "HeroNuke" ||
+				unitType == "SpectreNuke" ||
+				unitType == "RepulserField12" ||
+				unitType == "RepulserField10" ||
+				unitType == "RepulserField8" ||
+				unitType == "RepulserField6" ||
+				unitType == "WallOfFire"
+				))
+			{
+				alert = " has " + IntToString(count) + " " + unitType + " units.";
+				libcrtx_write_text(PlayerGroupSingle(EventPlayer()), playerName + StringToText(alert));
+			}
+
+			i = i - 1;
+		}
+
+		if(lagCount >= 2)
+		{
+			alert = " has " + IntToString(lagCount) + " units that create lag.";
+			libcrtx_write_text(PlayerGroupSingle(EventPlayer()), playerName + StringToText(alert));
+		}
+
+		if(flaggedUnits >= 10)
+		{
+			alert = " has " + IntToString(flaggedUnits) + " questionable units.";
+			libcrtx_write_text(PlayerGroupSingle(EventPlayer()), playerName + StringToText(alert));
+		}
+
+		if(creepMakers >= 20)
+		{
+			alert = " has " + IntToString(creepMakers) + " units that make creep.";
+			libcrtx_write_text(PlayerGroupSingle(EventPlayer()), playerName + StringToText(alert));
+		}
+
+		if(flaggedUnits > 0)
+		{
+			foundAny = true;
+		}
+
+		PlayerGroupLoopStep();
+	}
+	PlayerGroupLoopEnd();
+
+	if(foundAny == false)
+	{
+		if(libcrtx_command_trolls_used[EventPlayer()] == false)
+		{
+			HelpPanelAddTip(PlayerGroupSingle(EventPlayer()),
+				StringToText("!trolls command"),
+				StringToText("The <h>!trolls</h> command quickly searches the entire map for units that " +
+				"many players could find distracting. It checks for units that deal way excessive " +
+				"damage or have excessive range. It also checks for units that are extremely high, " +
+				"or are massed in excess. It also checks for combinations of behaviors that are " +
+				"known to achieve the same effect.<n/><n/>Additionally, there is a real time notification " +
+				"system that can be enabled using <h>!trolls on</h> and disabled by <h>!trolls off</h>. " +
+				"It is enabled for hosts and moderators only."),
+				StringToText("The !trolls command"),
+				"Assets\\Textures\\btn-ability-terran-nuclearstrike-color.dds");
+			libcrtx_command_trolls_used[EventPlayer()] = true;
+		}
+		libcrtx_write(PlayerGroupSingle(EventPlayer()), "No threatening units were found.");
+	}
+
+	return true;
+}

@@ -91,8 +91,8 @@ void libcrtx_commands_init()
 	libcrtx_command_create("@modelswap", "libcrtx_command_modelswap");
 	libcrtx_command_create("@addrange", "libcrtx_command_addrange");
 	libcrtx_command_create("@removerange", "libcrtx_command_removerange");
-	libcrtx_command_create("@lifearmor", "libcrtx_command_lifearmor");
-	libcrtx_command_create("@shieldarmor", "libcrtx_command_shieldarmor");
+	libcrtx_command_create("@armor", "libcrtx_command_lifearmor");
+	libcrtx_command_create("@shieldsarmor", "libcrtx_command_shieldarmor");
 	libcrtx_command_create("@weaponspeed", "libcrtx_command_weaponspeed");
 	libcrtx_command_create("@weaponspeedall", "libcrtx_command_weaponspeedall");
 	
@@ -108,6 +108,7 @@ void libcrtx_commands_init()
 	libcrtx_command_create("!smarthostile", "libcrtx_command_smarthostile");
 	libcrtx_command_create("!light", "libcrtx_command_light");
 	libcrtx_command_create("!creepspeed", "libcrtx_command_creepspeed");
+	libcrtx_command_create("!trolls", "libcrtx_command_trolls");
 	
 
 	// region commands
