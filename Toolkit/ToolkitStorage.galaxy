@@ -17,6 +17,9 @@ const string libcrtx_toolkit_prefix_restrictedbehavior = "toolkit_restrictedbeha
 static string libcrtx_toolkit_levelbehavior = "";
 static string libcrtx_toolkit_experiencegiverbehavior = "";
 static string[10] libcrtx_toolkit_damagebehavior;
+static string[6] libcrtx_toolkit_rangebehavior;
+static string[13] libcrtx_toolkit_armorbehavior;
+static string[2] libcrtx_toolkit_periodbehavior;
 static int libcrtx_toolkit_maxlevel = 10;
 
 void libcrtx_toolkit_addrestrictedbehavior(string restrictedBehavior)
@@ -89,6 +92,36 @@ void libcrtx_toolkit_setdamagebehavior(string beh, int pfeh)
 string libcrtx_toolkit_getdamagebehavior(int pfeh)
 {
 	return libcrtx_toolkit_damagebehavior[pfeh];
+}
+
+void libcrtx_toolkit_setrangebehavior(string inBehavior, int index)
+{
+	libcrtx_toolkit_rangebehavior[index] = inBehavior;
+}
+
+string libcrtx_toolkit_getrangebehavior(int index)
+{
+	return libcrtx_toolkit_rangebehavior[index];
+}
+
+void libcrtx_toolkit_setarmorbehavior(string inBehavior, int index)
+{
+	libcrtx_toolkit_armorbehavior[index] = inBehavior;
+}
+
+string libcrtx_toolkit_getarmorbehavior(int index)
+{
+	return libcrtx_toolkit_armorbehavior[index];
+}
+
+void libcrtx_toolkit_setperiodbehavior(string inBehavior, int index)
+{
+	libcrtx_toolkit_periodbehavior[index] = inBehavior;
+}
+
+string libcrtx_toolkit_getperiodbehavior(int index)
+{
+	return libcrtx_toolkit_periodbehavior[index];
 }
 
 void libcrtx_toolkit_setmaxlevel(int i)

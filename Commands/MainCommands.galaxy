@@ -322,3 +322,141 @@ bool libcrtx_command_search(bool testConds, bool runActions)
 	}
 	return true;
 }
+
+bool libcrtx_command_creep(bool testConds, bool runActions)
+{ 
+	string state = "add";
+	fixed radius = 5.0;
+	fixed currentVal;
+	bool permanent = false;
+	string parameters;
+
+	currentVal = StringToFixed(StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2));
+	if(currentVal != 0)
+	{
+		radius = currentVal;
+	}
+	currentVal = StringToFixed(StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 3));
+	if(currentVal != 0)
+	{
+		radius = currentVal;
+	}
+	currentVal = StringToFixed(StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 4));
+	if(currentVal != 0)
+	{
+		radius = currentVal;
+	}
+	
+	parameters = StringCase(libcrtx_chat_get_parse_line(EventPlayer()), false);
+	parameters = StringSub(parameters, StringFind(parameters, " ", c_stringCase) + 1, StringLength(parameters));
+	
+	if(StringContains(parameters, "remove", c_stringAnywhere, true) ||
+		StringContains(parameters, "subtract", c_stringAnywhere, true) ||
+		StringContains(parameters, "delete", c_stringAnywhere, true))
+	{
+		permanent = true;
+		state = "remove";
+	}
+
+	if(StringContains(parameters, "create", c_stringAnywhere, true) ||
+		StringContains(parameters, "add", c_stringAnywhere, true) ||
+		StringContains(parameters, "insert", c_stringAnywhere, true))
+	{
+		state = "add";
+	}
+
+	if(StringContains(parameters, "permanent", c_stringAnywhere, true))
+	{
+		permanent = true;
+	}
+	if(StringContains(parameters, "nopermanent", c_stringAnywhere, true))
+	{
+		permanent = false;
+	}
+
+	if(state == "add")
+	{
+		if(radius >= 25)
+		{
+			radius = 25;
+		}
+		CreepModify(UnitGetPosition(libcrtx_spawner()), radius, true, permanent);
+	}
+	else if (state == "remove")
+	{
+		CreepModify(UnitGetPosition(libcrtx_spawner()), radius, false, permanent);
+	}
+
+	return true;
+}
+
+bool libcrtx_command_upgrade(bool testConds, bool runActions)
+{
+	string upgrade = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2);
+	string nextParam = StringCase(StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 3), false);
+	int player = EventPlayer();
+	unitgroup g;
+	int curLevel;
+	int newLevel;
+
+	upgrade = libcrtx_param_catalog(c_gameCatalogUpgrade, upgrade);
+	if(upgrade == null)
+	{
+		libcrtx_write(PlayerGroupSingle(EventPlayer()), "<c val=\"ff0000\">Unable to modify upgrade</c>: No such upgrade exists.");
+		return true;
+	}
+
+	if(libcrtx_admin_getpermissions( EventPlayer() ) >= libcrtx_admin_permissionlevel_moderator )
+	{
+		g = libcrtx_chat_get_context(EventPlayer());
+		if(UnitGroupCount(g, c_unitCountAll) == 1)
+		{
+			player = UnitGetOwner(UnitGroupUnit(g, 1));
+		}
+	}
+	
+	curLevel = TechTreeUpgradeCount(player, upgrade, c_techCountQueuedOrBetter);
+	newLevel = StringToInt(nextParam);
+	if (CatalogFieldValueGet(c_gameCatalogUpgrade, upgrade, "MaxLevel", player) == "1")
+	{
+		// Most upgrades are of the on or off type.
+		if(StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 3) == "")
+		{
+			// Toggle the upgrade
+			newLevel = 1;
+			if(curLevel == 1)
+			{
+				newLevel = 0;
+			}
+		}
+		else if(nextParam == "on" || nextParam == "enabled")
+		{
+			newLevel = 1;
+		}
+		else if(nextParam == "off" || nextParam == "disabled")
+		{
+			newLevel = 0;
+		}
+		else if(nextParam == "query")
+		{
+			libcrtx_write( PlayerGroupSingle(EventPlayer()), "Upgrade level is at: " +
+				IntToString(curLevel));
+			return true;
+		}
+		else if(nextParam != "0" && newLevel == 0)
+		{
+			libcrtx_write(PlayerGroupSingle(EventPlayer()),
+				"Usage: @upgrade upgradename [on/off/query/number]");
+			return true;
+		}
+	}
+	else if(nextParam == "")
+	{
+		libcrtx_write( PlayerGroupSingle(EventPlayer()), "Upgrade level is at: " +
+			IntToString(curLevel));
+		return true;
+	}
+	TechTreeUpgradeAddLevel(player, upgrade, newLevel - curLevel);
+
+	return true;
+}

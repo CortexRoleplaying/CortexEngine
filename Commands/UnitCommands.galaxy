@@ -1752,3 +1752,342 @@ bool libcrtx_command_effect(bool testConds, bool runActions)
 	return true;
 }
 
+bool libcrtx_command_addrange(bool testConds, bool runActions)
+{
+	int range = StringToInt(libcrtx_param_index(2));
+	unit current;
+	unitgroup g = libcrtx_chat_get_context(EventPlayer());
+
+	if(range < 0)
+	{
+		libcrtx_chat_redirect_command(EventPlayer(), "@removerange", IntToString(AbsI(range)));
+		return true;
+	}
+
+	if(range > 100)
+	{
+		range = 100;
+	}
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		current = UnitGroupLoopCurrent();
+		
+		UnitBehaviorRemove(current, libcrtx_toolkit_getrangebehavior(1), -1);
+		UnitBehaviorRemove(current, libcrtx_toolkit_getrangebehavior(2), -1);
+		UnitBehaviorRemove(current, libcrtx_toolkit_getrangebehavior(4), -1);
+		UnitBehaviorRemove(current, libcrtx_toolkit_getrangebehavior(5), -1);
+
+		UnitBehaviorAdd(current, libcrtx_toolkit_getrangebehavior(1), null, ModI(range, 10));
+		UnitBehaviorAdd(current, libcrtx_toolkit_getrangebehavior(2), null, range / 10);
+
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	libcrtx_event_units_modified(g, libcrtx_event_behavior | libcrtx_event_range);
+
+	return true;
+}
+
+bool libcrtx_command_removerange(bool testConds, bool runActions)
+{
+	int range = StringToInt(libcrtx_param_index(2));
+	unit current;
+	unitgroup g = libcrtx_chat_get_context(EventPlayer());
+
+	if(range < 0)
+	{
+		libcrtx_chat_redirect_command(EventPlayer(), "@addrange", IntToString(AbsI(range)));
+		return true;
+	}
+
+	if(range > 100)
+	{
+		range = 100;
+	}
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		current = UnitGroupLoopCurrent();
+		
+		UnitBehaviorRemove(current, libcrtx_toolkit_getrangebehavior(1), -1);
+		UnitBehaviorRemove(current, libcrtx_toolkit_getrangebehavior(2), -1);
+		UnitBehaviorRemove(current, libcrtx_toolkit_getrangebehavior(4), -1);
+		UnitBehaviorRemove(current, libcrtx_toolkit_getrangebehavior(5), -1);
+
+		UnitBehaviorAdd(current, libcrtx_toolkit_getrangebehavior(4), null, ModI(range, 10));
+		UnitBehaviorAdd(current, libcrtx_toolkit_getrangebehavior(5), null, range / 10);
+
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	libcrtx_event_units_modified(g, libcrtx_event_behavior | libcrtx_event_range);
+
+	return true;
+}
+
+bool libcrtx_command_lifearmor(bool testConds, bool runActions)
+{
+	fixed armor = StringToFixed(libcrtx_param_index(2));
+	fixed curArmor = 0;
+	fixed armorDiff = 0;
+	unit current;
+	unitgroup g = libcrtx_chat_get_context(EventPlayer());
+	
+	if(armor > 12)
+	{
+		armor = 12;
+	}
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		current = UnitGroupLoopCurrent();
+		curArmor = StringToFixed(CatalogFieldValueGet(c_gameCatalogUnit, UnitGetType(current), "LifeArmor", UnitGetOwner(current)));
+		armorDiff = armor - curArmor;
+		
+		UnitBehaviorRemove(current, libcrtx_toolkit_getarmorbehavior(1), -1);
+		UnitBehaviorRemove(current, libcrtx_toolkit_getarmorbehavior(2), -1);
+		UnitBehaviorRemove(current, libcrtx_toolkit_getarmorbehavior(3), -1);
+		UnitBehaviorRemove(current, libcrtx_toolkit_getarmorbehavior(7), -1);
+		UnitBehaviorRemove(current, libcrtx_toolkit_getarmorbehavior(8), -1);
+		UnitBehaviorRemove(current, libcrtx_toolkit_getarmorbehavior(9), -1);
+		
+		if(armorDiff > 111)
+		{
+			armorDiff = 111;
+		}
+		if(armorDiff < -111)
+		{
+			armorDiff = -111;
+		}
+
+		if(armorDiff > 0)
+		{
+			while(armorDiff >= 10)
+			{
+				UnitBehaviorAdd(current, libcrtx_toolkit_getarmorbehavior(3), null, 1);
+				armorDiff = armorDiff - 10;
+			}
+			while(armorDiff >= 1)
+			{
+				UnitBehaviorAdd(current, libcrtx_toolkit_getarmorbehavior(2), null, 1);
+				armorDiff = armorDiff - 1;
+			}
+			while(armorDiff >= 0.1)
+			{
+				UnitBehaviorAdd(current, libcrtx_toolkit_getarmorbehavior(1), null, 1);
+				armorDiff = armorDiff - 0.1;
+			}
+		}
+		else
+		{
+			while(armorDiff <= -10)
+			{
+				UnitBehaviorAdd(current, libcrtx_toolkit_getarmorbehavior(9), null, 1);
+				armorDiff = armorDiff + 10;
+			}
+			while(armorDiff <= -1)
+			{
+				UnitBehaviorAdd(current, libcrtx_toolkit_getarmorbehavior(8), null, 1);
+				armorDiff = armorDiff + 1;
+			}
+			while(armorDiff <= -0.1)
+			{
+				UnitBehaviorAdd(current, libcrtx_toolkit_getarmorbehavior(7), null, 1);
+				armorDiff = armorDiff + 0.1;
+			}
+		}
+
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+
+	return true;
+}
+
+bool libcrtx_command_shieldarmor(bool testConds, bool runActions)
+{
+	fixed armor = StringToFixed(libcrtx_param_index(2));
+	fixed curArmor = 0;
+	fixed armorDiff = 0;
+	unit current;
+	unitgroup g = libcrtx_chat_get_context(EventPlayer());
+	
+	if(armor > 12)
+	{
+		armor = 12;
+	}
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		current = UnitGroupLoopCurrent();
+		curArmor = StringToFixed(CatalogFieldValueGet(c_gameCatalogUnit, UnitGetType(current), "ShieldArmor", UnitGetOwner(current)));
+		armorDiff = armor - curArmor;
+		
+		UnitBehaviorRemove(current, libcrtx_toolkit_getarmorbehavior(4), -1);
+		UnitBehaviorRemove(current, libcrtx_toolkit_getarmorbehavior(5), -1);
+		UnitBehaviorRemove(current, libcrtx_toolkit_getarmorbehavior(6), -1);
+		UnitBehaviorRemove(current, libcrtx_toolkit_getarmorbehavior(10), -1);
+		UnitBehaviorRemove(current, libcrtx_toolkit_getarmorbehavior(11), -1);
+		UnitBehaviorRemove(current, libcrtx_toolkit_getarmorbehavior(12), -1);
+		
+		if(armorDiff > 111)
+		{
+			armorDiff = 111;
+		}
+		if(armorDiff < -111)
+		{
+			armorDiff = -111;
+		}
+
+		if(armorDiff > 0)
+		{
+			while(armorDiff >= 10)
+			{
+				UnitBehaviorAdd(current, libcrtx_toolkit_getarmorbehavior(6), null, 1);
+				armorDiff = armorDiff - 10;
+			}
+			while(armorDiff >= 1)
+			{
+				UnitBehaviorAdd(current, libcrtx_toolkit_getarmorbehavior(5), null, 1);
+				armorDiff = armorDiff - 1;
+			}
+			while(armorDiff >= 0.1)
+			{
+				UnitBehaviorAdd(current, libcrtx_toolkit_getarmorbehavior(4), null, 1);
+				armorDiff = armorDiff - 0.1;
+			}
+		}
+		else
+		{
+			while(armorDiff <= -10)
+			{
+				UnitBehaviorAdd(current, libcrtx_toolkit_getarmorbehavior(12), null, 1);
+				armorDiff = armorDiff + 10;
+			}
+			while(armorDiff <= -1)
+			{
+				UnitBehaviorAdd(current, libcrtx_toolkit_getarmorbehavior(11), null, 1);
+				armorDiff = armorDiff + 1;
+			}
+			while(armorDiff <= -0.1)
+			{
+				UnitBehaviorAdd(current, libcrtx_toolkit_getarmorbehavior(10), null, 1);
+				armorDiff = armorDiff + 0.1;
+			}
+		}
+
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+
+	return true;
+}
+
+bool libcrtx_command_weaponspeedall(bool testConds, bool runActions)
+{
+	fixed speed = StringToFixed(libcrtx_param_index(2));
+	int index;
+	string weapon;
+	unit current;
+	unitgroup g = libcrtx_chat_get_context(EventPlayer());
+	
+	if(speed > 12)
+	{
+		speed = 12;
+	}	
+	if(speed <= 0.2)
+	{
+		speed = 0.2;
+	}
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		current = UnitGroupLoopCurrent();
+		index = UnitWeaponCount(current);
+		while(index != 0)
+		{
+			weapon = UnitWeaponGet(current, 1);
+			CatalogFieldValueSet(c_gameCatalogWeapon, UnitWeaponGet(current, index),
+				"Period", UnitGetOwner(current), FixedToString(speed, -1));
+			index = index - 1;
+		}
+
+		UnitBehaviorRemove(current, libcrtx_toolkit_getperiodbehavior(0), -1);
+		UnitBehaviorRemove(current, libcrtx_toolkit_getperiodbehavior(1), -1);
+		
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+
+	return true;
+}
+
+bool libcrtx_command_weaponspeed(bool testConds, bool runActions)
+{
+	fixed speed = StringToFixed(libcrtx_param_index(2));
+	fixed curSpeed = 0;
+	int maxStack;
+	string weapon;
+	unit current;
+	unitgroup g = libcrtx_chat_get_context(EventPlayer());
+	
+	if(speed > 12)
+	{
+		speed = 12;
+	}	
+	if(speed <= 0.2)
+	{
+		speed = 0.2;
+	}
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		current = UnitGroupLoopCurrent();
+		weapon = UnitWeaponGet(current, 1);
+		if(weapon != "")
+		{
+			curSpeed = StringToFixed(CatalogFieldValueGet(c_gameCatalogWeapon, weapon, "Period", UnitGetOwner(current))) / speed;
+		}
+		else
+		{
+			curSpeed = speed;
+		}
+
+		UnitBehaviorRemove(current, libcrtx_toolkit_getperiodbehavior(0), -1);
+		UnitBehaviorRemove(current, libcrtx_toolkit_getperiodbehavior(1), -1);
+		
+		maxStack = 256;
+		if(curSpeed > 1)
+		{
+			while(curSpeed > 1.1 && maxStack > 0)
+			{
+				UnitBehaviorAdd(current, libcrtx_toolkit_getperiodbehavior(1), null, 1);
+				curSpeed = curSpeed / 1.1;
+				maxStack = maxStack - 1;
+			}
+		}
+		else
+		{
+			while(curSpeed < 0.9 && maxStack > 0)
+			{
+				UnitBehaviorAdd(current, libcrtx_toolkit_getperiodbehavior(0), null, 1);
+				curSpeed = curSpeed / 0.9;
+				maxStack = maxStack - 1;
+			}
+		}
+
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+
+	return true;
+}
+
+

@@ -35,6 +35,8 @@ void libcrtx_commands_init()
 	libcrtx_command_create("var", "libcrtx_command_var");
 	libcrtx_command_create("town", "libcrtx_command_smarthostiletown");
 	libcrtx_command_create("search", "libcrtx_command_search");
+	libcrtx_command_create("creep", "libcrtx_command_creep");
+	libcrtx_command_create("upgrade", "libcrtx_command_upgrade");
 
 	// unit commands
 	libcrtx_command_create("@context", "libcrtx_command_context");
@@ -87,6 +89,13 @@ void libcrtx_commands_init()
 	libcrtx_command_create("@effect", "libcrtx_command_effect");
 	libcrtx_command_create("@radius", "libcrtx_command_radius");
 	libcrtx_command_create("@modelswap", "libcrtx_command_modelswap");
+	libcrtx_command_create("@addrange", "libcrtx_command_addrange");
+	libcrtx_command_create("@removerange", "libcrtx_command_removerange");
+	libcrtx_command_create("@lifearmor", "libcrtx_command_lifearmor");
+	libcrtx_command_create("@shieldarmor", "libcrtx_command_shieldarmor");
+	libcrtx_command_create("@weaponspeed", "libcrtx_command_weaponspeed");
+	libcrtx_command_create("@weaponspeedall", "libcrtx_command_weaponspeedall");
+	
 
 	// admin commands
 	libcrtx_command_create("!ban", "libcrtx_command_ban");
@@ -107,6 +116,7 @@ void libcrtx_commands_init()
 	libcrtx_command_create("#remove", "libcrtx_command_regionremove");
 	libcrtx_command_create("#removeall", "libcrtx_command_regionremoveall");
 	libcrtx_command_create("#list", "libcrtx_command_regionlist");
+	libcrtx_command_create("#attach", "libcrtx_command_regionattach");
 }
 
 

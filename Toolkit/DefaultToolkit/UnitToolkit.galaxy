@@ -31,6 +31,28 @@ void libcrtx_toolkit_default_initunittools()
 	libcrtx_toolkit_setdamagebehavior("DecreaseDamage10",6);
 	libcrtx_toolkit_setdamagebehavior("DecreaseDamage100",7);
 	libcrtx_toolkit_setdamagebehavior("DecreaseDamage1000",8);
+
+	libcrtx_toolkit_setrangebehavior("IncreaseRange1",1);
+	libcrtx_toolkit_setrangebehavior("IncreaseRange10",2);
+	
+	libcrtx_toolkit_setrangebehavior("DecreaseRange1",4);
+	libcrtx_toolkit_setrangebehavior("DecreaseRange10",5);
+
+	libcrtx_toolkit_setarmorbehavior("IncreaseLifeArmorP1",1);
+	libcrtx_toolkit_setarmorbehavior("IncreaseLifeArmor1",2);
+	libcrtx_toolkit_setarmorbehavior("IncreaseLifeArmor10",3);
+	libcrtx_toolkit_setarmorbehavior("IncreaseShieldArmorP1",4);
+	libcrtx_toolkit_setarmorbehavior("IncreaseShieldArmor1",5);
+	libcrtx_toolkit_setarmorbehavior("IncreaseShieldArmor10",6);
+	libcrtx_toolkit_setarmorbehavior("DecreaseLifeArmorP1",7);
+	libcrtx_toolkit_setarmorbehavior("DecreaseLifeArmor1",8);
+	libcrtx_toolkit_setarmorbehavior("DecreaseLifeArmor10",9);
+	libcrtx_toolkit_setarmorbehavior("DecreaseShieldArmorP1",10);
+	libcrtx_toolkit_setarmorbehavior("DecreaseShieldArmor1",11);
+	libcrtx_toolkit_setarmorbehavior("DecreaseShieldArmor10",12);
+
+	libcrtx_toolkit_setperiodbehavior("SetAttackSpeed0P9", 0);
+	libcrtx_toolkit_setperiodbehavior("SetAttackSpeed1P1", 1);
 }
 
 void libcrtx_toolkit_default_initrestrictedunits()

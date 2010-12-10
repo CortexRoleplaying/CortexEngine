@@ -210,3 +210,49 @@ bool libcrtx_command_teleport(bool checkConds, bool runActions)
 	TriggerAddEventUnitRegion( t, null, r2, false );
 	return true;
 }
+
+bool libcrtx_command_regionattach(bool checkConds, bool runActions)
+{
+	string rgnName;
+	region rgn = null;
+	unitgroup g = libcrtx_chat_get_context(EventPlayer());
+	point offset;
+	
+	rgnName = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2);
+	rgnName = libcrtx_command_region_buildidentifier(rgnName);
+
+	if(DataTableValueExists(true, libcrtx_command_region_buildidentifier(rgnName) + "_link"))
+	{
+		rgn = DataTableGetRegion(true, libcrtx_command_region_buildidentifier(rgnName) + "_link");
+	}
+	else
+	{
+		rgn = DataTableGetRegion(true, rgnName);
+	}
+
+	if(rgn == null)
+	{
+		libcrtx_write_error("No region with that name exists!");
+		return true;
+	}
+
+	offset = Point(StringToFixed(StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 3)),
+		StringToFixed(StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 4)));
+
+	if(UnitGroupCount(g, c_unitCountAll) == 0)
+	{
+		RegionAttachToUnit(rgn, null, offset);
+		libcrtx_write_success("Region unattached successfully.");
+	}
+	else if(UnitGroupCount(g, c_unitCountAll) == 1)
+	{
+		RegionAttachToUnit(rgn, UnitGroupUnit(g, 1), offset);
+		libcrtx_write_success("Region attached successfully.");
+	}
+	else
+	{
+		libcrtx_write_error("You can't attach the same region to multiple units!");
+	}
+
+	return true;
+}
