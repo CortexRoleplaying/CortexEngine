@@ -1,0 +1,556 @@
+// Cortex SC2 Roleplaying Engine
+// Copyright (C) 2009-2010 <http://www.cortexrp.com/>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; version 2 of the License.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+bool[libcrtx_max_players] libcrtx_command_trolldetection;
+
+int libcrtx_event_damage = 1;
+int libcrtx_event_health = 2;
+int libcrtx_event_behavior = 4;
+int libcrtx_event_height = 8;
+int libcrtx_event_weapon = 16;
+int libcrtx_event_create = 32;
+int libcrtx_event_range = 64;
+
+void libcrtx_event_trolldetection_init()
+{
+	int i = libcrtx_max_players - 1;
+	while(i != -1)
+	{
+		libcrtx_command_trolldetection[i] = 
+			libcrtx_admin_getpermissions(i) >=
+			libcrtx_admin_permissionlevel_moderator;
+		i = i - 1;
+	}
+}
+
+void libcrtx_event_units_modified(unitgroup units, int method)
+{
+	playergroup p = PlayerGroupActive();
+	int i = PlayerGroupCount(p);
+
+	int count;
+	int curPlayer;
+	text playerName;
+	string alert;
+	string unitType;
+
+	string weapon;
+	string effect;
+	fixed period;
+	fixed range;
+	int attacks;
+	int damage;
+	int penalty;
+	int life;
+	bool isFirst;
+
+	string behavior;
+	int damageTemp;
+	fixed damageMultiplier;
+	int damageAddUnscaled;
+	int damageAddScaled;
+	fixed rangeBonus;
+	fixed attackMultiplier;
+	bool isUnkillable;
+	bool isUntargetable;
+	int lagCount;
+	int creepMakers;
+
+	while (i != 0)
+	{
+		if(!libcrtx_command_trolldetection[PlayerGroupPlayer(p, i)])
+		{
+			PlayerGroupRemove(p, PlayerGroupPlayer(p, i));
+		}
+		i = i - 1;
+	}
+
+	if (PlayerGroupCount(p) == 0)
+	{
+		return;
+	}
+	
+	lagCount = 0;
+	creepMakers = 0;
+	UnitGroupLoopBegin(units);
+	while(!UnitGroupLoopDone())
+	{
+		unitType = UnitGetType(UnitGroupLoopCurrent());
+		curPlayer = UnitGetOwner(UnitGroupLoopCurrent());
+		playerName = libcrtx_colored_player_name(curPlayer) +
+			libcrtx_color_text_by_player(curPlayer, StringToText(" (" +
+			libcrtx_color_from_player(curPlayer) + ")"));
+		if(curPlayer != EventPlayer())
+		{
+			playerName = playerName + StringToText(" (command issued by ") +
+				libcrtx_colored_player_name(EventPlayer()) +
+				libcrtx_color_text_by_player(EventPlayer(), StringToText(" (" +
+				libcrtx_color_from_player(EventPlayer()) + ") ")) +
+				StringToText(")");
+		}
+
+		// Checking the behaviors on the current unit
+		damageMultiplier = 0;
+		damageAddScaled = 0;
+		damageAddUnscaled = 0;
+		rangeBonus = 0;
+		attackMultiplier = 1;
+		penalty = 1;
+		isUnkillable = false;
+		isUntargetable = false;
+
+		i = UnitBehaviorCountAll(UnitGroupLoopCurrent());
+		while(i != 0)
+		{
+			behavior = UnitBehaviorGet(UnitGroupLoopCurrent(), i);
+
+			if(CatalogEntryScope(c_gameCatalogBehavior, behavior) == "CBehaviorBuff")
+			{
+				damageMultiplier = damageMultiplier + StringToFixed(CatalogFieldValueGet(
+					c_gameCatalogBehavior, behavior, "Modification.DamageDealtFraction[1]",
+					curPlayer)) * UnitBehaviorCount(UnitGroupLoopCurrent(), behavior);
+
+				damageTemp = StringToInt(CatalogFieldValueGet(c_gameCatalogBehavior,
+					behavior, "Modification.DamageDealtUnscaled[1]", curPlayer));
+				damageAddUnscaled = damageAddUnscaled + damageTemp *
+					UnitBehaviorCount(UnitGroupLoopCurrent(), behavior);
+					
+				damageTemp = StringToInt(CatalogFieldValueGet(c_gameCatalogBehavior,
+					behavior, "Modification.DamageDealtScaled[1]", curPlayer));
+				damageAddScaled = damageAddScaled + damageTemp *
+					UnitBehaviorCount(UnitGroupLoopCurrent(), behavior);
+
+				rangeBonus = rangeBonus + StringToFixed(CatalogFieldValueGet(c_gameCatalogBehavior,
+					behavior, "Modification.WeaponRange", curPlayer)) *
+					UnitBehaviorCount(UnitGroupLoopCurrent(), behavior);
+
+				attackMultiplier = attackMultiplier * StringToFixed(CatalogFieldValueGet(c_gameCatalogBehavior,
+					behavior, "Modification.AttackSpeedMultiplier", curPlayer)) *
+					UnitBehaviorCount(UnitGroupLoopCurrent(), behavior);
+
+				if(CatalogFieldValueGet(c_gameCatalogBehavior, behavior,
+					"DamageResponse.ModifyFraction", curPlayer) == "0" &&
+					CatalogFieldValueGet(c_gameCatalogBehavior, behavior,
+					"DamageResponse.Chance", curPlayer) != "0" ||
+					StringToFixed(CatalogFieldValueGet(c_gameCatalogBehavior,
+					behavior, "DamageResponse.ClampMaximum", curPlayer)) <= 100 ||
+					CatalogFieldValueGet(c_gameCatalogBehavior, behavior,
+					"Modification.StateFlags[Invulnerable]", curPlayer) == "1")
+				{
+					isUnkillable = true;
+				}
+				if(CatalogFieldValueGet(c_gameCatalogBehavior, behavior,
+					"Modification.StateFlags[NoDraw]", curPlayer) == "1" ||
+					CatalogFieldValueGet(c_gameCatalogBehavior, behavior,
+					"Modification.StateFlags[Untargetable]", curPlayer) == "1" ||
+					CatalogFieldValueGet(c_gameCatalogBehavior, behavior,
+					"Modification.StateFlags[Unselectable]", curPlayer) == "1")
+				{
+					isUntargetable = true;
+				}
+			}
+
+			// Flag units based on their behaviors
+
+			if((method & libcrtx_event_behavior) != 0)
+			{
+				if(unitType != "Changeling" && behavior == "ChangelingDisguise")
+				{
+					alert = " has a " + unitType + " with a ChangelingDisguise.";
+					libcrtx_write_text(p, playerName + StringToText(alert));
+					MinimapPing(p, UnitGetPosition(UnitGroupLoopCurrent()), 
+						2, Color(100, 100, 0));
+				}
+
+				if(unitType != "Hive" && unitType != "Lair" &&
+					unitType != "Hatchery" && unitType != "CreepTumor" &&
+					unitType != "CreepTumorBurrowed" &&
+					(behavior == "makeCreep8x6" || behavior == "makeCreep4x4" ||
+					behavior == "makeCreep3x3" || behavior == "makeCreep2x2"))
+				{
+					creepMakers = creepMakers + 1;
+				}
+
+			}
+			if((method & (libcrtx_event_behavior | libcrtx_event_create)) != 0)
+			{
+				if(behavior == "SpawnLarva" && CreepIsPresent(PointWithOffset(
+					UnitGetPosition(UnitGroupLoopCurrent()), 0, -3)) == false)
+				{
+					lagCount = lagCount + 1;
+					MinimapPing(p, UnitGetPosition(UnitGroupLoopCurrent()), 
+						2, Color(100, 100, 0));
+				}
+			}
+
+			i = i - 1;
+		}
+
+		if(UnitTestPlane(UnitGroupLoopCurrent(), c_planeAir) == false &&
+			UnitTestPlane(UnitGroupLoopCurrent(), c_planeGround) == false)
+		{
+			isUntargetable = true;
+		}
+		if(libNtve_gf_UnitIsInvulnerable(UnitGroupLoopCurrent()))
+		{
+			isUnkillable = true;
+		}
+
+		// Penalize units that aren't easily attacked.
+		if(isUnkillable)
+		{
+			penalty = penalty * 2;
+		}
+		if(isUntargetable)
+		{
+			penalty = penalty * 2;
+		}
+
+		// Checking the weapons on the current unit.
+		i = UnitWeaponCount(UnitGroupLoopCurrent());
+		while(i != 0)
+		{
+			weapon = UnitWeaponGet(UnitGroupLoopCurrent(), i);
+			period = StringToFixed(CatalogFieldValueGet(c_gameCatalogWeapon, weapon, "Period", curPlayer));
+			range = StringToFixed(CatalogFieldValueGet(c_gameCatalogWeapon, weapon, "Range", curPlayer));
+			attacks = StringToInt(CatalogFieldValueGet(c_gameCatalogWeapon, weapon, "DisplayAttackCount", curPlayer));
+			effect = CatalogFieldValueGet(c_gameCatalogWeapon, weapon, "DisplayEffect", curPlayer);
+			damage = StringToInt(CatalogFieldValueGet(c_gameCatalogEffect, effect, "Amount", curPlayer));
+
+			// Calculate the effective values of each, given the behaviors.
+			if(attacks < 1)
+			{
+				attacks = 1;
+			}
+
+			if(damageMultiplier > 1)
+			{
+				if(damage + damageAddScaled >= 52427)
+				{
+					// Woah! Expert troll trying to make a numeric overflow!
+					damage = damage / 25;
+					damageAddScaled = damageAddScaled / 25;
+					damage = (FixedToInt(IntToFixed(damage + damageAddScaled) *
+						(damageMultiplier + 1)) + damageAddUnscaled) * attacks;
+					damage = damage * 25;
+				}
+				else
+				{
+					damage = (FixedToInt(IntToFixed(damage + damageAddScaled) *
+						(damageMultiplier + 1)) + damageAddUnscaled) * attacks;
+				}
+			}
+			else
+			{
+				damage = (FixedToInt(IntToFixed(damage + damageAddScaled) *
+					(damageMultiplier + 1)) + damageAddUnscaled) * attacks;
+			}
+			
+			if(attackMultiplier == 0)
+			{
+				attackMultiplier = 1;
+			}
+
+			period = period * attackMultiplier;
+			if(period <= 0.0333)
+			{
+				period = 0.0333;
+			}
+			period = 1 / period;
+
+			range = range + rangeBonus;
+
+			// Categorize the unit's threat level based on its damage capabilities.
+			if((method & (libcrtx_event_behavior | libcrtx_event_create |
+				libcrtx_event_damage | libcrtx_event_weapon)) != 0
+				&& damage * FixedToInt(period) * penalty >= 1000)
+			{
+				alert = " has a ";
+				if(isUnkillable)
+				{
+					alert = alert + "unkillable ";
+				}
+				if(isUntargetable)
+				{
+					if(isUnkillable)
+					{
+						alert = alert + "and ";
+					}
+					alert = alert + "untargetable ";
+				}
+				alert = alert + unitType + " which does " + IntToString(damage * FixedToInt(period)) + " damage per second.";
+				libcrtx_write_text(p, playerName + StringToText(alert));
+				MinimapPing(p, UnitGetPosition(UnitGroupLoopCurrent()), 
+					2, Color(100, 100, 0));
+				break;
+			}
+			else if((method & (libcrtx_event_behavior | libcrtx_event_create |
+				libcrtx_event_damage | libcrtx_event_weapon)) != 0 &&
+				damage * penalty >= 1000)
+			{
+				alert = " has a ";
+				if(isUnkillable)
+				{
+					alert = alert + "unkillable ";
+				}
+				if(isUntargetable)
+				{
+					if(isUnkillable)
+					{
+						alert = alert + "and ";
+					}
+					alert = alert + "untargetable ";
+				}
+				alert = alert + unitType + " which does " + IntToString(damage) + " damage.";
+				libcrtx_write_text(p, playerName + StringToText(alert));
+				MinimapPing(p, UnitGetPosition(UnitGroupLoopCurrent()), 
+					2, Color(100, 100, 0));
+				break;
+			}
+			else if((method & (libcrtx_event_behavior | libcrtx_event_create |
+				libcrtx_event_damage | libcrtx_event_weapon | libcrtx_event_range)) != 0 &&
+				range >= 50)
+			{
+				alert = " has a ";
+				if(isUnkillable)
+				{
+					alert = alert + "unkillable ";
+				}
+				if(isUntargetable)
+				{
+					if(isUnkillable)
+					{
+						alert = alert + "and ";
+					}
+					alert = alert + "untargetable ";
+				}
+				alert = alert + unitType + " with " +	FixedToString(range, 1) + " range.";
+				libcrtx_write_text(p, playerName + StringToText(alert));
+				MinimapPing(p, UnitGetPosition(UnitGroupLoopCurrent()), 
+					2, Color(100, 100, 0));
+				break;
+			}
+
+			// Categorize the unit's threat level based on its health
+			life = FixedToInt(UnitGetPropertyFixed(UnitGroupLoopCurrent(), c_unitPropLifeMax, c_unitPropCurrent)) +
+				FixedToInt(UnitGetPropertyFixed(UnitGroupLoopCurrent(), c_unitPropShields, c_unitPropCurrent));
+			if((method & (libcrtx_event_behavior | libcrtx_event_create |
+				libcrtx_event_health)) != 0 &&
+				life * penalty >= 100000)
+			{
+				alert = " has a ";
+				if(isUnkillable)
+				{
+					alert = alert + "unkillable ";
+				}
+				if(isUntargetable)
+				{
+					if(isUnkillable)
+					{
+						alert = alert + "and ";
+					}
+					alert = alert + "untargetable ";
+				}
+				alert = alert + unitType + " with " + IntToString(life) + " total health.";
+				libcrtx_write_text(p, playerName + StringToText(alert));
+				MinimapPing(p, UnitGetPosition(UnitGroupLoopCurrent()), 
+					2, Color(100, 100, 0));
+			}
+
+			// Categorize the unit's threat level based on its height
+			if((method & (libcrtx_event_behavior | libcrtx_event_create |
+				libcrtx_event_height)) != 0 &&
+				UnitGetHeight(UnitGroupLoopCurrent()) >= 25)
+			{
+				alert = " has a ";
+				if(isUnkillable)
+				{
+					alert = alert + "unkillable ";
+				}
+				if(isUntargetable)
+				{
+					if(isUnkillable)
+					{
+						alert = alert + "and ";
+					}
+					alert = alert + "untargetable ";
+				}
+				alert = alert + unitType + " with " + FixedToString(UnitGetHeight(UnitGroupLoopCurrent()), 1) + " height.";
+				libcrtx_write_text(p, playerName + StringToText(alert));
+				MinimapPing(p, UnitGetPosition(UnitGroupLoopCurrent()), 
+					2, Color(100, 100, 0));
+			}
+
+			i = i - 1;
+		}
+
+		// Categorize the unit based on its visibility and type using a blacklist.
+		if((method & libcrtx_event_behavior) != 0 &&
+			libNtve_gf_UnitIsVisibleToPlayer(UnitGroupLoopCurrent(), EventPlayer()) == false)
+		{
+			// List units here that only 1 would be needed to troll.
+			// Only the abilities of each unit need to be considered.
+			if(unitType == "Hyperion" ||
+				unitType == "Purifier" ||
+				unitType == "Artanis" ||
+				unitType == "Mothership" ||
+				unitType == "TestHero" ||
+				unitType == "Artifact")
+			{
+				alert = " has a ";
+				if(isUnkillable)
+				{
+					alert = alert + "unkillable ";
+				}
+				if(isUntargetable)
+				{
+					if(isUnkillable)
+					{
+						alert = alert + "and ";
+					}
+					alert = alert + "untargetable ";
+				}
+				alert = alert + unitType + " that is not visible.";
+				libcrtx_write_text(p, playerName + StringToText(alert));
+				MinimapPing(p, UnitGetPosition(UnitGroupLoopCurrent()), 
+					2, Color(100, 100, 0));
+			}
+		}
+
+		// Categorize the unit based on ability combinations
+		if((method & (libcrtx_event_behavior | libcrtx_event_create |
+			libcrtx_event_damage | libcrtx_event_weapon)) != 0
+			&& damageAddScaled + damageAddUnscaled > 0 &&
+			(unitType == "Purifier" ||
+			unitType == "Artanis" ||
+			unitType == "Mothership"))
+		{
+			alert = " has a ";
+			if(isUnkillable)
+			{
+				alert = alert + "unkillable ";
+			}
+			if(isUntargetable)
+			{
+				if(isUnkillable)
+				{
+					alert = alert + "and ";
+				}
+				alert = alert + "untargetable ";
+			}
+			alert = alert + unitType + " with a lethal vortex.";
+			libcrtx_write_text(p, playerName + StringToText(alert));
+			MinimapPing(p, UnitGetPosition(UnitGroupLoopCurrent()), 
+				2, Color(100, 100, 0));
+		}
+
+		if((method & libcrtx_event_create) != 0)
+		{
+			count = TechTreeUnitCount(UnitGetOwner(UnitGroupLoopCurrent()), unitType, c_techCountQueuedOrBetter);
+
+			i = UnitGroupCount(units, c_unitCountAll);
+
+			isFirst = true;
+
+			while(i != 0 && UnitGroupUnit(units, i) != UnitGroupLoopCurrent())
+			{
+				i = i - 1;
+			}
+			i = i - 1;
+
+			while(i > 0)
+			{
+				if(UnitGetType(UnitGroupUnit(units, i)) == UnitGetType(UnitGroupLoopCurrent()))
+				{
+					isFirst = false;
+					break;
+				}
+				i = i - 1;
+			}
+
+			if(isFirst)
+			{
+				if(count >= 72)
+				{
+					alert = " has " + IntToString(count) + " " + unitType + " units.";
+					libcrtx_write_text(p, playerName + StringToText(alert));
+				}
+				else if(count >= 24 && StringToFixed(CatalogFieldValueGet(
+					c_gameCatalogUnit, unitType, "ScoreMake", curPlayer)) >= 500)
+				{
+					alert = " has " + IntToString(count) + " " + unitType + " units.";
+					libcrtx_write_text(p, playerName + StringToText(alert));
+				}
+				else if(count >= 12 && StringToFixed(CatalogFieldValueGet(
+					c_gameCatalogUnit, unitType, "ScoreMake", curPlayer)) >= 1000)
+				{
+					alert = " has " + IntToString(count) + " " + unitType + " units.";
+					libcrtx_write_text(p, playerName + StringToText(alert));
+				}
+				else if(count >= 8 && (unitType == "Hyperion" ||
+					unitType == "DrakkenLaserDrill" ||
+					unitType == "Artanis" ||
+					unitType == "Purifier" ||
+					unitType == "Artifact" ||
+					unitType == "TestHero" ||
+					unitType == "Odin" ||
+					unitType == "Kerrigan" ||
+					unitType == "KerriganChar" ||
+					unitType == "BattlecruiserHelios" ||
+					unitType == "Loki" ||
+					unitType == "WreckedBattlecruiserHeliosFinal" ||
+					unitType == "Selendis" ||
+					unitType == "Mohandar" ||
+					unitType == "VoidSeeker" ||
+					unitType == "Blocker16x16" ||
+					unitType == "Blocker8x8" ||
+					unitType == "Blocker4x4" ||
+					unitType == "SpacePlatformDestructibleJumboBlocker" ||
+					unitType == "SpacePlatformDestructibleLargeBlocker" ||
+					unitType == "SpacePlatformDestructibleMediumBlocker" ||
+					unitType == "SporeCannon" ||
+					unitType == "Tosh" ||
+					unitType == "Nova" ||
+					unitType == "GhostAcademy" ||
+					unitType == "Nuke" ||
+					unitType == "HeroNuke" ||
+					unitType == "SpectreNuke" ||
+					unitType == "RepulserField12" ||
+					unitType == "RepulserField10" ||
+					unitType == "RepulserField8" ||
+					unitType == "RepulserField6" ||
+					unitType == "WallOfFire"
+					))
+				{
+					alert = " has " + IntToString(count) + " " + unitType + " units.";
+					libcrtx_write_text(p, playerName + StringToText(alert));
+				}
+			}
+		}
+		
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+
+	if(lagCount >= 1)
+	{
+		alert = " has " + IntToString(lagCount) + " units that create lag.";
+		libcrtx_write_text(p, playerName + StringToText(alert));
+	}
+
+	if(creepMakers >= 8)
+	{
+		alert = " has " + IntToString(creepMakers) + " units that make creep.";
+		libcrtx_write_text(p, playerName + StringToText(alert));
+	}
+}
+

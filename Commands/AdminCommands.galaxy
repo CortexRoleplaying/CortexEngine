@@ -220,3 +220,125 @@ bool libcrtx_command_smarthostile(bool check, bool run)
 	}
 	return true;
 }
+
+bool libcrtx_command_light(bool testConds, bool runActions)
+{
+	string light = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2);
+	fixed blendTime = StringToFixed(StringWord(EventChatMessage(false), 3));
+	
+	if( libcrtx_admin_getpermissions( EventPlayer() ) < libcrtx_admin_permissionlevel_moderator )
+	{
+		return true;
+	}
+
+	if(light == "")
+	{
+		light = GameTerrainSet();
+	}
+	
+	light = libcrtx_param_catalog(c_gameCatalogLight, light);
+	if(light == null)
+	{
+		libcrtx_write(PlayerGroupSingle(EventPlayer()), "<c val=\"ff0000\">Unable to change lighting</c>: No such light exists.");
+		return true;
+	}
+
+	if(StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 3) == "")
+	{
+		blendTime = 2;
+	}
+
+	GameSetLighting(light, blendTime);
+
+	return true;
+}
+
+bool libcrtx_command_fog(bool testConds, bool runActions)
+{
+	string state = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2 );
+	string paramOne;
+	string paramTwo;
+	string paramThree;
+	fixed red;
+	fixed green;
+	fixed blue;
+
+	if( libcrtx_admin_getpermissions( EventPlayer() ) < libcrtx_admin_permissionlevel_moderator ) {
+		return true;
+	}
+	
+	paramOne = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 3);
+	paramTwo = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 4);
+	paramThree = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 5);
+
+	if(state == "off")
+	{ 
+		FogSetEnabled(false);
+	}
+	else if(state == "on")
+	{
+		FogSetEnabled(true);
+	}
+	else if(state == "color")
+	{
+		red = libcrtx_boundsFixed(StringToFixed(paramOne), 0, 255) * 100 / 255;
+		green = libcrtx_boundsFixed(StringToFixed(paramTwo), 0, 255) * 100 / 255;
+		blue = libcrtx_boundsFixed(StringToFixed(paramThree), 0, 255) * 100 / 255;
+		FogSetColor(Color(red, green, blue));
+	}
+	else if(state == "density")
+	{
+		FogSetDensity(StringToFixed(paramOne) / 100);
+	}
+	else if(state == "height")
+	{
+		FogSetStartHeight(StringToFixed(paramOne));
+	}
+	else if(state == "falloff")
+	{
+		FogSetFallOff(StringToFixed(paramOne) / 100);
+	}
+	else
+	{
+		libcrtx_write( PlayerGroupSingle(EventPlayer()), "Usage: !fog on/off/color/density/height/falloff value");
+	}
+	return true;
+}
+
+bool libcrtx_command_creepspeed(bool testConds, bool runActions)
+{ 
+	string state;
+	fixed speed;
+	state = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2);
+	speed = StringToFixed(StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 3));
+	if( libcrtx_admin_getpermissions(EventPlayer()) < libcrtx_admin_permissionlevel_moderator )
+	{
+		return true;
+	}
+
+	if(speed >= 524287)
+	{
+	speed = 524287;
+	}
+
+	if( state == "growth" ) {
+		CreepSetSpeed(c_creepSpeedGrowth, speed);
+	} else if( state == "decay" ) {
+		CreepSetSpeed(c_creepSpeedDecay, speed);
+	} else if( state == "blend" ) {
+		CreepSetSpeed(c_creepSpeedBlend, speed);
+	} else {
+		speed = StringToFixed(state);
+		if(state == "")
+		{
+			libcrtx_write( PlayerGroupSingle(EventPlayer()), "Usage: !creepspeed [growth/decay/blend] <speed>");
+			return true;
+		}
+		CreepSetSpeed(c_creepSpeedGrowth, speed);
+		CreepSetSpeed(c_creepSpeedDecay, speed);
+		CreepSetSpeed(c_creepSpeedBlend, speed);
+	}
+	libcrtx_write_text(PlayerGroupAll(),  StringToText("Creep speed has been set to ") +
+		FixedToText(speed, 0) + StringToText(" by ") + libcrtx_colored_player_name(EventPlayer()));
+	return true;	
+}

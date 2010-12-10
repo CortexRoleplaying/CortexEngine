@@ -342,11 +342,15 @@ bool libcrtx_command_tint(bool testConds, bool runActions) {
 	string paramTwo;
 	string paramThree;
 	string paramFour;
+	string paramFive;
+	string paramSix;
 
 	int red;
 	int green;
 	int blue;
 	fixed alpha;
+	fixed hdr;
+	fixed duration;
 
 	string amsg;
 	actorscope ascope;
@@ -358,6 +362,8 @@ bool libcrtx_command_tint(bool testConds, bool runActions) {
 	paramTwo = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 3 );
 	paramThree = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 4 );
 	paramFour = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 5 );
+	paramFive = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 6 );
+	paramSix = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 7 );
 
 	if( StringContains(paramOne, "%", c_stringAnywhere, false) ) {
 		paramOne = StringSub(paramOne, 1, StringLength(paramOne)-1);
@@ -395,10 +401,27 @@ bool libcrtx_command_tint(bool testConds, bool runActions) {
 		alpha = 1.0;
 	}
 
+	if( paramFive == "" ) { // Unspecified, default to 1.0
+		hdr = 1.0;
+	}
+	else
+	{
+		hdr = StringToFixed(paramFive);
+	}
+	
+	if( paramSix == "" ) { // Unspecified, default to 0
+		duration = 0;
+	}
+	else
+	{
+		duration = StringToFixed(paramSix);
+	}
+
 	UnitGroupLoopBegin(g);
 	while(!UnitGroupLoopDone())
 	{
-		ActorSend(libNtve_gf_MainActorofUnit(UnitGroupLoopCurrent()), "SetTintColor " + IntToString(red) + "," + IntToString(green) + "," + IntToString(blue));
+		ActorSend(libNtve_gf_MainActorofUnit(UnitGroupLoopCurrent()), "SetTintColor {" + IntToString(red) + "," + IntToString(green) + "," + IntToString(blue) + " " +
+			FixedToString(hdr, c_fixedPrecisionAny) + "} {" + FixedToString(duration, c_fixedPrecisionAny) + "}");
 		ActorSend(libNtve_gf_MainActorofUnit(UnitGroupLoopCurrent()), "SetOpacity {" + FixedToString(alpha, c_fixedPrecisionAny) + "} {" + "0 }");
 		UnitGroupLoopStep();
 	}
@@ -1134,12 +1157,16 @@ bool libcrtx_command_play(bool testConds, bool runActions) {
 	string val;
 	int flags = 0;
 	unitgroup g = libcrtx_chat_get_context(EventPlayer());
-	val = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
+	string animgroup = libcrtx_param_index(3);
+	val = libcrtx_param_index(2);
 	val = StringCase(StringSub(val, 1, 1), true) + StringSub(val, 2, StringLength(val));
 
 	if( StringEqual(StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 3), "loop", false) ) {
 		flags = c_animFlagPlayForever;
+		animgroup = libcrtx_param_index(4);
 	}
+
+	animgroup = StringCase(StringSub(animgroup, 1, 1), true) + StringSub(animgroup, 2, StringLength(animgroup));
 
 	UnitGroupLoopBegin(g);
 	while(!UnitGroupLoopDone())
@@ -1148,6 +1175,11 @@ bool libcrtx_command_play(bool testConds, bool runActions) {
 			libNtve_gf_ClearAnimation( libNtve_gf_MainActorofUnit(UnitGroupLoopCurrent()), "libcrtx_command_play" );
 		} else {
 			libNtve_gf_PlayAnimation( libNtve_gf_MainActorofUnit(UnitGroupLoopCurrent()), "libcrtx_command_play", val, flags, 1 );
+			if(animgroup != "")
+			{
+				ActorSend(libNtve_gf_MainActorofUnit(UnitGroupLoopCurrent()), "AnimGroupRemoveAll");
+				ActorSend(libNtve_gf_MainActorofUnit(UnitGroupLoopCurrent()), "AnimGroupApply {" + animgroup + "}");
+			}
 		}
 		UnitGroupLoopStep();
 	}
@@ -1182,13 +1214,541 @@ bool libcrtx_command_context(bool testConds, bool runActions) {
 	return true;
 }
 
+bool libcrtx_command_resources(bool testConds, bool runActions) {
+	fixed val = StringToFixed(libcrtx_param_index(2));
+	unitgroup g = libcrtx_chat_get_context(EventPlayer());
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		UnitSetPropertyFixed( UnitGroupLoopCurrent(), c_unitPropResources, val );
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}
+
+bool libcrtx_command_shieldsregen(bool testConds, bool runActions) {
+	string nextParam;
+	fixed val;
+	bool isPercent = false;
+	unitgroup g = libcrtx_chat_get_context(EventPlayer());
+	nextParam = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
+	val = StringToFixed(nextParam);
+
+	if( StringContains(nextParam, "%", c_stringBegin, c_stringCase) ) {
+		nextParam = StringSub(nextParam, 1, StringLength(nextParam)-1);
+		val = StringToFixed(nextParam);
+		isPercent = true;
+	}
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		if(isPercent)
+		{
+			UnitSetPropertyFixed( UnitGroupLoopCurrent(), c_unitPropShieldsRegen,
+				val * UnitGetPropertyFixed(UnitGroupLoopCurrent(), c_unitPropShieldsRegen, false));
+		}
+		else
+		{
+			UnitSetPropertyFixed( UnitGroupLoopCurrent(), c_unitPropShieldsRegen, val );
+		}
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	libcrtx_event_units_modified(g, libcrtx_event_health);
+	return true;
+}
+
+bool libcrtx_command_liferegen(bool testConds, bool runActions) {
+	string nextParam;
+	fixed val;
+	bool isPercent = false;
+	unitgroup g = libcrtx_chat_get_context(EventPlayer());
+	nextParam = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
+	val = StringToFixed(nextParam);
+
+	if( StringContains(nextParam, "%", c_stringBegin, c_stringCase) ) {
+		nextParam = StringSub(nextParam, 1, StringLength(nextParam)-1);
+		val = StringToFixed(nextParam);
+		isPercent = true;
+	}
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		if(isPercent)
+		{
+			UnitSetPropertyFixed( UnitGroupLoopCurrent(), c_unitPropLifeRegen,
+				val * UnitGetPropertyFixed(UnitGroupLoopCurrent(), c_unitPropLifeRegen, false));
+		}
+		else
+		{
+			UnitSetPropertyFixed( UnitGroupLoopCurrent(), c_unitPropLifeRegen, val );
+		}
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	libcrtx_event_units_modified(g, libcrtx_event_health);
+	return true;
+}
+
+bool libcrtx_command_energyregen(bool testConds, bool runActions) {
+	string nextParam;
+	fixed val;
+	bool isPercent = false;
+	unitgroup g = libcrtx_chat_get_context(EventPlayer());
+	nextParam = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
+	val = StringToFixed(nextParam);
+
+	if( StringContains(nextParam, "%", c_stringBegin, c_stringCase) ) {
+		nextParam = StringSub(nextParam, 1, StringLength(nextParam)-1);
+		val = StringToFixed(nextParam);
+		isPercent = true;
+	}
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		if(isPercent)
+		{
+			UnitSetPropertyFixed( UnitGroupLoopCurrent(), c_unitPropEnergyRegen,
+				val * UnitGetPropertyFixed(UnitGroupLoopCurrent(), c_unitPropEnergyRegen, false));
+		}
+		else
+		{
+			UnitSetPropertyFixed( UnitGroupLoopCurrent(), c_unitPropEnergyRegen, val );
+		}
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}
 
 
+bool libcrtx_command_behaviors(bool testConds, bool runActions) {
+	unitgroup g = libcrtx_chat_get_context(EventPlayer());
+	int i;
+	bool hasBehaviors;
+	text unitName;
+	string behavior;
+	int behaviorCount;
 
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		unitName = libcrtx_color_text_by_player( EventPlayer(),
+			StringToText(UnitGetType(UnitGroupLoopCurrent())));
+		unitName = StringToText("(") + unitName + StringToText(")");
+		libcrtx_write_text(PlayerGroupSingle(EventPlayer()), unitName);
 
+		i = UnitBehaviorCountAll(UnitGroupLoopCurrent());
+		hasBehaviors = false;
+		while(i != 0)
+		{
+			behavior = UnitBehaviorGet(UnitGroupLoopCurrent(), i);
+			if(behavior != libcrtx_toolkit_getdamagebehavior(1) &&
+					behavior != libcrtx_toolkit_getdamagebehavior(2) &&
+					behavior != libcrtx_toolkit_getdamagebehavior(3) &&
+					behavior != libcrtx_toolkit_getdamagebehavior(4) &&
+					behavior != libcrtx_toolkit_getdamagebehavior(5) &&
+					behavior != libcrtx_toolkit_getdamagebehavior(6) &&
+					behavior != libcrtx_toolkit_getdamagebehavior(7) &&
+					behavior != libcrtx_toolkit_getdamagebehavior(8))
+			{
+				behaviorCount = UnitBehaviorCount(UnitGroupLoopCurrent(), behavior);
+				if(behaviorCount > 1)
+				{
+					behavior += "  (" + IntToString(behaviorCount) + ")";
+				}
+				hasBehaviors = true;
+				libcrtx_write(PlayerGroupSingle(EventPlayer()), behavior);
+			}
+			i = i - 1;
+		}
+		if(hasBehaviors == false)
+		{
+			libcrtx_write(PlayerGroupSingle(EventPlayer()), "No behaviors.");
+		}
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}
 
+bool libcrtx_command_order(bool testConds, bool runActions) {
+	unitgroup g = libcrtx_chat_get_context(EventPlayer());
+	int index;
+	int mode = c_orderQueueAddToEnd;
+	string abil = "";
+	string rgn = null;
+	point pt = null;
+	int i;
+	string tmp;
 
+	i = 5;
+	while(i != 1)
+	{
+		tmp = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), i);
+		if(StringContains(tmp, "#", c_stringBegin, false))
+		{
+			rgn = tmp;
+		}
+		else if(StringCase(tmp, false) == "now" || 
+			StringCase(tmp, false) == "replace")
+		{
+			mode = c_orderQueueReplace;
+		}
+		else if(StringCase(tmp, false) == "append" || 
+			StringCase(tmp, false) == "end")
+		{
+			mode = c_orderQueueAddToEnd;
+		}
+		else if(StringCase(tmp, false) == "prepend" || 
+			StringCase(tmp, false) == "begin" ||
+			StringCase(tmp, false) == "front")
+		{
+			mode = c_orderQueueAddToFront;
+		}
+		else if(StringToInt(tmp) != 0 || tmp == "0")
+		{
+			index = StringToInt(tmp);
+		}
+		else
+		{
+			abil = tmp;
+		}
+		i = i - 1;
+	}
 
+	if(rgn != null)
+	{
+		if(rgn == "#spawner")
+		{
+			pt = UnitGetPosition(libcrtx_spawner());
+		}
+		else
+		{
+			pt = RegionRandomPoint(libcrtx_param_get_region(rgn));
+		}
+	}
+	
+	abil = libcrtx_param_catalog(c_gameCatalogAbil, abil);
+	if(abil == null)
+	{
+		libcrtx_write(PlayerGroupSingle(EventPlayer()), "<c val=\"ff0000\">Unable to issue ability order</c>: No such ability exists.");
+		return true;
+	}
 
+	UnitGroupLoopBegin(g);
+	if(pt != null)
+	{
+		while(!UnitGroupLoopDone())
+		{
+			UnitIssueOrder(UnitGroupLoopCurrent(), 
+				OrderTargetingPoint(AbilityCommand(abil, index), pt), mode);
+			UnitGroupLoopStep();
+		}
+	}
+	else
+	{
+		while(!UnitGroupLoopDone())
+		{
+			UnitIssueOrder(UnitGroupLoopCurrent(), Order(AbilityCommand(abil, index)), mode);
+			UnitGroupLoopStep();
+		}
+	}
+	UnitGroupLoopEnd();
+	return true;
+}
 
+bool libcrtx_command_modelswap(bool testConds, bool runActions)
+{
+	string model = libcrtx_param_index(2);
+	string amsg;
+	unitgroup g = libcrtx_chat_get_context(EventPlayer());
+
+	model = libcrtx_param_catalog(c_gameCatalogModel, model);
+	if(model == null)
+	{
+		libcrtx_write(PlayerGroupSingle(EventPlayer()), "<c val=\"ff0000\">Unable to swap model</c>: No such model exists.");
+		return true;
+	}
+	amsg = "ModelSwap {" + model + "}";
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		ActorSend(libNtve_gf_MainActorofUnit(UnitGroupLoopCurrent()), amsg);
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+
+	return true;
+}
+
+bool libcrtx_command_radius(bool testConds, bool runActions)
+{
+	string val = libcrtx_param_index(2);
+	fixed radius;
+	unitgroup g = libcrtx_chat_get_context(EventPlayer());
+	
+	if(val == "")
+	{
+		libcrtx_write(PlayerGroupSingle(EventPlayer()),
+			"Usage: @radius new_collision_radius[%]");
+	}
+	else if(StringContains(val, "%", c_stringEnd, c_stringCase))
+	{
+		radius = StringToFixed(StringSub(val, 1, StringLength(val) - 1));
+		radius = radius / 100;
+
+		UnitGroupLoopBegin(g);
+		while(!UnitGroupLoopDone())
+		{
+			val = CatalogFieldValueGet(c_gameCatalogUnit, UnitGetType(UnitGroupLoopCurrent()),
+				"Radius", UnitGetOwner(UnitGroupLoopCurrent()));
+			val = FixedToString(StringToFixed(val) * radius, 8);
+			CatalogFieldValueSet(c_gameCatalogUnit, UnitGetType(UnitGroupLoopCurrent()),
+				"Radius", UnitGetOwner(UnitGroupLoopCurrent()), val);
+			UnitGroupLoopStep();
+		}
+		UnitGroupLoopEnd();
+	}
+	else
+	{
+		UnitGroupLoopBegin(g);
+		while(!UnitGroupLoopDone())
+		{
+			CatalogFieldValueSet(c_gameCatalogUnit, UnitGetType(UnitGroupLoopCurrent()),
+				"Radius", UnitGetOwner(UnitGroupLoopCurrent()), val);
+			UnitGroupLoopStep();
+		}
+		UnitGroupLoopEnd();
+	}
+
+	return true;
+}
+
+bool libcrtx_command_copy(bool testConds, bool runActions)
+{
+	unitgroup g = libcrtx_chat_get_context(EventPlayer());
+	unitgroup created = UnitGroupEmpty();
+	unit source;
+	unitgroup targets;
+	unit target;
+	point targetpos;
+	region targetregion = libcrtx_param_get_region(libcrtx_param_index(2));
+	int i;
+	
+	// Spawn Throttle reset check
+	if( GameGetMissionTime() - libcrtx_command_spawn_lastevent[EventPlayer()] > libcrtx_setting_getint(libcrtx_setting_int_spawnperiod) ) {
+		libcrtx_command_spawn_count[EventPlayer()] = 0;
+	}
+
+	// Can we still spawn units? (Spawn Throttle)
+	if( libcrtx_admin_getpermissions(EventPlayer()) < libcrtx_admin_permissionlevel_moderator &&
+		(libcrtx_command_spawn_count[EventPlayer()] >= libcrtx_setting_getint(libcrtx_setting_int_maxspawnrate)
+		|| libcrtx_command_spawn_frozenuntil[EventPlayer()] > GameGetMissionTime())) {
+		libcrtx_write_error("You cannot spawn that many units so quickly. Please wait a while, and try again.");
+		libcrtx_write_text(PlayerGroupAll(), libcrtx_colored_player_name(EventPlayer()) +
+		StringToText(" is attempting to spawn in excess of " + 
+		IntToString(libcrtx_setting_getint(libcrtx_setting_int_maxspawnrate)) + " units in " +
+		IntToString(libcrtx_setting_getint(libcrtx_setting_int_spawnperiod)) + " seconds."));
+
+		if( libcrtx_command_spawn_frozenuntil[EventPlayer()] < GameGetMissionTime() ) {
+			libcrtx_command_spawn_frozenuntil[EventPlayer()] = GameGetMissionTime() + libcrtx_setting_getint(libcrtx_setting_int_spawntimeout);
+		}
+		// Halt execution.
+		return true;
+	}
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone())
+	{
+		// Increment the spawn count throttle.
+		libcrtx_command_spawn_count[EventPlayer()] = libcrtx_command_spawn_count[EventPlayer()] + 1;
+		if( GameGetMissionTime() - libcrtx_command_spawn_lastevent[EventPlayer()] > libcrtx_setting_getint(libcrtx_setting_int_spawnperiod) ) {
+			libcrtx_command_spawn_lastevent[EventPlayer()] = FixedToInt(GameGetMissionTime());
+		}
+
+		// Can we spawn at the moment (spawn throttle)?
+		if( libcrtx_command_spawn_frozenuntil[EventPlayer()] > GameGetMissionTime() ) {
+			break;
+		}
+		
+		if(targetregion != null)
+		{
+			targetpos = RegionRandomPoint(targetregion);
+		}
+		else
+		{
+			targetpos = UnitGetPosition(libcrtx_spawner());
+		}
+
+		source = UnitGroupLoopCurrent();
+		targets = UnitCreate(1, UnitGetType(source), c_unitCreateIgnorePlacement,
+			UnitGetOwner(source), targetpos, UnitGetFacing(source));
+		target = UnitGroupUnit(targets, 1);
+		UnitGroupAdd(created, target);
+
+		UnitSetHeight(target, UnitGetHeight(source), 0);
+		UnitSetState(target, c_unitStateInvulnerable, 
+			UnitTestState(source, c_unitStateInvulnerable));
+		UnitSetState(target, c_unitStatePaused, 
+			UnitTestState(source, c_unitStatePaused));
+		UnitSetState(target, c_unitStateHidden, 
+			UnitTestState(source, c_unitStateHidden));
+		UnitSetState(target, c_unitStateHighlightable, 
+			UnitTestState(source, c_unitStateHighlightable));
+		UnitSetState(target, c_unitStateIgnoreTerrainZ, 
+			UnitTestState(source, c_unitStateIgnoreTerrainZ));
+		UnitSetState(target, c_unitStateFidget, 
+			UnitTestState(source, c_unitStateFidget));
+		UnitSetState(target, c_unitStateTargetable, 
+			UnitTestState(source, c_unitStateTargetable));
+		UnitSetState(target, c_unitStateStatusBar, 
+			UnitTestState(source, c_unitStateStatusBar));
+		UnitSetState(target, c_unitStateTooltipable, 
+			UnitTestState(source, c_unitStateTooltipable));
+		UnitSetState(target, c_unitStateCursorable, 
+			UnitTestState(source, c_unitStateCursorable));
+		UnitSetState(target, c_unitStateHighlighted, 
+			UnitTestState(source, c_unitStateHighlighted));
+		UnitSetState(target, c_unitStateUsingSupply, 
+			UnitTestState(source, c_unitStateUsingSupply));
+		UnitSetPropertyFixed(target, c_unitPropLifeMax, 
+			UnitGetPropertyFixed(source, c_unitPropLifeMax, true));
+		UnitSetPropertyFixed(target, c_unitPropLife, 
+			UnitGetPropertyFixed(source, c_unitPropLife, true));
+		UnitSetPropertyFixed(target, c_unitPropLifeRegen, 
+			UnitGetPropertyFixed(source, c_unitPropLifeRegen, true));
+		UnitSetPropertyFixed(target, c_unitPropEnergyMax, 
+			UnitGetPropertyFixed(source, c_unitPropEnergyMax, true));
+		UnitSetPropertyFixed(target, c_unitPropEnergy, 
+			UnitGetPropertyFixed(source, c_unitPropEnergy, true));
+		UnitSetPropertyFixed(target, c_unitPropEnergyRegen, 
+			UnitGetPropertyFixed(source, c_unitPropEnergyRegen, true));
+		UnitSetPropertyFixed(target, c_unitPropShieldsMax, 
+			UnitGetPropertyFixed(source, c_unitPropShieldsMax, true));
+		UnitSetPropertyFixed(target, c_unitPropShields, 
+			UnitGetPropertyFixed(source, c_unitPropShields, true));
+		UnitSetPropertyFixed(target, c_unitPropShieldsRegen, 
+			UnitGetPropertyFixed(source, c_unitPropShieldsRegen, true));
+		UnitSetPropertyFixed(target, c_unitPropKills, 
+			UnitGetPropertyFixed(source, c_unitPropKills, true));
+		UnitSetPropertyFixed(target, c_unitPropMovementSpeed, 
+			UnitGetPropertyFixed(source, c_unitPropMovementSpeed, true));
+		UnitSetPropertyFixed(target, c_unitPropResources, 
+			UnitGetPropertyFixed(source, c_unitPropResources, true));
+
+		// Skipping implementing ability commands and their charges.
+		// Skipping implementing the cargo contained in a unit
+		// Skipping implementing unit magazines
+		// Skipping implementing unit queues
+
+		i = UnitBehaviorCountAll(source);
+		while(i != 0)
+		{
+			UnitBehaviorAdd(target, UnitBehaviorGet(source, i), null,
+				UnitBehaviorCount(source, UnitBehaviorGet(source, i)));
+			UnitBehaviorSetDuration(target, UnitBehaviorGet(source, i),
+				UnitBehaviorDuration(source, UnitBehaviorGet(source, i)));
+			i = i - 1;
+		}
+
+		i = 1;
+		while(i <= UnitOrderCount(source))
+		{
+			UnitIssueOrder(target, UnitOrder(source, i), c_orderQueueAddToEnd);
+			i = i + 1;
+		}
+
+		i = UnitWeaponCount(target);
+		while(i != 0)
+		{
+			UnitWeaponRemove(target, UnitWeaponGet(target, 1));
+			i = i - 1;
+		}
+
+		i = UnitWeaponCount(source);
+		while(i != 0)
+		{
+			// Does not copy turrets!
+			UnitWeaponAdd(target, UnitWeaponGet(source, i), null);
+			i = i - 1;
+		}
+
+		// Skipping implementing setname duplications
+		// Skipping actor duplication (don't know if its possible)
+
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+
+	// Update the internal variables
+	libcrtx_variable_assign_group( EventPlayer(), libcrtx_variable_name_last_spawned, created );
+	g = libcrtx_variable_get_group( EventPlayer(), libcrtx_variable_name_all_spawned);
+	libNtve_gf_AddUnitGroupToUnitGroup( created, g );
+	libcrtx_variable_assign_group( EventPlayer(), libcrtx_variable_name_all_spawned, g );
+	libcrtx_chat_set_context( EventPlayer(), created );
+	libcrtx_variable_assign_group( EventPlayer(), libcrtx_variable_name_return, created );
+	libcrtx_event_units_modified(created, libcrtx_event_create);
+	return true;
+}
+
+bool libcrtx_command_effect(bool testConds, bool runActions)
+{
+	// TODO: Allow caster units to be specified.
+	string effect = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2);
+	unitgroup g = libcrtx_chat_get_context(EventPlayer());
+	bool errors = false;
+
+	effect = libcrtx_param_catalog(c_gameCatalogEffect, effect);
+	if(effect == null)
+	{
+		libcrtx_write(PlayerGroupSingle(EventPlayer()), "<c val=\"ff0000\">Unable to create effect</c>: No such effect exists.");
+		return true;
+	}
+
+	if (UnitGroupCount(g, c_unitCountAll) != 0)
+	{
+		UnitGroupLoopBegin(g);
+		while(!UnitGroupLoopDone())
+		{
+			if(libNtve_gf_PlayerCanCreateEffectOnUnit(EventPlayer(), effect
+				, UnitGroupLoopCurrent()))
+			{
+				PlayerCreateEffectUnit(EventPlayer(), effect,
+					UnitGroupLoopCurrent());
+			}
+			else
+			{
+				errors = true;
+			}
+			UnitGroupLoopStep();
+		}
+		UnitGroupLoopEnd();
+
+		if(errors)
+		{
+			libcrtx_write(PlayerGroupSingle(EventPlayer()), "<c val=\"ff0000\">Unable to create the effect.</c>");
+		}
+	}
+	else
+	{
+		if(libNtve_gf_PlayerCanCreateEffectAtPoint(EventPlayer(), StringWord(EventChatMessage(false), 2)
+			, UnitGetPosition(libcrtx_spawner())))
+		{
+			PlayerCreateEffectPoint(EventPlayer(), effect,
+				UnitGetPosition(libcrtx_spawner()));
+		}
+		else
+		{
+			libcrtx_write(PlayerGroupSingle(EventPlayer()), "<c val=\"ff0000\">Unable to create the effect.</c>");
+		}
+	}
+	return true;
+}
 

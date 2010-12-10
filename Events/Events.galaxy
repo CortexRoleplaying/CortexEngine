@@ -10,12 +10,16 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+include "Cortex/Events/TrollDetection.galaxy"
+
 bool libcrtx_event_map_init(bool checkConds, bool runActions);
 void libcrtx_events_init()
 {
 	libcrtx_event_map_init(false, true);
 	TriggerAddEventTimePeriodic( TriggerCreate("libcrtx_event_periodic_tick"), 1.0, c_timeReal );
 	TriggerAddEventDialogControl( TriggerCreate("libcrtx_event_dialog_clicked"), c_playerAny, c_invalidDialogControlId, c_triggerControlEventTypeClick );
+
+	libcrtx_event_trolldetection_init();
 }
 
 bool libcrtx_event_map_init(bool checkConds, bool runActions) {

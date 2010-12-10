@@ -207,3 +207,118 @@ bool libcrtx_command_smarthostiletown(bool check, bool run)
 	}
 	return true;
 }
+
+int libcrtx_search_index = -1;
+string libcrtx_search_lastquery = "";
+int libcrtx_search_catalog = c_gameCatalogActor;
+
+bool libcrtx_command_search(bool testConds, bool runActions)
+{
+	string type = StringCase(libcrtx_param_index(2), false);
+	string query = StringCase(libcrtx_param_index(3), false);
+	int catalog;
+	int i;
+	int count;
+	string result;
+
+	if(type == "abil")
+	{
+		catalog = c_gameCatalogAbil;
+	}
+	else if(type == "actor")
+	{
+		catalog = c_gameCatalogActor;
+	}
+	else if(type == "behavior")
+	{
+		catalog = c_gameCatalogBehavior;
+	}
+	else if(type == "effect")
+	{
+		catalog = c_gameCatalogEffect;
+	}
+	else if(type == "footprint")
+	{
+		catalog = c_gameCatalogFootprint;
+	}
+	else if(type == "light")
+	{
+		catalog = c_gameCatalogLight;
+	}
+	else if(type == "model")
+	{
+		catalog = c_gameCatalogModel;
+	}
+	else if(type == "texture")
+	{
+		catalog = c_gameCatalogTexture;
+	}
+	else if(type == "turret")
+	{
+		catalog = c_gameCatalogTurret;
+	}
+	else if(type == "unit")
+	{
+		catalog = c_gameCatalogUnit;
+	}
+	else if(type == "upgrade")
+	{
+		catalog = c_gameCatalogUpgrade;
+	}
+	else if(type == "validator")
+	{
+		catalog = c_gameCatalogValidator;
+	}
+	else if(type == "weapon")
+	{
+		catalog = c_gameCatalogWeapon;
+	}
+	else if(libcrtx_search_index == -1)
+	{
+		libcrtx_write( PlayerGroupSingle(EventPlayer()), "Usage: search [actor|behavior|weapon|validator|upgrade|unit|turret|light|footprint|model] [what to search for]");
+		return true;
+	}
+	
+	i = CatalogEntryCount(catalog);
+
+	// Allow for multi-page query results
+	if(type == "")
+	{
+		i = libcrtx_search_index;
+		catalog = libcrtx_search_catalog;
+		query  = libcrtx_search_lastquery;
+	}
+	else if(type == "repeat")
+	{
+		i = libcrtx_search_index + 8;
+		catalog = libcrtx_search_catalog;
+		query  = libcrtx_search_lastquery;
+	}
+
+	count = 8;
+	libcrtx_write( PlayerGroupSingle(EventPlayer()), "<h>Results for the word \"" + query + "\"</h>:");
+	while(i != 0 && count != 0)
+	{
+		result = CatalogEntryGet(catalog, i);
+		if(StringContains(result, query, c_stringAnywhere, c_stringNoCase) ||
+			query == "")
+		{
+			libcrtx_write( PlayerGroupSingle(EventPlayer()), result);
+			count = count - 1;
+		}
+		i = i - 1;
+	}
+
+	if(count == 0 && i != 0)
+	{
+		libcrtx_write( PlayerGroupSingle(EventPlayer()), "<h>More results exist. Type search to see them.</h>");
+		libcrtx_search_index = i;
+		libcrtx_search_lastquery = query;
+		libcrtx_search_catalog = catalog;
+	}
+	else
+	{
+		libcrtx_search_index = -1;
+	}
+	return true;
+}

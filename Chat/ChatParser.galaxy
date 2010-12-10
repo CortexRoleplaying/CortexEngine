@@ -50,3 +50,109 @@ unitgroup libcrtx_chat_get_context(int player)
 {
 	return libcrtx_enforce_unit_permissions(libcrtx_chat_current_context[player]);
 }
+
+// Returns the parameter at the given index.
+// Indexing starts at 2. (1 is the command being used)
+string libcrtx_param_index(int index)
+{
+	return StringWord(libcrtx_chat_get_parse_line(EventPlayer()), index);
+}
+
+// Returns all parameters
+string libcrtx_param_all()
+{
+	string msg = libcrtx_chat_get_parse_line(EventPlayer());
+	return StringSub(msg, StringFind(msg, " ", c_stringCase) + 1, StringLength(msg));
+}
+
+// Takes the given word and finds it in the catalog.
+// If it is not in the catalog, returns null.
+string libcrtx_param_catalog(int catalog, string word)
+{
+	int i;
+	string test;
+	string result = null;
+
+	if(CatalogEntryIsValid(catalog, word))
+	{
+		return word;
+	}
+	
+	i = CatalogEntryCount(catalog);
+	while(i != 0)
+	{
+		test = CatalogEntryGet(catalog, i);
+		if(StringEqual(test, word, c_stringNoCase))
+		{
+			result = test;
+			return result;
+		}
+		i = i - 1;
+	}
+
+	i = CatalogEntryCount(catalog);
+	while(i != 0)
+	{
+		test = CatalogEntryGet(catalog, i);
+		if(StringContains(test, word, c_stringBegin, c_stringNoCase))
+		{
+			result = test;
+			break;
+		}
+		i = i - 1;
+	}
+
+	return result;
+}
+
+// Takes the given word and translates it into a region.
+// If more than one word is given, then it searches for the #
+// If not possible, returns null.
+region libcrtx_param_get_region(string word)
+{
+	string rgnName = null;
+	int i = 0;
+
+	if(word == "")
+	{
+		return null;
+	}
+
+	if (StringContains(word, " ", c_stringAnywhere, c_stringCase))
+	{
+		while(StringWord(word, i) != "")
+		{
+			if (StringContains(StringWord(word, i), "#", c_stringBegin, c_stringCase))
+			{
+				rgnName = StringWord(word, i);
+				break;
+			}
+			i = i + 1;
+		}
+
+		if(rgnName == null)
+		{
+			return null;
+		}
+	}
+	else
+	{
+		rgnName = word;
+	}
+
+	if (StringContains(rgnName, "#", c_stringBegin, c_stringCase))
+	{
+		rgnName = StringSub(rgnName, 2, StringLength(rgnName));
+	}
+	rgnName = libcrtx_command_region_buildidentifier(rgnName);
+
+	if(DataTableValueExists(true, libcrtx_command_region_buildidentifier(rgnName) + "_link"))
+	{
+		return DataTableGetRegion(true, libcrtx_command_region_buildidentifier(rgnName) + "_link");
+	}
+	else
+	{
+		return DataTableGetRegion(true, rgnName);
+	}
+}
+

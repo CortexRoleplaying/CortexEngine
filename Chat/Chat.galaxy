@@ -16,7 +16,11 @@ string libcrtx_command_list;
 
 void libcrtx_command_create(string lp_cmd, string lp_func) 
 {
-	DataTableSetTrigger( true, "libcrtx_commands_" + lp_cmd, TriggerCreate(lp_func) );
+	trigger t = TriggerCreate(lp_func);
+	if(t == null) {
+		TriggerDebugOutput(1, StringToText("Failed to register command: " + lp_cmd + " => " + lp_func), true);
+	}
+	DataTableSetTrigger( true, "libcrtx_commands_" + lp_cmd, t );
 	libcrtx_command_list = libcrtx_command_list + lp_cmd + ", ";
 }
 

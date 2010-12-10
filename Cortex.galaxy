@@ -13,8 +13,8 @@
 include "Cortex/Common/Global.galaxy"
 include "Cortex/Toolkit/Toolkit.galaxy"
 include "Cortex/Chat/Chat.galaxy"
-include "Cortex/Commands/Commands.galaxy"
 include "Cortex/Events/Events.galaxy"
+include "Cortex/Commands/Commands.galaxy"
 
 bool libcrtx_MapCheck()
 {
