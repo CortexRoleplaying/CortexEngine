@@ -11,8 +11,8 @@
 // GNU General Public License for more details.
 
 // Load all Cortex dependencies
-include "Cortex/Common/libactionbar/libactionbar.galaxy"
-include "Cortex/Common/libstarcode/libstarcode.galaxy"
+include "Cortex/Common/lib/libactionbar.galaxy"
+include "Cortex/Common/lib/libstarcode.galaxy"
 
 // Cortex Git revision
 const string libcrtx_version_branch = "master";

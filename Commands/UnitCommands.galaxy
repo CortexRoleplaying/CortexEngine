@@ -120,6 +120,10 @@ bool libcrtx_command_give(bool testConds, bool runActions) {
 		UnitGroupLoopStep();
 	}
 	UnitGroupLoopEnd();
+
+	libcrtx_event_units_modified(g, libcrtx_event_create |
+		libcrtx_event_damage | libcrtx_event_weapon |
+		libcrtx_event_behavior | libcrtx_event_range);
 	return true;
 }
 
@@ -141,6 +145,10 @@ bool libcrtx_command_givecolor(bool testConds, bool runActions) {
 		UnitGroupLoopStep();
 	}
 	UnitGroupLoopEnd();
+
+	libcrtx_event_units_modified(g, libcrtx_event_create |
+		libcrtx_event_damage | libcrtx_event_weapon |
+		libcrtx_event_behavior | libcrtx_event_range);
 	return true;
 }
 
@@ -173,6 +181,9 @@ bool libcrtx_command_invulnerable(bool testConds, bool runActions) {
 		UnitGroupLoopStep();
 	}
 	UnitGroupLoopEnd();
+
+	libcrtx_event_units_modified(g, libcrtx_event_damage |
+		libcrtx_event_weapon);
 	return true;
 }
 
@@ -276,6 +287,8 @@ bool libcrtx_command_life(bool testConds, bool runActions) {
 		UnitGroupLoopStep();
 	}
 	UnitGroupLoopEnd();
+
+	libcrtx_event_units_modified(g, libcrtx_event_health);
 	return true;
 }
 
@@ -334,6 +347,8 @@ bool libcrtx_command_shields(bool testConds, bool runActions) {
 		UnitGroupLoopStep();
 	}
 	UnitGroupLoopEnd();
+
+	libcrtx_event_units_modified(g, libcrtx_event_health);
 	return true;
 }
 
@@ -474,6 +489,8 @@ bool libcrtx_command_height(bool testConds, bool runActions) {
 		UnitGroupLoopStep();
 	}
 	UnitGroupLoopEnd();
+
+	libcrtx_event_units_modified(g, libcrtx_event_height);
 	return true;
 }
 
@@ -520,6 +537,8 @@ bool libcrtx_command_addweapon(bool testConds, bool runActions) {
 		UnitGroupLoopStep();
 	}
 	UnitGroupLoopEnd();
+
+	libcrtx_event_units_modified(g, libcrtx_event_weapon);
 	return true;
 }
 
@@ -579,6 +598,7 @@ bool libcrtx_command_maxlife(bool testConds, bool runActions) {
 		UnitGroupLoopStep();
 	}
 	UnitGroupLoopEnd();
+	libcrtx_event_units_modified(g, libcrtx_event_health);
 	return true;
 }
 
@@ -617,23 +637,39 @@ bool libcrtx_command_maxshields(bool testConds, bool runActions) {
 		UnitGroupLoopStep();
 	}
 	UnitGroupLoopEnd();
+	libcrtx_event_units_modified(g, libcrtx_event_health);
 	return true;
 }
 
 bool libcrtx_command_speed(bool testConds, bool runActions) {
 	fixed val;
+	bool isPermanent = false;
 	unitgroup g = libcrtx_chat_get_context(EventPlayer());
 	val = StringToFixed(StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 ));
+	isPermanent = StringContains(libcrtx_chat_get_parse_line(EventPlayer()), "all", c_stringAnywhere, false) ||
+		StringContains(libcrtx_chat_get_parse_line(EventPlayer()), "permanent", c_stringAnywhere, false);
 
 	if( val <= 0 ) { // Bad input!
 		return true;
 	}
-
+	
 	UnitGroupLoopBegin(g);
-	while(!UnitGroupLoopDone())
+	if(isPermanent)
 	{
-		UnitSetPropertyFixed( UnitGroupLoopCurrent(), c_unitPropMovementSpeed, val );
-		UnitGroupLoopStep();
+		while(!UnitGroupLoopDone())
+		{
+			CatalogFieldValueSet(c_gameCatalogUnit, UnitGetType(UnitGroupLoopCurrent()),
+				"Speed", UnitGetOwner(UnitGroupLoopCurrent()), FixedToString(val, 4));
+			UnitGroupLoopStep();
+		}
+	}
+	else
+	{
+		while(!UnitGroupLoopDone())
+		{
+			UnitSetPropertyFixed( UnitGroupLoopCurrent(), c_unitPropMovementSpeed, val );
+			UnitGroupLoopStep();
+		}
 	}
 	UnitGroupLoopEnd();
 	return true;
@@ -688,6 +724,7 @@ bool libcrtx_command_level(bool testConds, bool runActions) {
 	}
 
 	UnitGroupLoopEnd();
+	libcrtx_event_units_modified(g, libcrtx_event_behavior);
 	return true;
 }
 
@@ -744,6 +781,7 @@ bool libcrtx_command_adddamage(bool testConds, bool runActions) {
 	}
 
 	UnitGroupLoopEnd();
+	libcrtx_event_units_modified(g, libcrtx_event_damage);
 	return true;
 }
 
@@ -878,8 +916,6 @@ bool libcrtx_command_attach(bool testConds, bool runActions) {
 	while(!UnitGroupLoopDone())
 	{
             	libNtve_gf_AttachActorToUnit( UnitGroupLoopCurrent(), actr, apoint);
-            	UIDisplayMessage( PlayerGroupAll(), c_messageAreaDebug, ActorScopeGetText( ActorScopeFromUnit( UnitGroupLoopCurrent() ) ));
-            	UIDisplayMessage( PlayerGroupAll(), c_messageAreaDebug, ActorGetText( libNtve_gf_MainActorofUnit( UnitGroupLoopCurrent() ) ));
 		UnitGroupLoopStep();
 	}
 	UnitGroupLoopEnd();
@@ -957,6 +993,7 @@ bool libcrtx_command_addbehavior(bool testConds, bool runActions) {
 		UnitGroupLoopStep();
 	}
 	UnitGroupLoopEnd();
+	libcrtx_event_units_modified(g, libcrtx_event_behavior);
 	return true;
 }
 
@@ -1386,6 +1423,7 @@ bool libcrtx_command_order(bool testConds, bool runActions) {
 	point pt = null;
 	int i;
 	string tmp;
+	order o;
 
 	i = 5;
 	while(i != 1)
@@ -1446,8 +1484,13 @@ bool libcrtx_command_order(bool testConds, bool runActions) {
 	{
 		while(!UnitGroupLoopDone())
 		{
+			o = OrderTargetingPoint(AbilityCommand(abil, index), pt);
+			if( !UnitOrderIsValid(UnitGroupLoopCurrent(), o) ) {
+				UnitGroupLoopStep();
+				continue;
+			}
 			UnitIssueOrder(UnitGroupLoopCurrent(), 
-				OrderTargetingPoint(AbilityCommand(abil, index), pt), mode);
+				o, mode);
 			UnitGroupLoopStep();
 		}
 	}
@@ -1455,7 +1498,12 @@ bool libcrtx_command_order(bool testConds, bool runActions) {
 	{
 		while(!UnitGroupLoopDone())
 		{
-			UnitIssueOrder(UnitGroupLoopCurrent(), Order(AbilityCommand(abil, index)), mode);
+			o = Order(AbilityCommand(abil, index));
+			if( !UnitOrderIsValid(UnitGroupLoopCurrent(), o) ) {
+				UnitGroupLoopStep();
+				continue;
+			}
+			UnitIssueOrder(UnitGroupLoopCurrent(), o, mode);
 			UnitGroupLoopStep();
 		}
 	}

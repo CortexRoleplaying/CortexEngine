@@ -548,6 +548,7 @@ void libactionbar_set_active_unit(int player, unit u) {
 
 	// We're removing the action bars only.
 	if( u == null ) {
+		libactionbar_redraw_actionbar(player, true);
 		return;
 	}
 
