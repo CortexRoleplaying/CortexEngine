@@ -74,6 +74,7 @@ void libcrtx_chat_parsechat(int lp_player, string lp_message, int lp_recursionLi
 	bool aliasCreate;
 	text tex;
 	string st;
+	bool isNoAliasCommand = false;
 
 	if( lp_recursionLimit == libcrtx_chat_recursion_limit ) {
 		// This is the original command as issued before it's broken down.
@@ -98,6 +99,8 @@ void libcrtx_chat_parsechat(int lp_player, string lp_message, int lp_recursionLi
 	// Parse normally so we don't have to escape the ;'s
 	if( StringEqual(StringSub(lp_message, 1, 12), "alias create", false) ) {
 		aliasCreate = true;
+	} else if( StringEqual(StringSub(lp_message, 1, 12), "alias remove", false) ) {
+		isNoAliasCommand = true;
 	}
 
 	l = 1;
@@ -162,7 +165,7 @@ void libcrtx_chat_parsechat(int lp_player, string lp_message, int lp_recursionLi
 
 	// Check every word for aliases.
 	x = 2;
-	while( StringWord(lp_message, x) != "" ) {
+	while( StringWord(lp_message, x) != "" && !isNoAliasCommand ) {
 		s = StringWord(lp_message, x);
 		if( libcrtx_alias_exists(s) ) { 
 			lp_message = StringReplaceWord( lp_message, s, libcrtx_alias_getsource(s), c_stringReplaceAll, false );
