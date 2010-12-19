@@ -85,5 +85,34 @@ string libcrtx_alias_getsource(string aliasName)
 	return BankValueGetAsString( libcrtx_alias_banks[EventPlayer()], "aliases", aliasName );
 }
 
+void libcrtx_chat_write_ooc(int player, string message)
+{
+	string str;
+	text msg = libcrtx_color_text_by_player( player, PlayerName( player ) + StringToText(" (OOC)") );
+	str = ": " + message;
+	msg = msg + StringToText(str);
+
+	// And now we write the pretty OOC chat!
+	libcrtx_write_text(PlayerGroupAll(), msg);
+}
+
+// Filters out instances of chat such as <c val="ff0000">, <h/>, <n/>, <img />, <s /> , etc.
+bool libcrtx_chat_contains_illegal_xml(string message)
+{
+	if( StringContains( message, "<c ", c_stringAnywhere, false ) ) {
+		return true;
+	} else if( StringContains(message, "<h", c_stringAnywhere, false ) ) {
+		return true;
+	} else if( StringContains(message, "<n", c_stringAnywhere, false ) ) {
+		return true;
+	} else if( StringContains(message, "<img", c_stringAnywhere, false ) ) {
+		return true;
+	} else if( StringContains(message, "<s", c_stringAnywhere, false ) ) {
+		return true;
+	}
+
+	return false;
+}
+
 include "Cortex/Chat/ChatParser.galaxy"
 include "Cortex/Chat/ChatHandler.galaxy"

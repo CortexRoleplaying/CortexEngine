@@ -196,29 +196,21 @@ void libcrtx_chat_parsechat(int lp_player, string lp_message, int lp_recursionLi
 		TriggerExecute(t, false, false);
 	} else {
 		// No such command for this iteration
-		tex = libcrtx_color_text_by_player( lp_player, PlayerName( lp_player ) + StringToText(" (OOC)") );
-		st = ": " + lp_message;
-		tex = tex + StringToText(st);
-		// And now we write the pretty OOC chat!
-		libcrtx_write_text(PlayerGroupAll(), tex);
+		libcrtx_chat_write_ooc( lp_player, lp_message );
 	}
 }
 
 bool libcrtx_chat_receivedevent(bool testConds, bool runActions)
 {
-	text t;
-	int i;
-	int x;
-	int l;
-	string c;
-	string s;
 	bool isCmd = false;
 	int triggerPlayer = EventPlayer();
 	string chatMsg = EventChatMessage(false);
 	chatMsg = libcrtx_trim_string(chatMsg);
 
-	if(!runActions)
+	if(!runActions || libcrtx_chat_contains_illegal_xml(chatMsg) )
 	{
+		UIClearMessages( PlayerGroupAll(), c_messageAreaChat );
+		libcrtx_write_text(PlayerGroupAll(), libcrtx_color_text_by_player( triggerPlayer, PlayerName(triggerPlayer) ) + StringToText(" attempted to use illegal XML styling.") );
 		return true;
 	}
 
