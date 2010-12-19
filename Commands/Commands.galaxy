@@ -95,6 +95,7 @@ void libcrtx_commands_init()
 	libcrtx_command_create("@shieldsarmor", "libcrtx_command_shieldarmor");
 	libcrtx_command_create("@weaponspeed", "libcrtx_command_weaponspeed");
 	libcrtx_command_create("@weaponspeedall", "libcrtx_command_weaponspeedall");
+	libcrtx_command_create("@animspeed", "libcrtx_command_animspeed");
 	
 
 	// admin commands

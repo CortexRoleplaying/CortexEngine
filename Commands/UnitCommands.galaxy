@@ -2133,4 +2133,27 @@ bool libcrtx_command_weaponspeed(bool testConds, bool runActions)
 	return true;
 }
 
+bool libcrtx_command_animspeed(bool testConds, bool runActions)
+{
+	string speed = libcrtx_param_index(2);
+	fixed speedDec;
+	unitgroup g = libcrtx_chat_get_context(EventPlayer());
+	if( StringContains( speed, "%", c_stringEnd, c_stringCase ) ) {
+		speedDec = StringToFixed( StringSub(speed, 1, StringLength(speed)-1) ) / 100;
+	} else {
+		speedDec = StringToFixed( speed );
+	}
+
+	if( speedDec < 0 || speedDec > 10 ) {
+		return true;
+	}
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone()) {
+		ActorSend( libNtve_gf_MainActorofUnit(UnitGroupLoopCurrent()), libNtve_gf_AnimSetTimeScaleGlobal(speedDec) );
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}
 
