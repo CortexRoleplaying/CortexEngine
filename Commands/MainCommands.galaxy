@@ -221,61 +221,61 @@ bool libcrtx_command_search(bool testConds, bool runActions)
 	int count;
 	string result;
 
-	if(type == "abil")
+	if(type == "ability" || type == "abilities")
 	{
 		catalog = c_gameCatalogAbil;
 	}
-	else if(type == "actor")
+	else if(type == "actor" || type == "actors")
 	{
 		catalog = c_gameCatalogActor;
 	}
-	else if(type == "behavior")
+	else if(type == "behavior" || type == "behaviors")
 	{
 		catalog = c_gameCatalogBehavior;
 	}
-	else if(type == "effect")
+	else if(type == "effect" || type == "effects")
 	{
 		catalog = c_gameCatalogEffect;
 	}
-	else if(type == "footprint")
+	else if(type == "footprint" || type == "footprints")
 	{
 		catalog = c_gameCatalogFootprint;
 	}
-	else if(type == "light")
+	else if(type == "light" || type == "lights")
 	{
 		catalog = c_gameCatalogLight;
 	}
-	else if(type == "model")
+	else if(type == "model" || type == "models")
 	{
 		catalog = c_gameCatalogModel;
 	}
-	else if(type == "texture")
+	else if(type == "texture" || type == "textures")
 	{
 		catalog = c_gameCatalogTexture;
 	}
-	else if(type == "turret")
+	else if(type == "turret" || type == "turrets")
 	{
 		catalog = c_gameCatalogTurret;
 	}
-	else if(type == "unit")
+	else if(type == "unit" || type == "units")
 	{
 		catalog = c_gameCatalogUnit;
 	}
-	else if(type == "upgrade")
+	else if(type == "upgrade" || type == "upgrades")
 	{
 		catalog = c_gameCatalogUpgrade;
 	}
-	else if(type == "validator")
+	else if(type == "validator" || type == "validators")
 	{
 		catalog = c_gameCatalogValidator;
 	}
-	else if(type == "weapon")
+	else if(type == "weapon" || type == "weapons")
 	{
 		catalog = c_gameCatalogWeapon;
 	}
 	else if(libcrtx_search_index == -1)
 	{
-		libcrtx_write( PlayerGroupSingle(EventPlayer()), "Usage: search [actor|behavior|weapon|validator|upgrade|unit|turret|light|footprint|model] [what to search for]");
+		libcrtx_write( PlayerGroupSingle(EventPlayer()), "Usage: search [ability|actor|behavior|weapon|validator|upgrade|unit|turret|light|footprint|model] [what to search for]");
 		return true;
 	}
 	

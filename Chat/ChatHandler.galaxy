@@ -207,7 +207,7 @@ bool libcrtx_chat_receivedevent(bool testConds, bool runActions)
 	string chatMsg = EventChatMessage(false);
 	chatMsg = libcrtx_trim_string(chatMsg);
 
-	if(!runActions || libcrtx_chat_contains_illegal_xml(chatMsg) )
+	if( libcrtx_chat_contains_illegal_xml(chatMsg) )
 	{
 		UIClearMessages( PlayerGroupAll(), c_messageAreaChat );
 		libcrtx_write_text(PlayerGroupAll(), libcrtx_color_text_by_player( triggerPlayer, PlayerName(triggerPlayer) ) + StringToText(" attempted to use illegal XML styling.") );
