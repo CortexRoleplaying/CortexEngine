@@ -35,31 +35,26 @@ bool libcrtx_command_remove(bool testConds, bool runActions) {
 }
 
 bool libcrtx_command_removearea(bool testConds, bool runActions) {
-      unitgroup g;
-      fixed radius = StringToFixed( StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 ));
-      if(radius == 0.0) {
-        radius = 5.0;
-      }
+	unitgroup g;
+	fixed radius = StringToFixed( StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 ));
+	if(radius == 0.0) {
+		radius = 5.0;
+	}
+
+	libNtve_gf_RemoveDeathModelsinRegion( RegionCircle( UnitGetPosition(libcrtx_spawner()), radius) );
 
 	g = UnitGroup( null, c_playerAny, RegionCircle( UnitGetPosition(libcrtx_spawner()), radius), null, 0 );
-      g = libcrtx_enforce_unit_permissions(g);
+	g = libcrtx_enforce_unit_permissions(g);
 
 	UnitGroupLoopBegin(g);
 
 	while(!UnitGroupLoopDone())
-
 	{
-
 		UnitRemove( UnitGroupLoopCurrent() );
-
 		UnitGroupLoopStep();
-
 	}
-
 	UnitGroupLoopEnd();
-
 	return true;
-
 }
 
 bool libcrtx_command_scale(bool testConds, bool runActions) {
