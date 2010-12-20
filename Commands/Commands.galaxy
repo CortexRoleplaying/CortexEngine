@@ -37,6 +37,10 @@ void libcrtx_commands_init()
 	libcrtx_command_create("search", "libcrtx_command_search");
 	libcrtx_command_create("creep", "libcrtx_command_creep");
 	libcrtx_command_create("upgrade", "libcrtx_command_upgrade");
+	libcrtx_command_create("ally", "libcrtx_command_ally");
+	libcrtx_command_create("unally", "libcrtx_command_unally");
+	libcrtx_command_create("control", "libcrtx_command_control");
+	libcrtx_command_create("uncontrol", "libcrtx_command_uncontrol");
 
 	// unit commands
 	libcrtx_command_create("@context", "libcrtx_command_context");

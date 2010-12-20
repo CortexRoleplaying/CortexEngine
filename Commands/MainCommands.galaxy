@@ -460,3 +460,249 @@ bool libcrtx_command_upgrade(bool testConds, bool runActions)
 
 	return true;
 }
+
+bool libcrtx_command_ally(bool testConds, bool runActions)
+{
+	string player = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2);
+	string targetPlayer = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 3);
+	string original = player;
+	int i = 1;
+	int context = EventPlayer();
+
+	// We're trying to make another computer do something interesting.
+	// Ex: ally smarthostile hostile
+	if( targetPlayer != "" ) {
+		context = libcrtx_color_to_player(player);
+		player = targetPlayer;
+	}
+
+	// Do we have the permissions to run this under the 'context'?
+	if( context != -1 && context != EventPlayer() && PlayerType(context) == c_playerTypeUser && !libcrtx_admin_haspermissions(EventPlayer(), context, libcrtx_admin_permissionlevel_moderator) )
+	{
+		return true;
+	}
+
+	// Awesome recursive part: unally/ally all all. :O
+	if( original == "all" ) {
+		while( i != libcrtx_max_players ) {
+			// Issue this command over the next color.
+			libcrtx_chat_redirect_command( EventPlayer(), "ally", libcrtx_color_from_player(i) + " " + targetPlayer );
+			i = i + 1;
+		}
+		return true;
+	}
+
+	if( context == -1 ) {
+		// Invalid player.
+		return true;
+	}
+
+	while( i != libcrtx_max_players ) { 
+		if( i == context || (libcrtx_color_to_player(player) != i && player != "all") ) {
+			i = i + 1;
+			continue;
+		}
+
+		if( PlayerType(i) != c_playerTypeUser ) { 
+			PlayerSetAlliance( context, c_allianceIdPassive, i, true );
+			PlayerSetAlliance( i, c_allianceIdPassive, context, true );			
+		} else {
+			PlayerSetAlliance( context, c_allianceIdPassive, i, true );
+			// Now check, do we have permission to modify this player's alliances, too?
+			if( EventPlayer() == i || libcrtx_admin_haspermissions( EventPlayer(), i, libcrtx_admin_permissionlevel_moderator ) ) {
+				PlayerSetAlliance( i, c_allianceIdPassive, context, true );
+			}
+		}
+
+		i = i + 1;
+		continue;
+	}
+	return true;
+}
+
+bool libcrtx_command_unally(bool testConds, bool runActions)
+{
+	string player = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2);
+	string targetPlayer = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 3);
+	string original = player;
+	int i = 1;
+	int context = EventPlayer();
+
+	// We're trying to make another computer do something interesting.
+	// Ex: ally smarthostile hostile
+	if( targetPlayer != "" ) {
+		context = libcrtx_color_to_player(player);
+		player = targetPlayer;
+	}
+
+	// Do we have the permissions to run this under the 'context'?
+	if( context != -1 && context != EventPlayer() && PlayerType(context) == c_playerTypeUser && !libcrtx_admin_haspermissions(EventPlayer(), context, libcrtx_admin_permissionlevel_moderator) )
+	{
+		return true;
+	}
+
+	// Awesome recursive part: unally/ally all all. :O
+	if( original == "all" ) {
+		while( i != libcrtx_max_players ) {
+			// Issue this command over the next color.
+			libcrtx_chat_redirect_command( EventPlayer(), "unally", libcrtx_color_from_player(i) + " " + targetPlayer );
+			i = i + 1;
+		}
+		return true;
+	}
+
+	if( context == -1 ) {
+		// Invalid player.
+		return true;
+	}
+
+	while( i != libcrtx_max_players ) { 
+		if( i == context || (libcrtx_color_to_player(player) != i && player != "all") ) {
+			i = i + 1;
+			continue;
+		}
+
+		if( PlayerType(i) != c_playerTypeUser ) { 
+			PlayerSetAlliance( context, c_allianceIdPassive, i, false );
+			PlayerSetAlliance( i, c_allianceIdPassive, context, false );			
+		} else {
+			PlayerSetAlliance( context, c_allianceIdPassive, i, false );
+			// Now check, do we have permission to modify this player's alliances, too?
+			if( EventPlayer() == i || libcrtx_admin_haspermissions( EventPlayer(), i, libcrtx_admin_permissionlevel_moderator ) ) {
+				PlayerSetAlliance( i, c_allianceIdPassive, context, false );
+			}
+		}
+
+		i = i + 1;
+		continue;
+	}
+	return true;
+}
+
+bool libcrtx_command_control(bool testConds, bool runActions)
+{
+	string player = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2);
+	string targetPlayer = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 3);
+	string original = player;
+	int i = 1;
+	int context = EventPlayer();
+
+	// We're trying to make another computer do something interesting.
+	// Ex: ally smarthostile hostile
+	if( targetPlayer != "" ) {
+		context = libcrtx_color_to_player(player);
+		player = targetPlayer;
+	}
+
+	// Do we have the permissions to run this under the 'context'?
+	if( context != -1 && context != EventPlayer() && PlayerType(context) == c_playerTypeUser && !libcrtx_admin_haspermissions(EventPlayer(), context, libcrtx_admin_permissionlevel_moderator) )
+	{
+		return true;
+	}
+
+	// Awesome recursive part: unally/ally all all. :O
+	if( original == "all" ) {
+		while( i != libcrtx_max_players ) {
+			// Issue this command over the next color.
+			libcrtx_chat_redirect_command( EventPlayer(), "control", libcrtx_color_from_player(i) + " " + targetPlayer );
+			i = i + 1;
+		}
+		return true;
+	}
+
+	if( context == -1 ) {
+		// Invalid player.
+		return true;
+	}
+
+	while( i != libcrtx_max_players ) { 
+		if( i == context || (libcrtx_color_to_player(player) != i && player != "all") ) {
+			i = i + 1;
+			continue;
+		}
+
+		if( PlayerType(i) != c_playerTypeUser ) { 
+			PlayerSetAlliance( context, c_allianceIdControl, i, true );
+			PlayerSetAlliance( context, c_allianceIdSpend, i, true );
+			PlayerSetAlliance( i, c_allianceIdControl, context, true );
+			PlayerSetAlliance( i, c_allianceIdSpend, context, true );			
+		} else {
+			PlayerSetAlliance( context, c_allianceIdControl, i, true );
+			PlayerSetAlliance( context, c_allianceIdSpend, i, true );
+			// Now check, do we have permission to modify this player's alliances, too?
+			if( EventPlayer() == i || libcrtx_admin_haspermissions( EventPlayer(), i, libcrtx_admin_permissionlevel_moderator ) ) {
+				PlayerSetAlliance( i, c_allianceIdControl, context, true );
+				PlayerSetAlliance( i, c_allianceIdSpend, context, true );	
+			}
+		}
+
+		i = i + 1;
+		continue;
+	}
+	return true;
+}
+
+bool libcrtx_command_uncontrol(bool testConds, bool runActions)
+{
+	string player = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2);
+	string targetPlayer = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 3);
+	string original = player;
+	int i = 1;
+	int context = EventPlayer();
+
+	// We're trying to make another computer do something interesting.
+	// Ex: ally smarthostile hostile
+	if( targetPlayer != "" ) {
+		context = libcrtx_color_to_player(player);
+		player = targetPlayer;
+	}
+
+	// Do we have the permissions to run this under the 'context'?
+	if( context != -1 && context != EventPlayer() && PlayerType(context) == c_playerTypeUser && !libcrtx_admin_haspermissions(EventPlayer(), context, libcrtx_admin_permissionlevel_moderator) )
+	{
+		return true;
+	}
+
+	// Awesome recursive part: unally/ally all all. :O
+	if( original == "all" ) {
+		while( i != libcrtx_max_players ) {
+			// Issue this command over the next color.
+			libcrtx_chat_redirect_command( EventPlayer(), "uncontrol", libcrtx_color_from_player(i) + " " + targetPlayer );
+			i = i + 1;
+		}
+		return true;
+	}
+
+	if( context == -1 ) {
+		// Invalid player.
+		return true;
+	}
+
+	while( i != libcrtx_max_players ) { 
+		if( i == context || (libcrtx_color_to_player(player) != i && player != "all") ) {
+			i = i + 1;
+			continue;
+		}
+
+		if( PlayerType(i) != c_playerTypeUser ) { 
+			PlayerSetAlliance( context, c_allianceIdControl, i, false );
+			PlayerSetAlliance( context, c_allianceIdSpend, i, false );
+			PlayerSetAlliance( i, c_allianceIdControl, context, false );
+			PlayerSetAlliance( i, c_allianceIdSpend, context, false );			
+		} else {
+			PlayerSetAlliance( context, c_allianceIdControl, i, false );
+			PlayerSetAlliance( context, c_allianceIdSpend, i, false );
+			// Now check, do we have permission to modify this player's alliances, too?
+			if( EventPlayer() == i || libcrtx_admin_haspermissions( EventPlayer(), i, libcrtx_admin_permissionlevel_moderator ) ) {
+				PlayerSetAlliance( i, c_allianceIdControl, context, false );
+				PlayerSetAlliance( i, c_allianceIdSpend, context, false );	
+			}
+		}
+
+		i = i + 1;
+		continue;
+	}
+	return true;
+}
+
+
