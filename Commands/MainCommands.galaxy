@@ -208,9 +208,9 @@ bool libcrtx_command_smarthostiletown(bool check, bool run)
 	return true;
 }
 
-int libcrtx_search_index = -1;
-string libcrtx_search_lastquery = "";
-int libcrtx_search_catalog = c_gameCatalogActor;
+int[libcrtx_max_players] libcrtx_search_index;
+string[libcrtx_max_players] libcrtx_search_lastquery;
+int[libcrtx_max_players] libcrtx_search_catalog;
 
 bool libcrtx_command_search(bool testConds, bool runActions)
 {
@@ -273,7 +273,7 @@ bool libcrtx_command_search(bool testConds, bool runActions)
 	{
 		catalog = c_gameCatalogWeapon;
 	}
-	else if(libcrtx_search_index == -1)
+	else if(libcrtx_search_index[EventPlayer()] == -1)
 	{
 		libcrtx_write( PlayerGroupSingle(EventPlayer()), "Usage: search [ability|actor|behavior|weapon|validator|upgrade|unit|turret|light|footprint|model] [what to search for]");
 		return true;
@@ -284,15 +284,15 @@ bool libcrtx_command_search(bool testConds, bool runActions)
 	// Allow for multi-page query results
 	if(type == "")
 	{
-		i = libcrtx_search_index;
-		catalog = libcrtx_search_catalog;
-		query  = libcrtx_search_lastquery;
+		i = libcrtx_search_index[EventPlayer()];
+		catalog = libcrtx_search_catalog[EventPlayer()];
+		query  = libcrtx_search_lastquery[EventPlayer()];
 	}
 	else if(type == "repeat")
 	{
-		i = libcrtx_search_index + 8;
-		catalog = libcrtx_search_catalog;
-		query  = libcrtx_search_lastquery;
+		i = libcrtx_search_index[EventPlayer()] + 8;
+		catalog = libcrtx_search_catalog[EventPlayer()];
+		query  = libcrtx_search_lastquery[EventPlayer()];
 	}
 
 	count = 8;
@@ -312,13 +312,13 @@ bool libcrtx_command_search(bool testConds, bool runActions)
 	if(count == 0 && i != 0)
 	{
 		libcrtx_write( PlayerGroupSingle(EventPlayer()), "<h>More results exist. Type search to see them.</h>");
-		libcrtx_search_index = i;
-		libcrtx_search_lastquery = query;
-		libcrtx_search_catalog = catalog;
+		libcrtx_search_index[EventPlayer()] = i;
+		libcrtx_search_lastquery[EventPlayer()] = query;
+		libcrtx_search_catalog[EventPlayer()] = catalog;
 	}
 	else
 	{
-		libcrtx_search_index = -1;
+		libcrtx_search_index[EventPlayer()] = -1;
 	}
 	return true;
 }
