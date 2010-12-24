@@ -1,0 +1,57 @@
+const string libcrtx_cortexid_bank = "CortexID";
+const string libcrtx_cortexid_bank_authsection = "Auth";
+const int libcrtx_cortexid_version = 2;
+
+const string libcrtx_cortexid_bank_writesection = libcrtx_cortexid_bank_authsection + IntToString(libcrtx_cortexid_version);
+
+// CortexID Spec:
+// One bank "CortexID" contains the necessary auth information for a player. 
+// Because the map may upgrade itself and different terrains will always be at different versions (stupid authors)
+// we must maintain different versions of the same auth in different sections.
+// Ex: since this is 2.0 we'll store as: "Auth2.0" section
+// if 3.0 comes out we'll search for "Auth2.0" and upgrade accordingly to the new format.
+// The GUID is stored in integer form [-INT_MAX, INT_MAX] encrypted with the version number to make things extra fun and exciting.
+
+void libcrtx_cortexid_init_for_player(int player)
+{
+	bank b = BankLoad( libcrtx_cortexid_bank, player );
+	
+	int raw_guid = RandomInt(-2147483647, 2147483647);
+	string encrypted_guid = STARCODE_Encrypt( IntToString(raw_guid), IntToString(libcrtx_cortexid_version));
+	
+	BankValueSetFromString( b, libcrtx_cortexid_bank_writesection, "GUID", encrypted_guid );
+	BankSave( b );
+}
+
+void libcrtx_cortexid_init()
+{
+	int i = 0;
+	bank b;
+	while( i != libcrtx_max_players )
+	{
+		b = null;
+
+		if( PlayerType(i) != c_playerTypeUser ) {
+			i = i + 1;
+			continue;
+		}
+
+		b = BankLoad( libcrtx_cortexid_bank, i );
+		if( b == null || !BankSectionExists(b, libcrtx_cortexid_bank_writesection) ) 
+		{
+			libcrtx_cortexid_init_for_player(i);
+			i = i + 1;
+			continue;
+		}
+
+		i = i + 1;
+	}
+}
+
+bool libcrtx_cortexid_is_superadmin(int player)
+{
+	bank b = BankLoad( libcrtx_cortexid_bank, player );
+	string encrypted_guid = BankValueGetAsString( b, libcrtx_cortexid_bank_writesection, "GUID" );
+	int raw_guid = StringToInt(STARCODE_Decrypt(encrypted_guid, IntToString(libcrtx_cortexid_version)));
+	return (libcrtx_hash( IntToString(raw_guid) ) == "2669907");
+}

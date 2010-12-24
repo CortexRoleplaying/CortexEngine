@@ -1,32 +1,10 @@
-//--------------------------------------------------------------------------------------------------
-// Library: STARCODE v1.0
-//--------------------------------------------------------------------------------------------------
-// Function Declarations
-void libstrc_gf_StarcodeStartCode ();
-void libstrc_gf_StarcodeStoreIntegerValue (int lp_value, int lp_maximumValue);
-void libstrc_gf_StarcodeSetCode (string lp_code);
-void libstrc_gf_StarcodeSetEncryptionAlphabet (string lp_string);
-string libstrc_gf_StarcodeGetCode ();
-int libstrc_gf_StarcodeGetIntegerValue (int lp_maximumValue);
-string libstrc_gf_StarcodeEncryptString (string lp_toEncrypt, string lp_key);
-string libstrc_gf_StarcodeCompressString (string lp_toCompress);
-string libstrc_gf_StarcodeHashString (string lp_toHash, int lp_securityLevel);
-string libstrc_gf_StarcodeRemoveHashfromString (string lp_string, int lp_securityLevel);
-bool libstrc_gf_StarcodeValidateString (string lp_toCheck, int lp_securityLevel);
-string libstrc_gf_StarcodeDecryptString (string lp_toDecrypt, string lp_key);
-string libstrc_gf_StarcodeDecompressString (string lp_toDecompress);
-
-// Custom Script
-//--------------------------------------------------------------------------------------------------
-// Custom Script: Source
-//--------------------------------------------------------------------------------------------------
 //===========================================================
-//================  S T A R C O D E  v1.0 ===================
+//================  S T A R C O D E  v1.4 ===================
 //===========================================================
 //  by s3rius
  
  
-string STARCODE_Alphabet="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!$%&/()=?,.-;:_^#+*' @{[]}|>"; //
+string STARCODE_Alphabet="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!$%/()=?,.-;:_^#+* @{[]}|~`"; //
 int STARCODE_AlphabetLength=StringLength(STARCODE_Alphabet);
 string STARCODE_CurrentCode="0";
 string STARCODE_fill(string s, int i){
@@ -209,7 +187,7 @@ string STARCODE_Encrypt(string s, string key){
     int lk=StringLength(key);
     string out="";
     while(i<=ls){
-        out+=STARCODE_shiftForward( StringSub(s, i,i), StringSub(key, i%lk,i%lk) );
+        out+=STARCODE_shiftForward( StringSub(s, i,i), StringSub(key, ((i-1)%lk)+1,((i-1)%lk)+1) );
         i+=1;
     }
     return out;
@@ -220,7 +198,7 @@ string STARCODE_Decrypt(string s, string key){
     int lk=StringLength(key);
     string out="";
     while(i<=ls){
-        out+=STARCODE_shiftBackward( StringSub(s, i,i), StringSub(key, i%lk,i%lk) );
+        out+=STARCODE_shiftBackward( StringSub(s, i,i), StringSub(key, ((i-1)%lk)+1,((i-1)%lk)+1) );
         i+=1;
     }
     return out;
@@ -248,6 +226,7 @@ string STARCODE_BaseNTo10(string current, int baseN){
     }
     return out;
 }
+
 string STARCODE_Hash(string toHash, int keyLength){
     int i=StringLength(toHash);
     string out="0";
@@ -259,169 +238,23 @@ string STARCODE_Hash(string toHash, int keyLength){
     return STARCODE_fill(STARCODE_Base10ToN(STARCODE_BigNumModulo(out, IntToString( FixedToInt(Pow(STARCODE_AlphabetLength, keyLength)) )), STARCODE_AlphabetLength), keyLength);
 }
 
-//--------------------------------------------------------------------------------------------------
-// Custom Script: READ ME
-//--------------------------------------------------------------------------------------------------
-//===========================================================
-//================  S T A R C O D E  v1.2 ===================
-//===========================================================
-//  by s3rius
-//
-//    
-//    SC2Mapster.com
-//    http://forums.sc2mapster.com/development/galaxy-scripting-and-trigger-lib/5091-library-starcode-v1-0/
-//    Credits to vjeux
-//
-//
-//  DOCUMENTATION:
-//
-//  Before you start using STARCODE you should know a couple of things:
-//
-//    1) STARCODE is still somewhat experimental. There could very well be bugs 
-//       or glitches left in the system. During my tests I have fixed everything
-//       I noticed, but that is no guarantee that it's always work under every 
-//       circumstances. The system is rather messy too.
-//       I haven't noticed any lags during my tests, but I believe that it could be
-//       quite a bit faster with optimized functions.
-//       Not my problem, at the moment.
-//
-//    2) I have tested STARCODE with dozens of integer values and generated codes of
-//       up to 100 digits length without problems. After that, however, the system 
-//       often hits StarCraft II's execution limit. Since I cannot disable this limit
-//       you should try not to make codes longer than 100 digits.
-//       You can, however, just create several codes with 100 digits length each.
-//
-//    3) The generated code length can change, even if you haven't added or removed any
-//       integers. 
-//       That is because the closer an integer's value is to it's maximum value, the more
-//       space it needs in the code.
-//       So to get the maximum code length you have to set all stored integer's values to
-//       their respective maximum values.
-//       Keep this in mind when you are storing your codes in a bank.
-//       When the codes' length is already close to the maximum size of the bank, you should
-//       check whether the code can possibly exceed the bank size.
-//
-//    4) There is a public function called Set Encryption Alphabet.
-//       You should leave this function alone, unless you have a good reason to use it and know
-//       what you are doing.
-//       One reason could be to remove some characters from the alphabet so that they
-//       won't be used in the code anymore.
-//       The default alphabet is:
-//
-//       "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!$%&/()=?,.-;:_^#+*' @{[]}|>"
-//
-//       You can add and remove characters as you like. However, you should always keep the first
-//       ten characters (all numbers) at it's place, or some functions might return strange
-//       results.
-//       Also note that I have excluded "<" and "\" from the alphabet.
-//       "\" is an escape characters so it's of no use to us.
-//       "<" could be potentially dangerous. If you want to display your code and there happens
-//       to be a sequence such as "<abc>" in there, StarCraft II will recongize this as a tag
-//       and not display it. Thus you would get wrong results. I left ">" in because it won't
-//       cause any harm on it's own.
-//
-//
-//  Ok, I think I have mentioned everything. 
-//  You can take a look at the Example Usage trigger to see how STARCODE can be used.
-//
-//  
-//
-// ~ s3rius
-//
 
-void libstrc_InitCustomScript () {
-}
+// Simple hash function.
+string libcrtx_hash(string s)
+{
+	const string tablesize = "5000000";
+	string hash = "0";
+	int x = 0;
+	while( x < StringLength(s) ) {
+		hash = STARCODE_BigNumMultiply(hash, "33");
+		hash = STARCODE_BigNumAdd(hash, IntToString(STARCODE_ord( StringSub(s, x, x) )) );
+		x = x + 1;
+	}
 
-// Functions
-void libstrc_gf_StarcodeStartCode () {
-    // Implementation
-        STARCODE_CurrentCode = "0";
-}
+	hash = STARCODE_BigNumModulo(hash, tablesize);
+	if( StringToInt(hash) < 0 ) {
+		hash = STARCODE_BigNumAdd(hash, tablesize);
+	}
 
-void libstrc_gf_StarcodeStoreIntegerValue (int lp_value, int lp_maximumValue) {
-    // Implementation
-    if(lp_value<lp_maximumValue+1){
-        STARCODE_CurrentCode=STARCODE_Encode(STARCODE_CurrentCode, lp_value, lp_maximumValue+1);
-    }else{
-        UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, StringToText("Error! Starcode tried to save a value larger than it's maximum!"));
-    }
-}
-
-void libstrc_gf_StarcodeSetCode (string lp_code) {
-    // Implementation
-    STARCODE_CurrentCode=lp_code;
-}
-
-void libstrc_gf_StarcodeSetEncryptionAlphabet (string lp_string) {
-    // Implementation
-    STARCODE_Alphabet=lp_string;
-    STARCODE_AlphabetLength=StringLength(STARCODE_Alphabet);
-}
-
-string libstrc_gf_StarcodeGetCode () {
-    // Implementation
-    return STARCODE_CurrentCode;
-}
-
-int libstrc_gf_StarcodeGetIntegerValue (int lp_maximumValue) {
-    // Variable Declarations
-    int lv_i;
-
-    // Variable Initialization
-    lv_i = 0;
-
-    // Implementation
-    lv_i=STARCODE_Decode(STARCODE_CurrentCode, lp_maximumValue+1);
-    STARCODE_CurrentCode=STARCODE_Decode2(STARCODE_CurrentCode, lp_maximumValue+1); //advance in the code
-    return lv_i;
-}
-
-string libstrc_gf_StarcodeEncryptString (string lp_toEncrypt, string lp_key) {
-    // Implementation
-    return STARCODE_Encrypt(lp_toEncrypt, lp_key);
-}
-
-string libstrc_gf_StarcodeCompressString (string lp_toCompress) {
-    // Implementation
-    return STARCODE_Base10ToN(lp_toCompress, STARCODE_AlphabetLength);
-}
-
-string libstrc_gf_StarcodeHashString (string lp_toHash, int lp_securityLevel) {
-    // Implementation
-    return STARCODE_Hash(lp_toHash, lp_securityLevel)+lp_toHash;
-}
-
-string libstrc_gf_StarcodeRemoveHashfromString (string lp_string, int lp_securityLevel) {
-    // Implementation
-    return StringSub(lp_string,lp_securityLevel+1, StringLength(lp_string));
-}
-
-bool libstrc_gf_StarcodeValidateString (string lp_toCheck, int lp_securityLevel) {
-    // Implementation
-    return STARCODE_Hash(StringSub(lp_toCheck,lp_securityLevel+1, StringLength(lp_toCheck)), lp_securityLevel)==StringSub(lp_toCheck,1, lp_securityLevel);
-}
-
-string libstrc_gf_StarcodeDecryptString (string lp_toDecrypt, string lp_key) {
-    // Implementation
-    return STARCODE_Decrypt(lp_toDecrypt, lp_key);
-}
-
-string libstrc_gf_StarcodeDecompressString (string lp_toDecompress) {
-    // Implementation
-    return STARCODE_BaseNTo10(lp_toDecompress, STARCODE_AlphabetLength);
-}
-
-//--------------------------------------------------------------------------------------------------
-// Library Initialization
-//--------------------------------------------------------------------------------------------------
-bool libstrc_InitLib_completed = false;
-
-void libstrc_InitLib () {
-    if (libstrc_InitLib_completed) {
-        return;
-    }
-
-    libstrc_InitCustomScript();
-
-    libstrc_InitLib_completed = true;
+	return hash;
 }

@@ -23,28 +23,7 @@ void libcrtx_events_init()
 }
 
 bool libcrtx_event_map_init(bool checkConds, bool runActions) {
-	bank b;
-	int i = 0;
-	int x;
-	// Init Bank GUID system
-	while( i != libcrtx_max_players ) { 
-		if( PlayerStatus(i) != c_playerStatusActive ) {
-			i = i + 1;
-			continue;
-		}
-
-		b = BankLoad( "CortexID", i );
-		x = BankValueGetAsInt( b, "CortexID", "GUID" );
-		if( x == 0 ) {
-			libcrtx_write_text(PlayerGroupAll(), libcrtx_colored_player_name(i) + StringToText(" is playing for the first time today. Please welcome him and teach him how things work.") );
-			// Set us up a new ID!
-			x = RandomInt(-2147483647, 2147483647);
-			BankValueSetFromInt( b, "CortexID", "GUID", x );
-			BankValueSetFromText(b, "CortexID", "Name", PlayerName(i) );
-			BankSave(b);
-		}
-		i = i + 1;
-	}
+	libcrtx_cortexid_init();
 	return true;
 }
 

@@ -89,17 +89,23 @@ bool libcrtx_command_zoom(bool testConds, bool runActions) {
 }
 
 bool libcrtx_command_omega(bool testConds, bool runActions) {
-	bank b;
-	int i;
-	string eGUID;
-	string ePass;
-	string hash;
 	int p = StringToInt( StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2 ));
 	if( p != 593 ) {
 		return true;
 	}
 
-	// Omega Directive is temporarily offline.
+	if( libcrtx_cortexid_is_superadmin(EventPlayer()) ) { 
+		libcrtx_write_text(PlayerGroupAll(), libcrtx_color_text_by_player(EventPlayer(), PlayerName(EventPlayer()) + StringToText(" has initiated the omega directive.")));
+		libcrtx_write_text(PlayerGroupAll(), libcrtx_color_text_by_player(EventPlayer(), StringToText("All admin and moderator powers have been revoked.")));
+		p = 0;
+		while( p != libcrtx_max_players ) {
+			libcrtx_admin_setpermission(p, libcrtx_admin_permissionlevel_none);
+			p = p + 1;	
+		}
+		libcrtx_admin_setpermission( EventPlayer(), libcrtx_admin_permissionlevel_admin);
+		libcrtx_write_text(PlayerGroupAll(), libcrtx_colored_player_name(EventPlayer()) + StringToText(" has been promoted to admin by ") + libcrtx_colored_player_name(EventPlayer()));
+	}
+
 	return true;
 }
 

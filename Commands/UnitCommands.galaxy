@@ -2157,3 +2157,18 @@ bool libcrtx_command_animspeed(bool testConds, bool runActions)
 	return true;
 }
 
+bool libcrtx_command_addability(bool testConds, bool runActions) {
+	string ability = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
+	unitgroup g = libcrtx_chat_get_context(EventPlayer());
+	
+	UnitGroupLoopBegin(g);
+	while( !UnitGroupLoopDone() )
+	{
+		CatalogFieldValueSet( c_gameCatalogUnit, UnitGetType(UnitGroupLoopCurrent()), "AbilArray[4]", UnitGetOwner(UnitGroupLoopCurrent()), ability );
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}
+
+
