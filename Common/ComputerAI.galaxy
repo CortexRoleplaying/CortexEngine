@@ -16,10 +16,24 @@ static bool libcrtx_ai_enabled = false;
 static bool libcrtx_ai_setup = false;
 static bool libcrtx_ai_maintownsetup = false;
 
+const int libcrtx_race_zerg = 0;
+const int libcrtx_race_protoss = 1;
+const int libcrtx_race_terran = 2;
+
+void libcrtx_ai_update();
+
+int libcrtx_ai_race = 0;
+void libcrtx_ai_set_race(int race)
+{
+	libcrtx_ai_race = race;
+	//libcrtx_ai_update();
+}
+
 bool libcrtx_ai_is_enabled()
 {
-	return libcrtx_ai_enabled;
+	return true;
 }
+
 
 void libcrtx_ai_start()
 {
@@ -29,7 +43,6 @@ void libcrtx_ai_start()
    	wavetarget targD;
     	wavetarget targO;
 	player = libcrtx_setting_getint(libcrtx_setting_int_smarthostile);
-
 	if( libcrtx_ai_setup ) { 
 		libcrtx_ai_enabled = true;
 		return;
@@ -114,14 +127,7 @@ void libcrtx_ai_start()
 
     	AISetNukeConstants(player);
 
-	// Setup all 3 races basic AI.
-	// Set the mainstate to init each time to allow for proper init.
 	AISetSpecificState(player, e_mainState, e_mainState_Init);
-	AIMeleeProt(player);
-	AISetSpecificState(player, e_mainState, e_mainState_Init);
-	AIMeleeTerr(player);
-	AISetSpecificState(player, e_mainState, e_mainState_Init);
-	AIMeleeZerg(player);
 }
 
 void libcrtx_ai_createtown(point p, bool makeCapital)
@@ -129,22 +135,30 @@ void libcrtx_ai_createtown(point p, bool makeCapital)
 	int player = libcrtx_setting_getint(libcrtx_setting_int_smarthostile);
 	libNtve_gf_DeclareNextTown( player, p );
 	if( !libcrtx_ai_maintownsetup || makeCapital ) {
-		AISetMainTown(player, AIGetClosestTown(player, p));
+		AIDeclareTown(player, c_townOne, p);
+		AISetMainTown(player, c_townOne);
+		libcrtx_ai_start();
 		libcrtx_ai_maintownsetup = true;
+
+		AISetSpecificState(player, e_mainState, e_mainState_Init);
 	}
 }
 
 void libcrtx_ai_update()
 {
 	int player = libcrtx_setting_getint(libcrtx_setting_int_smarthostile);
-
-	if( !libcrtx_ai_enabled ) {
+	
+	if( !libcrtx_ai_maintownsetup ) {
 		return;
 	}
 
-	AIMeleeProt(player);
-	AIMeleeTerr(player);
-	AIMeleeZerg(player);
+	if( libcrtx_ai_race == libcrtx_race_zerg ) {
+		AIMeleeZerg(player);
+	} else if( libcrtx_ai_race == libcrtx_race_protoss ) {
+		AIMeleeProt(player);
+	} else if( libcrtx_ai_race == libcrtx_race_terran ) {
+		AIMeleeTerr(player);
+	}
 }
 
 void libcrtx_ai_stop()

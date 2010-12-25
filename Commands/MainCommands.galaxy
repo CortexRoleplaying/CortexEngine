@@ -205,11 +205,12 @@ bool libcrtx_command_smarthostiletown(bool check, bool run)
 	string args = libcrtx_chat_get_parse_line(EventPlayer());
 	args = StringCase(StringWord(args, 2), false);
 
-	if( libcrtx_ai_is_enabled() ) {
-		libcrtx_ai_createtown( UnitGetPosition(libcrtx_spawner()), (args == StringCase("capital",false)) );
-		libcrtx_write_success("Smart Hostile town created!");
+	if( args == StringCase("capital", false) ) {
+		libcrtx_ai_createtown( UnitGetPosition(libcrtx_spawner()), true);
+		libcrtx_write_success("Smart Hostile capital created!");
 	} else {
-		libcrtx_write_error("Smart Hostile is not enabled.");
+		libcrtx_ai_createtown( UnitGetPosition(libcrtx_spawner()), false );
+		libcrtx_write_success("Smart Hostile town created!");
 	}
 	return true;
 }

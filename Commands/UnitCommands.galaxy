@@ -628,6 +628,8 @@ bool libcrtx_command_maxshields(bool testConds, bool runActions) {
 	UnitGroupLoopBegin(g);
 	while(!UnitGroupLoopDone())
 	{
+		// Send a signal to the unit so that we can potentially add the shield animation.
+		CatalogFieldValueSet( c_gameCatalogModel, "Marine", "AttachProps[Ref_Target].Keys[TargetShield]", 1, "1" );
 		UnitSetPropertyFixed( UnitGroupLoopCurrent(), c_unitPropShieldsMax, val );
 		UnitGroupLoopStep();
 	}
