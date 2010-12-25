@@ -511,13 +511,13 @@ bool libcrtx_command_ally(bool testConds, bool runActions)
 		}
 
 		if( PlayerType(i) != c_playerTypeUser ) { 
-			PlayerSetAlliance( context, c_allianceIdPassive, i, true );
-			PlayerSetAlliance( i, c_allianceIdPassive, context, true );			
+			libNtve_gf_SetAllianceOneWay( context, i, 1);
+			libNtve_gf_SetAllianceOneWay( i, context, 1);		
 		} else {
-			PlayerSetAlliance( context, c_allianceIdPassive, i, true );
+			libNtve_gf_SetAllianceOneWay( context, i, 1);
 			// Now check, do we have permission to modify this player's alliances, too?
 			if( EventPlayer() == i || libcrtx_admin_haspermissions( EventPlayer(), i, libcrtx_admin_permissionlevel_moderator ) ) {
-				PlayerSetAlliance( i, c_allianceIdPassive, context, true );
+				libNtve_gf_SetAllianceOneWay( i, context, 1);
 			}
 		}
 
@@ -570,13 +570,13 @@ bool libcrtx_command_unally(bool testConds, bool runActions)
 		}
 
 		if( PlayerType(i) != c_playerTypeUser ) { 
-			PlayerSetAlliance( context, c_allianceIdPassive, i, false );
-			PlayerSetAlliance( i, c_allianceIdPassive, context, false );			
+			libNtve_gf_SetAllianceOneWay( context, i, 5);
+			libNtve_gf_SetAllianceOneWay( i, context, 5);			
 		} else {
-			PlayerSetAlliance( context, c_allianceIdPassive, i, false );
+			libNtve_gf_SetAllianceOneWay( context, 5, 1);
 			// Now check, do we have permission to modify this player's alliances, too?
 			if( EventPlayer() == i || libcrtx_admin_haspermissions( EventPlayer(), i, libcrtx_admin_permissionlevel_moderator ) ) {
-				PlayerSetAlliance( i, c_allianceIdPassive, context, false );
+				libNtve_gf_SetAllianceOneWay( i, context, 5);
 			}
 		}
 

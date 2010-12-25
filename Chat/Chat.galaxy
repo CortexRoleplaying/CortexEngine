@@ -101,6 +101,8 @@ bool libcrtx_chat_contains_illegal_xml(string message)
 {
 	if( StringContains( message, "<c ", c_stringAnywhere, false ) ) {
 		return true;
+	} else if( StringContains( message, "<c>", c_stringAnywhere, false ) ) {
+		return true;
 	} else if( StringContains(message, "<h", c_stringAnywhere, false ) ) {
 		return true;
 	} else if( StringContains(message, "<n", c_stringAnywhere, false ) ) {
