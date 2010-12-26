@@ -573,7 +573,7 @@ bool libcrtx_command_unally(bool testConds, bool runActions)
 			libNtve_gf_SetAllianceOneWay( context, i, 5);
 			libNtve_gf_SetAllianceOneWay( i, context, 5);			
 		} else {
-			libNtve_gf_SetAllianceOneWay( context, 5, 1);
+			libNtve_gf_SetAllianceOneWay( context, i, 5);
 			// Now check, do we have permission to modify this player's alliances, too?
 			if( EventPlayer() == i || libcrtx_admin_haspermissions( EventPlayer(), i, libcrtx_admin_permissionlevel_moderator ) ) {
 				libNtve_gf_SetAllianceOneWay( i, context, 5);
