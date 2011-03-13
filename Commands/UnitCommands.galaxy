@@ -850,8 +850,8 @@ bool libcrtx_command_attach(bool testConds, bool runActions) {
 	unitgroup g = libcrtx_chat_get_context(EventPlayer());
 	actr = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
     apoint = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 3 );
-	attachPoints = "Origin Center Damage Damage01 Damage02 Engine Hardpoint Hardpoint01 Hardpoint02 Hardpoint03 Hardpoint04 HardpointLeft HardpointRight Head Hit Hit01 Hit02 Hit03 Hit04 Hit05 Hit06 Hit07 Hit08 Hit09 Overhead RallyPoint StatusBar ";
-	attachPoints = attachPoints + "Target Target01 Target02 Target03 TargetHeavy TargetLight TargetMedium TargetShield Turret TurretY TurretZ Upgrade UpgradeArmor UpgradeEngine UpgradeEngineBottom UpgradeEngineLeft UpgradeEngineRight UpgradeWeapon UpgradeWeaponBottom UpgradeWeaponleft UpgradeWeaponRight Weapon Weapon01 Weapon02 Weapon03 Weapon04 WeaponBottom WeaponLeft WeaponRight";
+	attachPoints = "Origin Center Damage Damage01 Damage02 Engine Hardpoint Hardpoint01 Hardpoint02 Hardpoint03 Hardpoint04 HardpointLeft HardpointRight Head Hit Hit01 Hit02 Hit03 Hit04 Hit05 Hit06 Hit07 Hit08 Hit09 Overhead RallyPoint StatusBar Left Right";
+	attachPoints += "Target Target01 Target02 Target03 TargetHeavy TargetLight TargetMedium TargetShield Turret TurretY TurretZ Upgrade UpgradeArmor UpgradeEngine UpgradeEngineBottom UpgradeEngineLeft UpgradeEngineRight UpgradeWeapon UpgradeWeaponBottom UpgradeWeaponleft UpgradeWeaponRight Weapon Weapon01 Weapon02 Weapon03 Weapon04 WeaponBottom WeaponLeft WeaponRight";
 	
 	if( apoint == "" ) { 
 		apoint = "Origin";
