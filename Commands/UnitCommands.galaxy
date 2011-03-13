@@ -1749,6 +1749,11 @@ bool libcrtx_command_effect(bool testConds, bool runActions)
 	bool errors = false;
 
 	effect = libcrtx_param_catalog(c_gameCatalogEffect, effect);
+	if( libcrtx_toolkit_isrestrictedeffect(effect) ) {
+		libcrtx_write(PlayerGroupSingle(EventPlayer()), "<c val=\"ff0000\">Unable to create effect</c>: That effect is restricted.");
+		return true;
+	}
+	
 	if(effect == null)
 	{
 		libcrtx_write(PlayerGroupSingle(EventPlayer()), "<c val=\"ff0000\">Unable to create effect</c>: No such effect exists.");

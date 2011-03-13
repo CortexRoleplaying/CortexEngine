@@ -16,6 +16,7 @@
 include "Cortex/Toolkit/DefaultToolkit/WeaponToolkit.galaxy"
 include "Cortex/Toolkit/DefaultToolkit/UnitToolkit.galaxy"
 include "Cortex/Toolkit/DefaultToolkit/BehaviorToolkit.galaxy"
+include "Cortex/Toolkit/DefaultToolkit/EffectToolkit.galaxy"
 
 void libcrtx_toolkit_default_init()
 {
@@ -23,4 +24,5 @@ void libcrtx_toolkit_default_init()
 	libcrtx_toolkit_default_initunittools();
 	libcrtx_toolkit_default_initrestrictedunits();
 	libcrtx_toolkit_default_initbehaviors();
+	libcrtx_toolkit_default_initeffects();
 }

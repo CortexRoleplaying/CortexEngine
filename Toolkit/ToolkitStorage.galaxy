@@ -13,6 +13,7 @@
 const string libcrtx_toolkit_prefix_weapon = "toolkit_weapon_";
 const string libcrtx_toolkit_prefix_restrictedunit = "toolkit_restrictedunit_";
 const string libcrtx_toolkit_prefix_restrictedbehavior = "toolkit_restrictedbehavior_";
+const string libcrtx_toolkit_prefix_restrictedeffect = "toolkit_restrictedeffect_";
 
 static string libcrtx_toolkit_levelbehavior = "";
 static string libcrtx_toolkit_experiencegiverbehavior = "";
@@ -31,6 +32,18 @@ void libcrtx_toolkit_addrestrictedbehavior(string restrictedBehavior)
 bool libcrtx_toolkit_isrestrictedbehavior(string behName)
 {
 	string lookup = StringCase( libcrtx_toolkit_prefix_restrictedbehavior + behName, false );
+	return DataTableGetBool(true, lookup);
+}
+
+void libcrtx_toolkit_addrestrictedeffect(string restrictedEffect)
+{
+	string storeAs = StringCase(libcrtx_toolkit_prefix_restrictedeffect + restrictedEffect, false);
+	DataTableSetBool(true, storeAs, true );
+}
+
+bool libcrtx_toolkit_isrestrictedeffect(string effName)
+{
+	string lookup = StringCase( libcrtx_toolkit_prefix_restrictedeffect + effName, false );
 	return DataTableGetBool(true, lookup);
 }
 
