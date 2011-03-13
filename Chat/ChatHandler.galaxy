@@ -40,16 +40,16 @@ string libcrtx_chat_variablereplace( int player, string message )
 			// Variable!
 			v = StringSub(s, 2, StringLength(s));
 			if( libcrtx_variable_exists( player, v, libcrtx_variable_type_int ) ) {
-				message = StringReplaceWord( message, s, IntToString(libcrtx_variable_get_int(player, v)), c_stringReplaceAll, c_stringCase );
+				message = libcrtx_replace_word( message, s, IntToString(libcrtx_variable_get_int(player, v)), c_stringReplaceAll, c_stringCase );
 				return libcrtx_chat_variablereplace(player, message);
 			} else if( libcrtx_variable_exists( player, v, libcrtx_variable_type_fixed ) ) {
-				message = StringReplaceWord( message, s, FixedToString(libcrtx_variable_get_fixed(player, v), c_fixedPrecisionAny), c_stringReplaceAll, c_stringCase );
+				message = libcrtx_replace_word( message, s, FixedToString(libcrtx_variable_get_fixed(player, v), c_fixedPrecisionAny), c_stringReplaceAll, c_stringCase );
 				return libcrtx_chat_variablereplace(player, message);
 			} if( libcrtx_variable_exists( player, v, libcrtx_variable_type_string ) ) {
-				message = StringReplaceWord( message, s, libcrtx_variable_get_string(player, v), c_stringReplaceAll, c_stringCase );
+				message = libcrtx_replace_word( message, s, libcrtx_variable_get_string(player, v), c_stringReplaceAll, c_stringCase );
 				return libcrtx_chat_variablereplace(player, message);
 			} else {
-				message = StringReplaceWord( message, s, "", c_stringReplaceAll, c_stringCase );
+				message = libcrtx_replace_word( message, s, "", c_stringReplaceAll, c_stringCase );
 				return libcrtx_chat_variablereplace(player, message);
 			}
 		}
@@ -168,7 +168,7 @@ void libcrtx_chat_parsechat(int lp_player, string lp_message, int lp_recursionLi
 	while( StringWord(lp_message, x) != "" && !isNoAliasCommand ) {
 		s = StringWord(lp_message, x);
 		if( libcrtx_alias_exists(s) ) { 
-			lp_message = StringReplaceWord( lp_message, s, libcrtx_alias_getsource(s), c_stringReplaceAll, false );
+			lp_message = libcrtx_replace_word( lp_message, s, libcrtx_alias_getsource(s), c_stringReplaceAll, false );
 			libcrtx_chat_parsechat( lp_player, lp_message, lp_recursionLimit - 1 );
 			return;
 		}

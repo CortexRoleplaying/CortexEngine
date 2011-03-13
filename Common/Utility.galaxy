@@ -290,3 +290,27 @@ string libcrtx_trim_string( string s )
 
 	return StringSub(s, x, y);
 }
+
+// Replacement for native StringReplaceWord(string s, string word, string replace, int maxCount, bool caseSens)
+// operates on a per-word basis unlike the native.
+string libcrtx_replace_word(string s, string word, string replace, int maxCount, bool caseSens)
+{
+	string result;
+	string part;
+	int i = 1;
+	part = StringWord(s, 1);
+	while(part != "")
+	{
+		if( StringEqual(part, word, caseSens) ) {
+			result += replace;
+		} else {
+			result += part;
+		}
+		i += 1;
+		part = StringWord(s, i);
+		if( part != "" ) {
+			result += " ";
+		}
+	}
+	return result;
+}
