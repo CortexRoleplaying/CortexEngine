@@ -1509,6 +1509,7 @@ bool libcrtx_command_order(bool testConds, bool runActions) {
 bool libcrtx_command_modelswap(bool testConds, bool runActions)
 {
 	string model = libcrtx_param_index(2);
+	string variation = libcrtx_param_index(3);
 	string amsg;
 	unitgroup g = libcrtx_chat_get_context(EventPlayer());
 
@@ -1519,6 +1520,9 @@ bool libcrtx_command_modelswap(bool testConds, bool runActions)
 		return true;
 	}
 	amsg = "ModelSwap {" + model + "}";
+	if( variation != "" && StringToInt(variation) >= 0 ) {
+		amsg += " {" + variation + "}";
+	}
 
 	UnitGroupLoopBegin(g);
 	while(!UnitGroupLoopDone())
