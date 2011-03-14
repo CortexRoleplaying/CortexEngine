@@ -2166,3 +2166,26 @@ bool libcrtx_command_animspeed(bool testConds, bool runActions)
 	return true;
 }
 
+bool libcrtx_command_rotate(bool testConds, bool runActions)
+{
+	unitgroup g = libcrtx_chat_get_context(EventPlayer());
+	fixed yaw = StringToFixed(libcrtx_param_index(2));
+	fixed pitch = StringToFixed(libcrtx_param_index(3));
+	fixed roll = StringToFixed(libcrtx_param_index(4));
+	
+	fixed forwardX = Sin(yaw);
+	fixed forwardY = -Sin(pitch) * Cos(yaw);
+	fixed forwardZ = Cos(pitch) * Cos(yaw);
+	
+	fixed upX = -Cos(yaw) * Sin(roll);
+	fixed upY = -Sin(pitch) * Sin(yaw) * Sin(roll) + Cos(pitch) * Cos(roll);
+	fixed upZ = Cos(pitch) * Sin(yaw) * Sin(roll) + Sin(pitch) * Cos(roll);
+	
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone()) {
+		ActorSend( libNtve_gf_MainActorofUnit(UnitGroupLoopCurrent()), libNtve_gf_SetRotation(forwardX, forwardY, forwardZ, upX, upY, upZ) );
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}
