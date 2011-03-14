@@ -1,1 +1,4 @@
-CortexHelper.SC2Lib msut be used to load Cortex.
+Import all *.galaxy files in their directory structures to /Cortex in the MPQ root.
+CortexHelper.SC2Lib must be used to load Cortex.
+
+Move the "Map Data" folder's contents into the root of the map MPQ.

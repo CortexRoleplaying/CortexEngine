@@ -215,8 +215,5 @@ bool libcrtx_chat_receivedevent(bool testConds, bool runActions)
 	}
 
 	libcrtx_chat_parsechat( triggerPlayer, chatMsg, libcrtx_chat_recursion_limit );
-
-	// Clear everyone's chat of the filth. FILTH I SAY.
-	UIClearMessages( PlayerGroupAll(), c_messageAreaChat );
 	return true;			
 }

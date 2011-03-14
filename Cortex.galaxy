@@ -60,7 +60,6 @@ void libcrtx_InitLib()
 
 	// cortex main init.
 	libcrtx_settings_initdefault();
-	libcrtx_output_init();
 
 	if( libcrtx_MapCheck() ) {
 		libcrtx_toolkit_init();
