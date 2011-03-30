@@ -224,7 +224,11 @@ void libcrtx_event_units_modified(unitgroup units, int method)
 			range = StringToFixed(CatalogFieldValueGet(c_gameCatalogWeapon, weapon, "Range", curPlayer));
 			attacks = StringToInt(CatalogFieldValueGet(c_gameCatalogWeapon, weapon, "DisplayAttackCount", curPlayer));
 			effect = CatalogFieldValueGet(c_gameCatalogWeapon, weapon, "DisplayEffect", curPlayer);
-			damage = StringToInt(CatalogFieldValueGet(c_gameCatalogEffect, effect, "Amount", curPlayer));
+			if(CatalogEntryIsValid(c_gameCatalogEffect, effect)) {
+				damage = StringToInt(CatalogFieldValueGet(c_gameCatalogEffect, effect, "Amount", curPlayer));
+			} else {
+				damage = 0;
+			}
 
 			// Calculate the effective values of each, given the behaviors.
 			if(attacks < 1)

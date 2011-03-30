@@ -1,0 +1,27 @@
+<Desc>
+	<!-- Hide default Blizzard chat area, since we use it for commands -->
+	<Frame type="MessageDisplay" name="GameUI/UIContainer/FullscreenUpperContainer/ChatDisplay" file="GameUI">
+		<Visible val="false"/>
+	</Frame>
+	
+	<!-- Hide replay chat area so that viewers don't have to see all the commands there -->
+	<Frame type="MessageDisplay" name="GameUI/UIContainer/FullscreenUpperContainer/ReplayChatDisplay" file="GameUI">
+		<Visible val="false"/>
+	</Frame>
+	
+	<!-- Use DebugDisplay chat area as our new main chat area for Cortex. We can output to this through triggers as needed. -->
+	<Frame type="MessageDisplay" name="GameUI/UIContainer/FullscreenUpperContainer/DebugDisplay" file="GameUI">
+        <AlternateTime val="true"/>
+        <MaxMessages val="64"/>
+        <MessageDuration val="15000"/>
+		<FadeDuration val="5000"/>
+		<Style val="ChatDisplayInternational"/>
+        <AcceptsMouse val="false"/>
+		<BatchText val="true"/>
+        <Anchor side="Bottom" relative="$parent" pos="Max" offset="0"/>
+        <Anchor side="Left" relative="$parent" pos="Mid" offset="0"/>
+        <Anchor side="Right" relative="$parent" pos="Mid" offset="0"/>
+        <Width val="720"/>
+        <Height val="500"/>
+    </Frame>
+</Desc>

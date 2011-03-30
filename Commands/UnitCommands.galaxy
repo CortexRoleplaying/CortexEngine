@@ -840,6 +840,8 @@ bool libcrtx_command_removedamage(bool testConds, bool runActions) {
 }
 
 bool libcrtx_command_attach(bool testConds, bool runActions) {
+	actor sactor;
+	string aliasName;
 	string actr;
     string apoint;
 	string scope;
@@ -850,8 +852,9 @@ bool libcrtx_command_attach(bool testConds, bool runActions) {
 	unitgroup g = libcrtx_chat_get_context(EventPlayer());
 	actr = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
     apoint = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 3 );
-	attachPoints = "Origin Center Damage Damage01 Damage02 Engine Hardpoint Hardpoint01 Hardpoint02 Hardpoint03 Hardpoint04 HardpointLeft HardpointRight Head Hit Hit01 Hit02 Hit03 Hit04 Hit05 Hit06 Hit07 Hit08 Hit09 Overhead RallyPoint StatusBar Left Right";
-	attachPoints += "Target Target01 Target02 Target03 TargetHeavy TargetLight TargetMedium TargetShield Turret TurretY TurretZ Upgrade UpgradeArmor UpgradeEngine UpgradeEngineBottom UpgradeEngineLeft UpgradeEngineRight UpgradeWeapon UpgradeWeaponBottom UpgradeWeaponleft UpgradeWeaponRight Weapon Weapon01 Weapon02 Weapon03 Weapon04 WeaponBottom WeaponLeft WeaponRight";
+	aliasName = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 4);
+	attachPoints = "Origin Center Damage Damage01 Damage02 Engine Hardpoint Hardpoint01 Hardpoint02 Hardpoint03 Hardpoint04 HardpointLeft HardpointRight Head Hit Hit01 Hit02 Hit03 Hit04 Hit05 Hit06 Hit07 Hit08 Hit09 Overhead RallyPoint StatusBar Left Right ";
+	attachPoints += "Target Target01 Target02 Target03 TargetHeavy TargetLight TargetMedium TargetShield Turret TurretY TurretZ Upgrade UpgradeArmor UpgradeEngine UpgradeEngineBottom UpgradeEngineLeft UpgradeEngineRight UpgradeWeapon UpgradeWeaponBottom UpgradeWeaponleft UpgradeWeaponRight Weapon Weapon01 Weapon02 Weapon03 Weapon04 WeaponBottom WeaponLeft WeaponRight ";
 	
 	if( apoint == "" ) { 
 		apoint = "Origin";
@@ -878,30 +881,7 @@ bool libcrtx_command_attach(bool testConds, bool runActions) {
 		libcrtx_write(PlayerGroupSingle(EventPlayer()), "<c val=\"ff0000\">Warning</c>: Invalid attachment point, defaulting to Origin.<n/>You can obtain a list of attachment points by typing <c val=\"00ff00\">@attach listpoints</c>.");
 	}
 
-	// Look up this Actor and verify it is not CActorEventMacro
-	if( !CatalogEntryIsValid(c_gameCatalogActor, actr) ) {
-		// Let's try to rectify this for the user. Maybe they're stupid and can't use capital letters. :P
-		// This section will transfer "marine" to "Marine" if they get the name of the actor right but not the case.
-		x = CatalogEntryCount(c_gameCatalogActor);
-		i = 1;
-		s = "";
-		while( i != x ) {
-			s = CatalogEntryGet(c_gameCatalogActor, i);
-			if( StringEqual(s, actr, false) ) {
-				break;
-			}
-			i = i + 1;
-		}
-		
-		// Did we find a match? if not, quit.
-		if( i == x ) {
-			return true;
-		}
-		
-		// Use the correctly referenced actor.
-		actr = s;
-	}
-
+	actr = libcrtx_param_catalog(c_gameCatalogActor, actr);
 	scope = CatalogEntryScope( c_gameCatalogActor, actr );
 	if( scope == "CActorEventMacro" || scope == "CActorSound" ) {
 		return true;
@@ -910,7 +890,8 @@ bool libcrtx_command_attach(bool testConds, bool runActions) {
 	UnitGroupLoopBegin(g);
 	while(!UnitGroupLoopDone())
 	{
-            	libNtve_gf_AttachActorToUnit( UnitGroupLoopCurrent(), actr, apoint);
+		// Attach the actor to the unit
+		libNtve_gf_AttachActorToUnit(UnitGroupLoopCurrent(), actr, apoint);
 		UnitGroupLoopStep();
 	}
 	UnitGroupLoopEnd();
@@ -963,19 +944,7 @@ bool libcrtx_command_addbehavior(bool testConds, bool runActions) {
 	val = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
 	
 	// Check for an invalid behavior name, and attempt to compensate.
-	if( !CatalogEntryIsValid(c_gameCatalogBehavior, val) ) {
-		x = CatalogEntryCount(c_gameCatalogBehavior);
-		i = 1;
-		while( i != x ) {
-			s = CatalogEntryGet(c_gameCatalogBehavior, i);
-			if( StringEqual(s, val, false) ) {
-				val = s;
-				break;
-			}
-			i = i + 1;
-		}
-		
-	}
+	val = libcrtx_param_catalog(c_gameCatalogBehavior, val);
 
 	if( libcrtx_toolkit_isrestrictedbehavior(val) ) {
 		return true;
@@ -2189,3 +2158,4 @@ bool libcrtx_command_rotate(bool testConds, bool runActions)
 	UnitGroupLoopEnd();
 	return true;
 }
+

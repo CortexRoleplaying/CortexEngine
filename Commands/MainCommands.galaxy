@@ -64,7 +64,7 @@ bool libcrtx_command_colors(bool testConds, bool runActions) {
 		if( PlayerStatus(i) != c_playerStatusUnused ) {
 			t = t + libcrtx_colored_player_name(i);
 			t = t + StringToText(" (" + libcrtx_color_from_player(i) + ")");
-			t = t + StringToText("<n/>                        ");
+			t = t + StringToText("<n/>");
 		}
 		i = i + 1;
 	}
@@ -453,7 +453,7 @@ bool libcrtx_command_upgrade(bool testConds, bool runActions)
 		else if(nextParam != "0" && newLevel == 0)
 		{
 			libcrtx_write(PlayerGroupSingle(EventPlayer()),
-				"Usage: @upgrade upgradename [on/off/query/number]");
+				"Usage: upgrade upgradename [on/off/query/number]");
 			return true;
 		}
 	}
@@ -712,4 +712,60 @@ bool libcrtx_command_uncontrol(bool testConds, bool runActions)
 	return true;
 }
 
+bool libcrtx_command_replaceunit(bool testConds, bool runActions)
+{
+	string source = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2);
+	string replace = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 3);
+	unitgroup g = libcrtx_chat_get_context(EventPlayer());
+	
+	source = libcrtx_param_catalog(c_gameCatalogUnit, source);
+	replace = libcrtx_param_catalog(c_gameCatalogUnit, replace);
+	
+	if( source == "" || replace == "" || libcrtx_toolkit_isrestrictedunit(source) || libcrtx_toolkit_isrestrictedunit(replace) ) {
+		return true;
+	}
+	
+	// So that this command works on hostile/other players, if we are selecting other player's units, run this command on them.
+	if( UnitGroupCount(g, c_unitCountAlive) > 0 )
+	{
+		UnitGroupLoopBegin(g);
+		while(!UnitGroupLoopDone())
+		{
+			CatalogLinkReplace(UnitGetOwner(UnitGroupLoopCurrent()), c_gameCatalogUnit, source, replace);
+			UnitGroupLoopStep();
+		}
+		UnitGroupLoopEnd();
+	} else {
+		CatalogLinkReplace(EventPlayer(), c_gameCatalogUnit, source, replace);
+	}
+	return true;
+}
 
+bool libcrtx_command_replaceeffect(bool testConds, bool runActions)
+{
+	string source = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2);
+	string replace = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 3);
+	unitgroup g = libcrtx_chat_get_context(EventPlayer());
+	
+	source = libcrtx_param_catalog(c_gameCatalogEffect, source);
+	replace = libcrtx_param_catalog(c_gameCatalogEffect, replace);
+	
+	if( source == "" || replace == "" || libcrtx_toolkit_isrestrictedeffect(source) || libcrtx_toolkit_isrestrictedeffect(replace) ) {
+		return true;
+	}
+	
+	// So that this command works on hostile/other players, if we are selecting other player's units, run this command on them.
+	if( UnitGroupCount(g, c_unitCountAlive) > 0 )
+	{
+		UnitGroupLoopBegin(g);
+		while(!UnitGroupLoopDone())
+		{
+			CatalogLinkReplace(UnitGetOwner(UnitGroupLoopCurrent()), c_gameCatalogEffect, source, replace);
+			UnitGroupLoopStep();
+		}
+		UnitGroupLoopEnd();
+	} else {
+		CatalogLinkReplace(EventPlayer(), c_gameCatalogEffect, source, replace);
+	}
+	return true;
+}

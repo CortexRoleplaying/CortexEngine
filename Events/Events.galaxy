@@ -11,6 +11,7 @@
 // GNU General Public License for more details.
 
 include "Cortex/Events/TrollDetection.galaxy"
+include "Cortex/Events/PlayerSetup.galaxy"
 
 bool libcrtx_event_map_init(bool checkConds, bool runActions);
 void libcrtx_events_init()
@@ -24,6 +25,7 @@ void libcrtx_events_init()
 
 bool libcrtx_event_map_init(bool checkConds, bool runActions) {
 	libcrtx_cortexid_init();
+	libcrtx_event_playersetup();
 	return true;
 }
 

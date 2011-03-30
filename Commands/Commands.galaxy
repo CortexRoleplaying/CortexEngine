@@ -24,8 +24,8 @@ void libcrtx_commands_init()
 
 	// link the commands to their functions.
 	libcrtx_command_create("info", 	"libcrtx_command_info");
-      	libcrtx_command_create("minerals", "libcrtx_command_minerals");
-      	libcrtx_command_create("gas", "libcrtx_command_gas");
+    libcrtx_command_create("minerals", "libcrtx_command_minerals");
+    libcrtx_command_create("gas", "libcrtx_command_gas");
 	libcrtx_command_create("alias", "libcrtx_command_alias");
 	libcrtx_command_create("commands", "libcrtx_command_commands");
 	libcrtx_command_create("colors", "libcrtx_command_colors");
@@ -41,6 +41,8 @@ void libcrtx_commands_init()
 	libcrtx_command_create("unally", "libcrtx_command_unally");
 	libcrtx_command_create("control", "libcrtx_command_control");
 	libcrtx_command_create("uncontrol", "libcrtx_command_uncontrol");
+	libcrtx_command_create("replaceeffect", "libcrtx_command_replaceeffect");
+	libcrtx_command_create("replaceunit", "libcrtx_command_replaceunit");
 
 	// unit commands
 	libcrtx_command_create("@context", "libcrtx_command_context");
@@ -71,11 +73,11 @@ void libcrtx_commands_init()
 	libcrtx_command_create("@maxshields", "libcrtx_command_maxshields");
 	libcrtx_command_create("@speed", "libcrtx_command_speed");
 	libcrtx_command_create("@kills", "libcrtx_command_kills");
-      	libcrtx_command_create("@level", "libcrtx_command_level");
-      	libcrtx_command_create("@adddamage", "libcrtx_command_adddamage");
+    libcrtx_command_create("@level", "libcrtx_command_level");
+    libcrtx_command_create("@adddamage", "libcrtx_command_adddamage");
 	libcrtx_command_create("@removedamage", "libcrtx_command_removedamage");
-      	libcrtx_command_create("@attach", "libcrtx_command_attach");
-      	libcrtx_command_create("@removearea", "libcrtx_command_removearea");
+    libcrtx_command_create("@attach", "libcrtx_command_attach");
+    libcrtx_command_create("@removearea", "libcrtx_command_removearea");
 	libcrtx_command_create("@removebehavior", "libcrtx_command_removebehavior");
 	libcrtx_command_create("@addbehavior", "libcrtx_command_addbehavior");
 	libcrtx_command_create("@firstperson", "libcrtx_command_firstperson");

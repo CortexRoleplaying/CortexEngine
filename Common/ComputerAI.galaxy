@@ -52,8 +52,8 @@ void libcrtx_ai_start()
 	libcrtx_ai_setup = true;
 
 	// Get 'em started on minerals.
-	PlayerModifyPropertyInt( player, c_playerPropMinerals, c_playerPropOperAdd, 1000 );
-	PlayerModifyPropertyInt( player, c_playerPropVespene, c_playerPropOperAdd, 1000 );
+	PlayerModifyPropertyInt( player, c_playerPropMinerals, c_playerPropOperAdd, 500000 );
+	PlayerModifyPropertyInt( player, c_playerPropVespene, c_playerPropOperAdd, 500000 );
 
 	AIStart(player, false, 400);
 

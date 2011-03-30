@@ -1,0 +1,46 @@
+// Cortex SC2 Roleplaying Engine
+// Copyright (C) 2009-2010 <http://www.cortexrp.com/>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; version 2 of the License.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// Call me at map init to setup player spawners, etc.
+void libcrtx_event_playersetup()
+{
+	int i = 0;
+	// Things that occur for everyone.
+	while(i < libcrtx_max_players)
+	{
+		if( !PlayerGroupHasPlayer(PlayerGroupActive(), i) ) {
+			i += 1;
+			continue;
+		}
+		PlayerSetState(i, c_playerStateFidgetingEnabled, false);
+		i += 1;
+	}
+	
+	// Things that occur for only players.
+	i = 0;
+	while(i < libcrtx_max_players)
+	{
+		if( PlayerType(i) != c_playerTypeUser ) {
+			i += 1;
+			continue;
+		}
+		
+		// Create spawner
+		libNtve_gf_CreateUnitsAtPoint2(1, "Spawner", 0, i, RegionGetCenter(RegionEntireMap()));
+		// Hotkey to control group 1
+		UnitControlGroupAddUnit(i, 1, UnitLastCreated());
+		
+		// Pan our camera to the spawner
+		CameraPan(i, RegionGetCenter(RegionEntireMap()), 2.0, -1, 10, false);
+		i += 1;
+	}
+}
