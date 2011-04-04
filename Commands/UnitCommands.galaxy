@@ -41,9 +41,9 @@ bool libcrtx_command_removearea(bool testConds, bool runActions) {
 		radius = 5.0;
 	}
 
-	libNtve_gf_RemoveDeathModelsinRegion( RegionCircle( UnitGetPosition(libcrtx_spawner()), radius) );
+	libNtve_gf_RemoveDeathModelsinRegion( RegionCircle( libcrtx_mouse_position(), radius) );
 
-	g = UnitGroup( null, c_playerAny, RegionCircle( UnitGetPosition(libcrtx_spawner()), radius), null, 0 );
+	g = UnitGroup( null, c_playerAny, RegionCircle( libcrtx_mouse_position(), radius), null, 0 );
 	g = libcrtx_enforce_unit_permissions(g);
 
 	UnitGroupLoopBegin(g);
@@ -454,7 +454,7 @@ bool libcrtx_command_face(bool testConds, bool runActions) {
 	{
 		// face spawner
 		if( nextParam == "" ) {
-			libNtve_gf_MakeUnitFacePoint( UnitGroupLoopCurrent(), UnitGetPosition(libcrtx_spawner()), 0.0 );
+			libNtve_gf_MakeUnitFacePoint( UnitGroupLoopCurrent(), libcrtx_mouse_position(), 0.0 );
 		} else {
 			// face angle
 			UnitSetFacing( UnitGroupLoopCurrent(), angleToFace, 0.0 );
@@ -617,9 +617,11 @@ bool libcrtx_command_maxenergy(bool testConds, bool runActions) {
 }
 
 bool libcrtx_command_maxshields(bool testConds, bool runActions) {
+	string all;
 	fixed val;
 	unitgroup g = libcrtx_chat_get_context(EventPlayer());
 	val = StringToFixed(StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 ));
+	all = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 3);
 
 	if( val <= 0 ) { // Bad input!
 		return true;
@@ -628,6 +630,11 @@ bool libcrtx_command_maxshields(bool testConds, bool runActions) {
 	UnitGroupLoopBegin(g);
 	while(!UnitGroupLoopDone())
 	{
+		if(all == "all") {
+			CatalogFieldValueSet(c_gameCatalogUnit, UnitGetType(UnitGroupLoopCurrent()), "ShieldArmorName", 1, "Unit/ShieldArmorName/ProtossPlasmaShields");
+			CatalogFieldValueSet(c_gameCatalogUnit, UnitGetType(UnitGroupLoopCurrent()), "ShieldsMax", 1,  FixedToString(val, c_fixedPrecisionAny));
+			CatalogFieldValueSet(c_gameCatalogUnit, UnitGetType(UnitGroupLoopCurrent()), "ShieldsStart", 1,  FixedToString(val, c_fixedPrecisionAny));
+		}
 		UnitSetPropertyFixed( UnitGroupLoopCurrent(), c_unitPropShieldsMax, val );
 		UnitGroupLoopStep();
 	}
@@ -1428,7 +1435,7 @@ bool libcrtx_command_order(bool testConds, bool runActions) {
 	{
 		if(rgn == "#spawner")
 		{
-			pt = UnitGetPosition(libcrtx_spawner());
+			pt = libcrtx_mouse_position();
 		}
 		else
 		{
@@ -1600,7 +1607,7 @@ bool libcrtx_command_copy(bool testConds, bool runActions)
 		}
 		else
 		{
-			targetpos = UnitGetPosition(libcrtx_spawner());
+			targetpos = libcrtx_mouse_position();
 		}
 
 		source = UnitGroupLoopCurrent();
@@ -1760,10 +1767,10 @@ bool libcrtx_command_effect(bool testConds, bool runActions)
 	else
 	{
 		if(libNtve_gf_PlayerCanCreateEffectAtPoint(EventPlayer(), StringWord(EventChatMessage(false), 2)
-			, UnitGetPosition(libcrtx_spawner())))
+			, libcrtx_mouse_position()))
 		{
 			PlayerCreateEffectPoint(EventPlayer(), effect,
-				UnitGetPosition(libcrtx_spawner()));
+				libcrtx_mouse_position());
 		}
 		else
 		{

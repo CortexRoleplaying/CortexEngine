@@ -35,14 +35,14 @@ void libcrtx_event_playersetup()
 		}
 		
 		// Create spawner
-		libNtve_gf_CreateUnitsAtPoint2(1, "Spawner", 0, i, RegionGetCenter(RegionEntireMap()));
+		//libNtve_gf_CreateUnitsAtPoint2(1, "Spawner", 0, i, RegionGetCenter(RegionEntireMap()));
 		// Hotkey to control group 1
-		UnitControlGroupAddUnit(i, 1, UnitLastCreated());
+		//UnitControlGroupAddUnit(i, 1, UnitLastCreated());
 		
 		// Make all tech tree requirements obsolete for simple actions
 		TechTreeRequirementsEnable(i, false);
 		
-		// Pan our camera to the spawner
+		// Pan our camera to the center
 		CameraPan(i, RegionGetCenter(RegionEntireMap()), 2.0, -1, 10, false);
 		i += 1;
 	}

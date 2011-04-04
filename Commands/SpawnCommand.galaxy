@@ -88,7 +88,6 @@ bool libcrtx_command_spawn_parse(string lp_message)
 void libcrtx_command_spawn_execute()
 {
 	string uType;
-	unit u;
 	point p;
 	unitgroup g;
 	
@@ -97,9 +96,7 @@ void libcrtx_command_spawn_execute()
 		return; // count == 0, don't bother.
 	}
 
-	// Establish the spawn point
-	u = libcrtx_spawner();
-	p = UnitGetPosition(u);
+	p = libcrtx_mouse_position();
 	if( libcrtx_command_spawn_instances[EventPlayer()].loc ) {
 		p = RegionGetCenter(libcrtx_command_spawn_instances[EventPlayer()].loc);
 	}

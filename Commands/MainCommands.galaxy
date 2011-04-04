@@ -206,10 +206,10 @@ bool libcrtx_command_smarthostiletown(bool check, bool run)
 	args = StringCase(StringWord(args, 2), false);
 
 	if( args == StringCase("capital", false) ) {
-		libcrtx_ai_createtown( UnitGetPosition(libcrtx_spawner()), true);
+		libcrtx_ai_createtown( libcrtx_mouse_position(), true);
 		libcrtx_write_success("Smart Hostile capital created!");
 	} else {
-		libcrtx_ai_createtown( UnitGetPosition(libcrtx_spawner()), false );
+		libcrtx_ai_createtown( libcrtx_mouse_position(), false );
 		libcrtx_write_success("Smart Hostile town created!");
 	}
 	return true;
@@ -387,11 +387,11 @@ bool libcrtx_command_creep(bool testConds, bool runActions)
 		{
 			radius = 25;
 		}
-		CreepModify(UnitGetPosition(libcrtx_spawner()), radius, true, permanent);
+		CreepModify(libcrtx_mouse_position(), radius, true, permanent);
 	}
 	else if (state == "remove")
 	{
-		CreepModify(UnitGetPosition(libcrtx_spawner()), radius, false, permanent);
+		CreepModify(libcrtx_mouse_position(), radius, false, permanent);
 	}
 
 	return true;

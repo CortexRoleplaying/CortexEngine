@@ -187,6 +187,12 @@ text libcrtx_colored_player_name(int player)
 	return libcrtx_color_text_by_player(player, pName);
 }
 
+// Returns the EventPlayer's mouse position.
+point libcrtx_mouse_position()
+{
+	return libcrtx_mouse_positions[EventPlayer()];
+}
+
 // Returns the spawner of the EventPlayer() or null.
 unit libcrtx_spawner()
 {
