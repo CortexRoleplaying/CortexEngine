@@ -12,6 +12,7 @@
 
 include "Cortex/Events/TrollDetection.galaxy"
 include "Cortex/Events/PlayerSetup.galaxy"
+include "Cortex/Events/PlayerLeaves.galaxy"
 
 bool libcrtx_event_map_init(bool checkConds, bool runActions);
 void libcrtx_events_init()
@@ -19,7 +20,7 @@ void libcrtx_events_init()
 	libcrtx_event_map_init(false, true);
 	TriggerAddEventTimePeriodic( TriggerCreate("libcrtx_event_periodic_tick"), 1.0, c_timeReal );
 	TriggerAddEventDialogControl( TriggerCreate("libcrtx_event_dialog_clicked"), c_playerAny, c_invalidDialogControlId, c_triggerControlEventTypeClick );
-
+	TriggerAddEventPlayerLeft(TriggerCreate("libcrtx_event_playerleaves"), c_playerAny, c_gameResultUndecided);
 	libcrtx_event_trolldetection_init();
 }
 

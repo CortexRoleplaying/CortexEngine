@@ -39,6 +39,9 @@ void libcrtx_event_playersetup()
 		// Hotkey to control group 1
 		UnitControlGroupAddUnit(i, 1, UnitLastCreated());
 		
+		// Make all tech tree requirements obsolete for simple actions
+		TechTreeRequirementsEnable(i, false);
+		
 		// Pan our camera to the spawner
 		CameraPan(i, RegionGetCenter(RegionEntireMap()), 2.0, -1, 10, false);
 		i += 1;
