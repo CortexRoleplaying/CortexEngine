@@ -96,7 +96,7 @@ void libcrtx_command_spawn_execute()
 		return; // count == 0, don't bother.
 	}
 
-	p = libcrtx_mouse_position();
+	p = libcrtx_spawn_position();
 	if( libcrtx_command_spawn_instances[EventPlayer()].loc ) {
 		p = RegionGetCenter(libcrtx_command_spawn_instances[EventPlayer()].loc);
 	}

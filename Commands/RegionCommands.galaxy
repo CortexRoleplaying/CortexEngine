@@ -27,7 +27,7 @@ bool libcrtx_command_regioncreate(bool checkConds, bool runActions)
 		return true;
 	}
 
-	r = RegionCircle( libcrtx_mouse_position(), radius );
+	r = RegionCircle( libcrtx_spawn_position(), radius );
 
 	// and save it…
 	DataTableSetRegion( true, libcrtx_command_region_buildidentifier(name), r );

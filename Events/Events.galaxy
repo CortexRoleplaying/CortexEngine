@@ -14,6 +14,7 @@ include "Cortex/Events/TrollDetection.galaxy"
 include "Cortex/Events/PlayerSetup.galaxy"
 include "Cortex/Events/PlayerLeaves.galaxy"
 include "Cortex/Events/PlayerMouseMovement.galaxy"
+include "Cortex/Events/SpawnerDeath.galaxy"
 
 bool libcrtx_event_map_init(bool checkConds, bool runActions);
 void libcrtx_events_init()
@@ -23,6 +24,7 @@ void libcrtx_events_init()
 	TriggerAddEventDialogControl( TriggerCreate("libcrtx_event_dialog_clicked"), c_playerAny, c_invalidDialogControlId, c_triggerControlEventTypeClick );
 	TriggerAddEventPlayerLeft(TriggerCreate("libcrtx_event_playerleaves"), c_playerAny, c_gameResultUndecided);
 	TriggerAddEventMouseMoved(TriggerCreate("libcrtx_event_playermousemoves"), c_playerAny);
+	TriggerAddEventUnitDied(TriggerCreate("libcrtx_event_spawnerdeath"), null);
 	libcrtx_event_trolldetection_init();
 }
 

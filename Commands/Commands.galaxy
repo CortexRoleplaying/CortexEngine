@@ -43,6 +43,7 @@ void libcrtx_commands_init()
 	libcrtx_command_create("uncontrol", "libcrtx_command_uncontrol");
 	libcrtx_command_create("replaceeffect", "libcrtx_command_replaceeffect");
 	libcrtx_command_create("replaceunit", "libcrtx_command_replaceunit");
+	libcrtx_command_create("togglespawner", "libcrtx_command_togglespawner");
 
 	// unit commands
 	libcrtx_command_create("@context", "libcrtx_command_context");

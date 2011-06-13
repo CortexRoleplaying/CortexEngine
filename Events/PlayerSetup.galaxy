@@ -35,9 +35,11 @@ void libcrtx_event_playersetup()
 		}
 		
 		// Create spawner
-		//libNtve_gf_CreateUnitsAtPoint2(1, "Spawner", 0, i, RegionGetCenter(RegionEntireMap()));
-		// Hotkey to control group 1
-		//UnitControlGroupAddUnit(i, 1, UnitLastCreated());
+		if( libcrtx_cortexid_has_playerflag(i, c_cortexIdPlayerFlagPrefersSpawnerUnit) ) {
+			libNtve_gf_CreateUnitsAtPoint2(1, "Spawner", 0, i, RegionGetCenter(RegionEntireMap()));
+			// Hotkey to control group 1
+			UnitControlGroupAddUnit(i, 1, UnitLastCreated());
+		}
 		
 		// Make all tech tree requirements obsolete for simple actions
 		TechTreeRequirementsEnable(i, false);

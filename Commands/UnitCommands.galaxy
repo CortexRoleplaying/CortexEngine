@@ -41,9 +41,9 @@ bool libcrtx_command_removearea(bool testConds, bool runActions) {
 		radius = 5.0;
 	}
 
-	libNtve_gf_RemoveDeathModelsinRegion( RegionCircle( libcrtx_mouse_position(), radius) );
+	libNtve_gf_RemoveDeathModelsinRegion( RegionCircle( libcrtx_spawn_position(), radius) );
 
-	g = UnitGroup( null, c_playerAny, RegionCircle( libcrtx_mouse_position(), radius), null, 0 );
+	g = UnitGroup( null, c_playerAny, RegionCircle( libcrtx_spawn_position(), radius), null, 0 );
 	g = libcrtx_enforce_unit_permissions(g);
 
 	UnitGroupLoopBegin(g);
@@ -454,7 +454,7 @@ bool libcrtx_command_face(bool testConds, bool runActions) {
 	{
 		// face spawner
 		if( nextParam == "" ) {
-			libNtve_gf_MakeUnitFacePoint( UnitGroupLoopCurrent(), libcrtx_mouse_position(), 0.0 );
+			libNtve_gf_MakeUnitFacePoint( UnitGroupLoopCurrent(), libcrtx_spawn_position(), 0.0 );
 		} else {
 			// face angle
 			UnitSetFacing( UnitGroupLoopCurrent(), angleToFace, 0.0 );
@@ -1435,7 +1435,7 @@ bool libcrtx_command_order(bool testConds, bool runActions) {
 	{
 		if(rgn == "#spawner")
 		{
-			pt = libcrtx_mouse_position();
+			pt = libcrtx_spawn_position();
 		}
 		else
 		{
@@ -1607,7 +1607,7 @@ bool libcrtx_command_copy(bool testConds, bool runActions)
 		}
 		else
 		{
-			targetpos = libcrtx_mouse_position();
+			targetpos = libcrtx_spawn_position();
 		}
 
 		source = UnitGroupLoopCurrent();
@@ -1767,10 +1767,10 @@ bool libcrtx_command_effect(bool testConds, bool runActions)
 	else
 	{
 		if(libNtve_gf_PlayerCanCreateEffectAtPoint(EventPlayer(), StringWord(EventChatMessage(false), 2)
-			, libcrtx_mouse_position()))
+			, libcrtx_spawn_position()))
 		{
 			PlayerCreateEffectPoint(EventPlayer(), effect,
-				libcrtx_mouse_position());
+				libcrtx_spawn_position());
 		}
 		else
 		{

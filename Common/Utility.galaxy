@@ -210,6 +210,39 @@ unit libcrtx_spawner()
 	return u;
 }
 
+// Returns either the mouse or spawner unit position, depending on
+// the player's settings.
+point libcrtx_spawn_position()
+{
+	if( libcrtx_cortexid_has_playerflag(EventPlayer(), c_cortexIdPlayerFlagPrefersSpawnerUnit) ) {
+		return UnitGetPosition(libcrtx_spawner());
+	} else {
+		return libcrtx_mouse_position();
+	}
+}
+
+void libcrtx_create_spawner(int player, point p)
+{
+	// Create the spawner at the cursor's position.
+	if( p == null ) {
+		p = libcrtx_mouse_position();
+	}
+	
+	libNtve_gf_CreateUnitsAtPoint2(1, "Spawner", 0, player, p);
+	// Hotkey to control group 1
+	UnitControlGroupAddUnit(player, 1, UnitLastCreated());
+}
+
+void libcrtx_destroy_spawner()
+{
+	unit spawner = libcrtx_spawner();
+	if(spawner == null) {
+		return;
+	}
+	
+	UnitRemove(spawner);
+}
+
 // Clamps an int between min and max.
 int libcrtx_boundsInt(int src, int min, int max)
 {

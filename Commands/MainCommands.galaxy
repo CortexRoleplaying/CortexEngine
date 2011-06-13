@@ -206,10 +206,10 @@ bool libcrtx_command_smarthostiletown(bool check, bool run)
 	args = StringCase(StringWord(args, 2), false);
 
 	if( args == StringCase("capital", false) ) {
-		libcrtx_ai_createtown( libcrtx_mouse_position(), true);
+		libcrtx_ai_createtown( libcrtx_spawn_position(), true);
 		libcrtx_write_success("Smart Hostile capital created!");
 	} else {
-		libcrtx_ai_createtown( libcrtx_mouse_position(), false );
+		libcrtx_ai_createtown( libcrtx_spawn_position(), false );
 		libcrtx_write_success("Smart Hostile town created!");
 	}
 	return true;
@@ -387,11 +387,11 @@ bool libcrtx_command_creep(bool testConds, bool runActions)
 		{
 			radius = 25;
 		}
-		CreepModify(libcrtx_mouse_position(), radius, true, permanent);
+		CreepModify(libcrtx_spawn_position(), radius, true, permanent);
 	}
 	else if (state == "remove")
 	{
-		CreepModify(libcrtx_mouse_position(), radius, false, permanent);
+		CreepModify(libcrtx_spawn_position(), radius, false, permanent);
 	}
 
 	return true;
@@ -766,6 +766,21 @@ bool libcrtx_command_replaceeffect(bool testConds, bool runActions)
 		UnitGroupLoopEnd();
 	} else {
 		CatalogLinkReplace(EventPlayer(), c_gameCatalogEffect, source, replace);
+	}
+	return true;
+}
+
+bool libcrtx_command_togglespawner(bool testConds, bool runActions)
+{
+	// Are we using spawner? 
+	if( libcrtx_cortexid_has_playerflag(EventPlayer(), c_cortexIdPlayerFlagPrefersSpawnerUnit) ) {
+		libcrtx_destroy_spawner();
+		libcrtx_cortexid_unset_playerflag(EventPlayer(), c_cortexIdPlayerFlagPrefersSpawnerUnit);
+		libcrtx_write(PlayerGroupSingle(EventPlayer()), "You are now using the mouse to spawn and mark positions.");
+	} else {
+		libcrtx_create_spawner(EventPlayer(), null);
+		libcrtx_cortexid_set_playerflag(EventPlayer(), c_cortexIdPlayerFlagPrefersSpawnerUnit);
+		libcrtx_write(PlayerGroupSingle(EventPlayer()), "You are now using the spawner unit.");
 	}
 	return true;
 }

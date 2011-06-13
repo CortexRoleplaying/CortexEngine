@@ -4,6 +4,9 @@ const int libcrtx_cortexid_version = 2;
 
 const string libcrtx_cortexid_bank_writesection = libcrtx_cortexid_bank_authsection + IntToString(libcrtx_cortexid_version);
 
+// CortexID Player Flags:
+const int c_cortexIdPlayerFlagPrefersSpawnerUnit = (1 << 0);
+
 // CortexID Spec:
 // One bank "CortexID" contains the necessary auth information for a player. 
 // Because the map may upgrade itself and different terrains will always be at different versions (stupid authors)
@@ -21,6 +24,31 @@ void libcrtx_cortexid_init_for_player(int player)
 	
 	BankValueSetFromString( b, libcrtx_cortexid_bank_writesection, "GUID", encrypted_guid );
 	BankSave( b );
+}
+
+bool libcrtx_cortexid_has_playerflag(int player, int flags)
+{
+	bank b = BankLoad( libcrtx_cortexid_bank, player);
+	int cflags = BankValueGetAsInt(b, libcrtx_cortexid_bank_writesection, "PlayerFlags");
+	return (cflags & flags) != 0;
+}
+
+void libcrtx_cortexid_set_playerflag(int player, int flags)
+{
+	bank b = BankLoad( libcrtx_cortexid_bank, player);
+	int cflags = BankValueGetAsInt(b, libcrtx_cortexid_bank_writesection, "PlayerFlags");
+	cflags |= flags;
+	BankValueSetFromInt(b, libcrtx_cortexid_bank_writesection, "PlayerFlags", cflags);
+	BankSave(b);
+}
+
+void libcrtx_cortexid_unset_playerflag(int player, int flags)
+{
+	bank b = BankLoad( libcrtx_cortexid_bank, player);
+	int cflags = BankValueGetAsInt(b, libcrtx_cortexid_bank_writesection, "PlayerFlags");
+	cflags &= ~flags;
+	BankValueSetFromInt(b, libcrtx_cortexid_bank_writesection, "PlayerFlags", cflags);
+	BankSave(b);
 }
 
 void libcrtx_cortexid_init()
