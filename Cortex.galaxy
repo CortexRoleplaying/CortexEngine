@@ -57,6 +57,7 @@ void libcrtx_InitLib()
 	libcrtx_debug("cortex_init()");
 	// init dependencies
 	libactionbar_init();
+	libHash_InitLib();
 
 	// cortex main init.
 	libcrtx_settings_initdefault();
