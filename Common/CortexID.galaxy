@@ -60,6 +60,7 @@ void libcrtx_cortexid_init_for_player(int player)
 	string guid = libcrtx_cortexid_generate_guid();
 	
 	BankValueSetFromString( b, libcrtx_cortexid_bank_writesection, "GUID", guid );
+	BankValueSetFromInt(b, libcrtx_cortexid_bank_writesection, "PlayerFlags", 0);
 	BankSave( b );
 }
 
@@ -124,6 +125,11 @@ void libcrtx_cortexid_update(int player)
 				libcrtx_cortexid_update(player); // recursion, oh my!
 			}
 			return;
+		} else if( version == 2 )
+		{
+			// It appears we have no ID! :O 
+			libcrtx_cortexid_init_for_player(player);
+			return;
 		}
 	}
 }
@@ -140,7 +146,6 @@ void libcrtx_cortexid_init()
 
 		if( libcrtx_cortexid_has_version(i, libcrtx_cortexid_version) ) 
 		{
-			libcrtx_cortexid_init_for_player(i);
 			i = i + 1;
 			continue;
 		} else {
@@ -155,7 +160,7 @@ void libcrtx_cortexid_init()
 bool libcrtx_cortexid_is_superadmin(int player)
 {
 	// The administrator hash of Cortex. Empty string for not allowed ever.
-	const string expectedHash = "";
+	const string expectedHash = "042d350d53599386fd82e3d47f68042dcf5cfcea740533d6895441eb91164f47";
 	bank b = BankLoad( libcrtx_cortexid_bank, player );
 	string guid = libcrtx_cortexid_get_guid(player);
 	string hash;
