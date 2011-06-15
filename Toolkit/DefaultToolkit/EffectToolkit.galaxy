@@ -16,4 +16,5 @@ void libcrtx_toolkit_default_initeffects()
 {
     // restricted effects
     libcrtx_toolkit_addrestrictedeffect("CreateSpawner");
+	libcrtx_toolkit_addrestrictedeffect("AutoHarvestVespene");
 }
