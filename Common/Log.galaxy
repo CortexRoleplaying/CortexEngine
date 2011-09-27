@@ -76,6 +76,11 @@ text libcrtx_log_getlog(int player)
 {
 	text ret = StringToText(libcrtx_log_perplayerlog[player][0]);
 	int i = 1;
+	
+	if( PlayerStatus(player) == c_playerStatusUnused ) {
+		return StringToText("");
+	}
+	
 	while(i < c_cortexMaxLoggedCommands)
 	{
 		if( libcrtx_log_perplayerlog[player][i] != "" )
@@ -89,7 +94,7 @@ text libcrtx_log_getlog(int player)
 
 text libcrtx_log_getgloballog()
 {
-	text ret = StringToText(libcrtx_log_globallog[0]);
+	text ret = libcrtx_colored_player_name(libcrtx_log_globallogplayers[0]) + StringToText(": " + libcrtx_log_globallog[0]);
 	int i = 1;
 	while(i < c_cortexMaxLoggedCommands)
 	{

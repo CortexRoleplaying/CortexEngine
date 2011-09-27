@@ -884,6 +884,7 @@ bool libcrtx_command_log(bool checkConds, bool runActions)
 	{
 		libcrtx_write_text(PlayerGroupSingle(EventPlayer()), libcrtx_log_getlog(plr));
 	} else {
+		libcrtx_write(PlayerGroupSingle(EventPlayer()), "Global Command Log:");
 		libcrtx_write_text(PlayerGroupSingle(EventPlayer()), libcrtx_log_getgloballog());
 	}
 	return true;
