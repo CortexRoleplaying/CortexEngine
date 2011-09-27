@@ -12,6 +12,35 @@
 
 bool libcrtx_event_playerleaves(bool runConditions, bool runActions)
 {
-	libcrtx_write_text(PlayerGroupActive(), libcrtx_colored_player_name(EventPlayer())+ StringToText(" has left the game."));
+	int i = 1;
+	libcrtx_write_text(PlayerGroupAll(), libcrtx_colored_player_name(EventPlayer())+ StringToText(" has left the game."));
+	
+	if( libcrtx_admin_getpermissions( EventPlayer() ) == libcrtx_admin_permissionlevel_admin )
+	{
+		// The administrator has left! Let's appoint a new one.
+		// First, look to promote any moderators we have left.
+		while( i < libcrtx_max_players )
+		{
+			if( PlayerStatus(i) == c_playerStatusActive && libcrtx_admin_getpermissions(i) == libcrtx_admin_permissionlevel_moderator )
+			{
+				// Promote him and we're done.
+				libcrtx_admin_setpermission(i, libcrtx_admin_permissionlevel_admin);
+				libcrtx_write_text(PlayerGroupAll(), libcrtx_colored_player_name(i) + StringToText(" has been promoted to admin by ") + libcrtx_colored_player_name(EventPlayer()));
+				return true;
+			}
+			i += 1;
+		}
+	}
+	
+	// If we have no one left, exit now.
+	if( PlayerGroupCount(PlayerGroupActive()) == 0 )
+	{
+		return true;
+	}
+	
+	// Otherwise, just appoint someone randomly.
+	i = PlayerGroupPlayer(PlayerGroupActive(), RandomInt(1, PlayerGroupCount(PlayerGroupActive())));
+	libcrtx_admin_setpermission(i, libcrtx_admin_permissionlevel_admin);
+	libcrtx_write_text(PlayerGroupAll(), libcrtx_colored_player_name(i) + StringToText(" has been promoted to admin by ") + libcrtx_colored_player_name(EventPlayer()));
 	return true;
 }
