@@ -869,3 +869,22 @@ bool libcrtx_command_trolls(bool testConds, bool runActions)
 
 	return true;
 }
+
+bool libcrtx_command_log(bool checkConds, bool runActions)
+{
+	int plr = -1;
+	string val = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2 );
+	plr = libcrtx_color_to_player( val );
+	
+	if( libcrtx_admin_getpermissions( EventPlayer() ) < libcrtx_admin_permissionlevel_moderator ) {
+		return true;
+	}
+	
+	if( plr != -1 )
+	{
+		libcrtx_write_text(PlayerGroupSingle(EventPlayer()), libcrtx_log_getlog(plr));
+	} else {
+		libcrtx_write_text(PlayerGroupSingle(EventPlayer()), libcrtx_log_getgloballog());
+	}
+	return true;
+}

@@ -57,6 +57,7 @@ void libcrtx_toolkit_default_initunittools()
 
 void libcrtx_toolkit_default_initrestrictedunits()
 {
+	libcrtx_toolkit_addrestrictedunit("Spawner");
 	libcrtx_toolkit_addrestrictedunit("nukenoodle");
 }
 

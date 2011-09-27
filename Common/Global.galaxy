@@ -78,3 +78,5 @@ include "Cortex/Common/SharedData.galaxy"
 include "Cortex/Common/CortexID.galaxy"
 include "Cortex/Common/Utility.galaxy"
 include "Cortex/Common/ComputerAI.galaxy"
+include "Cortex/Common/Log.galaxy"
+

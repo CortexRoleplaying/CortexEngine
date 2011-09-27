@@ -118,6 +118,7 @@ void libcrtx_commands_init()
 	libcrtx_command_create("!light", "libcrtx_command_light");
 	libcrtx_command_create("!creepspeed", "libcrtx_command_creepspeed");
 	libcrtx_command_create("!trolls", "libcrtx_command_trolls");
+	libcrtx_command_create("!log", "libcrtx_command_log");
 	
 
 	// region commands

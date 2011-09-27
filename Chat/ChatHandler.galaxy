@@ -193,6 +193,7 @@ void libcrtx_chat_parsechat(int lp_player, string lp_message, int lp_recursionLi
 		libcrtx_variable_delete(lp_player, libcrtx_variable_name_return);
 
 		libcrtx_chat_set_parse_line( lp_player, lp_message );
+		libcrtx_log_event(lp_player, lp_message);
 		TriggerExecute(t, false, false);
 	} else {
 		// No such command for this iteration

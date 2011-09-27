@@ -1,0 +1,103 @@
+// Cortex SC2 Roleplaying Engine
+// Copyright (C) 2009-2011 <http://www.cortexrp.com/>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; version 2 of the License.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+const int c_cortexMaxLoggedCommands = 25;
+
+string[libcrtx_max_players][c_cortexMaxLoggedCommands] libcrtx_log_perplayerlog;
+string[c_cortexMaxLoggedCommands] libcrtx_log_globallog;
+int[c_cortexMaxLoggedCommands] libcrtx_log_globallogplayers;
+
+static void libcrtx_log_event_individual(int player, string message)
+{
+	int currentLevel = 0;
+	
+	// Find free index and insert, if possible
+	while(currentLevel < c_cortexMaxLoggedCommands)
+	{
+		if( libcrtx_log_perplayerlog[player][currentLevel] == "" ) {
+			libcrtx_log_perplayerlog[player][currentLevel] = message;
+			return;
+		}
+		currentLevel += 1;
+	}
+	
+	// We're out of space! Discard one message and move the rest upward one level, and use last index.
+	currentLevel = 1;
+	while(currentLevel < c_cortexMaxLoggedCommands)
+	{
+		libcrtx_log_perplayerlog[player][currentLevel - 1] = libcrtx_log_perplayerlog[player][currentLevel]; 
+		currentLevel += 1;
+	}
+	libcrtx_log_perplayerlog[player][c_cortexMaxLoggedCommands - 1] = message;
+}
+
+static void libcrtx_log_event_global(int player, string message)
+{
+	int currentLevel = 0;
+	
+	// Find free index and insert, if possible
+	while(currentLevel < c_cortexMaxLoggedCommands)
+	{
+		if( libcrtx_log_globallog[currentLevel] == "" ) {
+			libcrtx_log_globallog[currentLevel] = message;
+			libcrtx_log_globallogplayers[currentLevel] = player;
+			return;
+		}
+		currentLevel += 1;
+	}
+	
+	// We're out of space! Discard one message and move the rest upward one level, and use last index.
+	currentLevel = 1;
+	while(currentLevel < c_cortexMaxLoggedCommands)
+	{
+		libcrtx_log_globallog[currentLevel - 1] = libcrtx_log_globallog[currentLevel]; 
+		currentLevel += 1;
+	}
+	libcrtx_log_globallog[c_cortexMaxLoggedCommands - 1] = message;
+	libcrtx_log_globallogplayers[c_cortexMaxLoggedCommands - 1] = player;
+}
+
+void libcrtx_log_event(int player, string message)
+{
+	libcrtx_log_event_individual(player, message);
+	libcrtx_log_event_global(player, message);
+}
+
+text libcrtx_log_getlog(int player)
+{
+	text ret = StringToText(libcrtx_log_perplayerlog[player][0]);
+	int i = 1;
+	while(i < c_cortexMaxLoggedCommands)
+	{
+		if( libcrtx_log_perplayerlog[player][i] != "" )
+		{
+			ret += StringToText("<n />") + libcrtx_colored_player_name(player) + StringToText(": " + libcrtx_log_perplayerlog[player][i]);
+		}
+		i += 1;
+	}
+	return ret;
+}
+
+text libcrtx_log_getgloballog()
+{
+	text ret = StringToText(libcrtx_log_globallog[0]);
+	int i = 1;
+	while(i < c_cortexMaxLoggedCommands)
+	{
+		if( libcrtx_log_globallog[i] != "" )
+		{
+			ret += StringToText("<n />") + libcrtx_colored_player_name(libcrtx_log_globallogplayers[i]) + StringToText(": " + libcrtx_log_globallog[i]);
+		}
+		i += 1;
+	}
+	return ret;
+}
