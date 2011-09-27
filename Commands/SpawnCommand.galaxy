@@ -104,7 +104,12 @@ void libcrtx_command_spawn_execute()
 	// What unit are we spawning?
 	// Make sure this is a valid entry in the game catalog.
 	uType = UnitTypeFromString(libcrtx_command_spawn_instances[EventPlayer()].unitType);
-	if( uType == "" || uType == libcrtx_getspawnertype() || libcrtx_toolkit_isrestrictedunit(uType) || !CatalogEntryIsValid(c_gameCatalogUnit, uType) )
+	if( uType == "" || 
+		uType == libcrtx_getspawnertype() || 
+		libcrtx_toolkit_isrestrictedunit(uType) || 
+		!CatalogEntryIsValid(c_gameCatalogUnit, uType) ||
+		UnitTypeTestFlag(uType, c_unitFlagMissile)
+	)
 	{
 		return;
 	}
