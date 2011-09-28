@@ -2166,3 +2166,43 @@ bool libcrtx_command_rotate(bool testConds, bool runActions)
 	return true;
 }
 
+bool libcrtx_command_label(bool testConds, bool runActions)
+{
+	int tagId = -1;
+	bool removeTag = false;
+	unitgroup g =  libcrtx_chat_get_context(EventPlayer());
+	string label = libcrtx_chat_get_parse_line(EventPlayer());
+	label = StringSub( label, StringFind(label, " ", c_stringCase)+1, StringLength(label)); // The remainder of the chat message.
+	
+	if( StringLength(label) > 128 ) {
+		libcrtx_write_error("Your label length is too long.");
+		return true;
+	}
+	
+	if( label == "" ) {
+		removeTag = true;
+	}
+
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone()) {
+		if( removeTag || UnitGetCustomValue(UnitGroupLoopCurrent(), libcrtx_unit_custom_value_texttag) != 0.0 )
+		{
+			tagId = FixedToInt(UnitGetCustomValue(UnitGroupLoopCurrent(), libcrtx_unit_custom_value_texttag));
+			TextTagDestroy(tagId);
+			UnitSetCustomValue(UnitGroupLoopCurrent(), libcrtx_unit_custom_value_texttag, 0.0);
+		}
+		
+		if( !removeTag )
+		{
+			tagId = TextTagCreate(libcrtx_color_text_by_player(EventPlayer(), StringToText(label)), 46, UnitGetPosition(UnitGroupLoopCurrent()), 1.0, true, true, PlayerGroupAll());
+			TextTagSetTextShadow(tagId, true);
+			TextTagAttachToUnit(tagId, UnitGroupLoopCurrent(), 1.0);
+		
+			UnitSetCustomValue(UnitGroupLoopCurrent(), libcrtx_unit_custom_value_texttag, IntToFixed(tagId));
+		}
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}
+
