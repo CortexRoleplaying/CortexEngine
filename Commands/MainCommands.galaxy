@@ -256,7 +256,7 @@ bool libcrtx_command_search(bool testConds, bool runActions)
 	{
 		catalog = c_gameCatalogModel;
 	}
-	else if(type == "texture" || type == "textures")
+	else if(type == "decal" || type == "decals")
 	{
 		catalog = c_gameCatalogTexture;
 	}
@@ -282,7 +282,7 @@ bool libcrtx_command_search(bool testConds, bool runActions)
 	}
 	else if(libcrtx_search_index[EventPlayer()] == -1)
 	{
-		libcrtx_write( PlayerGroupSingle(EventPlayer()), "Usage: search [ability|actor|behavior|weapon|validator|upgrade|unit|turret|light|footprint|model] [what to search for]");
+		libcrtx_write( PlayerGroupSingle(EventPlayer()), "Usage: search [ability|actor|behavior|weapon|validator|upgrade|unit|turret|light|footprint|model|decal] [what to search for]");
 		return true;
 	}
 	
@@ -310,8 +310,12 @@ bool libcrtx_command_search(bool testConds, bool runActions)
 		if(StringContains(result, query, c_stringAnywhere, c_stringNoCase) ||
 			query == "")
 		{
-			libcrtx_write( PlayerGroupSingle(EventPlayer()), result);
-			count = count - 1;
+			// hide "decal" results that aren't decals at all.
+			if( catalog != c_gameCatalogTexture || StringContains(result, "Decal", c_stringAnywhere, c_stringNoCase) )
+			{
+				libcrtx_write( PlayerGroupSingle(EventPlayer()), result);
+				count = count - 1;
+			}
 		}
 		i = i - 1;
 	}

@@ -2206,3 +2206,21 @@ bool libcrtx_command_label(bool testConds, bool runActions)
 	return true;
 }
 
+bool libcrtx_command_decal(bool testConds, bool runActions)
+{
+	unitgroup g = libcrtx_chat_get_context(EventPlayer());
+	string texturename = libcrtx_param_catalog(c_gameCatalogTexture, libcrtx_param_index(2));
+	
+	if(texturename == "" || !StringContains(texturename, "Decal", c_stringAnywhere, false) ) {
+		libcrtx_write(PlayerGroupSingle(EventPlayer()), "<c val=\"ff0000\">No such decal!</c>");
+		return true;
+	}
+	
+	UnitGroupLoopBegin(g);
+	while(!UnitGroupLoopDone()) {
+		ActorSend(libNtve_gf_MainActorofUnit(UnitGroupLoopCurrent()), "TextureSelectById " + texturename);
+		UnitGroupLoopStep();
+	}
+	UnitGroupLoopEnd();
+	return true;
+}

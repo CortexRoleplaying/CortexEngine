@@ -105,6 +105,7 @@ void libcrtx_commands_init()
 	libcrtx_command_create("@animspeed", "libcrtx_command_animspeed");
 	libcrtx_command_create("@rotate", "libcrtx_command_rotate");
 	libcrtx_command_create("@label", "libcrtx_command_label");
+	libcrtx_command_create("@decal", "libcrtx_command_decal");
 	
 
 	// admin commands
