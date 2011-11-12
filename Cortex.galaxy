@@ -44,7 +44,7 @@ bool libcrtx_MapCheck()
 	if( !r ) {
 		libcrtx_write(PlayerGroupAll(), "One or more errors detected. Cortex has failed to startup.");
 		libcrtx_write(PlayerGroupAll(), "Engine Version: " + libcrtx_get_versionstring());
-		libcrtx_write_text(PlayerGroupAll(), StringToText("Please correct your settings, or contact the author of ") + GameMapName() );
+		libcrtx_write_text(PlayerGroupAll(), StringToText("Please correct your map settings, or contact the author of ") + GameMapName() );
 	}
 
 	return r;

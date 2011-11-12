@@ -29,7 +29,7 @@ bool libcrtx_command_minerals(bool testConds, bool runActions) {
 
     minerals = StringToInt(StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2));
     if(minerals == 0) {
-	minerals = 5000;
+	minerals = 100000;
     }
 
     PlayerModifyPropertyInt( EventPlayer(), c_playerPropMinerals, c_playerPropOperAdd, minerals );
@@ -45,7 +45,7 @@ bool libcrtx_command_gas(bool testConds, bool runActions) {
 
     gas = StringToInt(StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2));
     if(gas == 0) {
-	gas = 5000;
+	gas = 100000;
     }
     PlayerModifyPropertyInt( EventPlayer(), c_playerPropVespene, c_playerPropOperAdd, gas );
     return true;
@@ -725,6 +725,12 @@ bool libcrtx_command_replaceunit(bool testConds, bool runActions)
 		return true;
 	}
 	
+	if( libcrtx_secure_mode && libcrtx_admin_getpermissions(EventPlayer()) < libcrtx_admin_permissionlevel_moderator)
+	{
+		libcrtx_write(PlayerGroupSingle(EventPlayer()), "You can't do that while secure mode is enabled.");
+		return true;
+	}
+	
 	// So that this command works on hostile/other players, if we are selecting other player's units, run this command on them.
 	if( UnitGroupCount(g, c_unitCountAlive) > 0 )
 	{
@@ -751,6 +757,12 @@ bool libcrtx_command_replaceeffect(bool testConds, bool runActions)
 	replace = libcrtx_param_catalog(c_gameCatalogEffect, replace);
 	
 	if( source == "" || replace == "" || libcrtx_toolkit_isrestrictedeffect(source) || libcrtx_toolkit_isrestrictedeffect(replace) ) {
+		return true;
+	}
+	
+	if( libcrtx_secure_mode && libcrtx_admin_getpermissions(EventPlayer()) < libcrtx_admin_permissionlevel_moderator)
+	{
+		libcrtx_write(PlayerGroupSingle(EventPlayer()), "You can't do that while secure mode is enabled.");
 		return true;
 	}
 	

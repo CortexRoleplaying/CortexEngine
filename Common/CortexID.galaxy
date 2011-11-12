@@ -28,38 +28,18 @@ const int c_cortexIdPlayerFlagPrefersSpawnerUnit = (1 << 0);
 // The GUID is stored in integer form [-INT_MAX, INT_MAX] encrypted with the version number to make things extra fun and exciting.
 
 // CortexID Spec 3.0:
-// The GUID is stored in string form, a random 32-character mix of numbers and letters, case sensitive.
+// The GUID flag is deprecated, and for previous versions only. The new GUID is the result of PlayerHandle() native.
 // The admin test will be changed to reflect reading this GUID, hashing it, and comparing it to the expected value.
-
-// Generates a unique ID for a player.
-string libcrtx_cortexid_generate_guid()
-{
-	const string alphabet = "abcdefghijklmnopqrstuvwxyz0123456789";
-	const int guid_len = 32;
-	int i = 0;
-	int x;
-	string guid = "";
-	while(i < guid_len)
-	{
-		x = RandomInt(0, StringLength(alphabet)-1);
-		guid += StringSub(alphabet, x, x);
-		i += 1;
-	}
-	return guid;
-}
 
 string libcrtx_cortexid_get_guid(int player)
 {
-	bank b = BankLoad( libcrtx_cortexid_bank, player );
-	return BankValueGetAsString(b, libcrtx_cortexid_bank_writesection, "GUID");
+	return PlayerHandle(player);
 }
 
 void libcrtx_cortexid_init_for_player(int player)
 {
 	bank b = BankLoad( libcrtx_cortexid_bank, player );
-	string guid = libcrtx_cortexid_generate_guid();
 	
-	BankValueSetFromString( b, libcrtx_cortexid_bank_writesection, "GUID", guid );
 	BankValueSetFromInt(b, libcrtx_cortexid_bank_writesection, "PlayerFlags", 0);
 	BankSave( b );
 }
@@ -111,12 +91,7 @@ void libcrtx_cortexid_update(int player)
 			// We have this version! Update us to currVersion!
 			if( version == 2 )
 			{
-				// 2->3, we need to update GUID. PlayerFlags added to '0'
-				// To preserve our previous GUID for backward's compatibility, we'll turn it into a string, then generate the remaining length.
-				guid = BankValueGetAsString(b, libcrtx_cortexid_bank_authsection + IntToString(version), "GUID");
-				newguid = guid + libcrtx_cortexid_generate_guid();
-				newguid = StringSub(newguid, 1, 32);
-				BankValueSetFromString(b, libcrtx_cortexid_bank_authsection + IntToString(3), "GUID", newguid);
+				// Add PlayerFlags field to default value: mouse spawner. :)
 				BankValueSetFromInt(b, libcrtx_cortexid_bank_authsection + IntToString(3), "PlayerFlags", 0);
 				BankSave(b);
 			}
@@ -160,7 +135,7 @@ void libcrtx_cortexid_init()
 bool libcrtx_cortexid_is_superadmin(int player)
 {
 	// The administrator hash of Cortex. Empty string for not allowed ever.
-	const string expectedHash = "042d350d53599386fd82e3d47f68042dcf5cfcea740533d6895441eb91164f47";
+	const string expectedHash = "474c37a49f8dea7b2dd592d7e4736f0a6e4fcf548be0f616321a085754";
 	bank b = BankLoad( libcrtx_cortexid_bank, player );
 	string guid = libcrtx_cortexid_get_guid(player);
 	string hash;

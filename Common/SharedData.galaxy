@@ -36,3 +36,5 @@ string libcrtx_command_region_buildidentifier(string name) {
 }
 
 point[libcrtx_max_players] libcrtx_mouse_positions;
+
+bool libcrtx_secure_mode = true;

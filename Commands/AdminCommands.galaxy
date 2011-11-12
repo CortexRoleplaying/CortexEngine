@@ -884,8 +884,32 @@ bool libcrtx_command_log(bool checkConds, bool runActions)
 	{
 		libcrtx_write_text(PlayerGroupSingle(EventPlayer()), libcrtx_log_getlog(plr));
 	} else {
-		libcrtx_write(PlayerGroupSingle(EventPlayer()), "Global Command Log:");
 		libcrtx_write_text(PlayerGroupSingle(EventPlayer()), libcrtx_log_getgloballog());
 	}
 	return true;
 }
+
+bool libcrtx_command_secure(bool checkConds, bool runActions)
+{
+	string onoff = "ON";
+	string params = StringWord( libcrtx_chat_get_parse_line(EventPlayer()), 2);
+	if( libcrtx_admin_getpermissions( EventPlayer() ) < libcrtx_admin_permissionlevel_admin ) {
+		return true;
+	}
+	
+	if(params == "on") {
+		libcrtx_secure_mode = true;
+	} else if( params == "off") {
+		libcrtx_secure_mode = false;
+	} else {
+		libcrtx_secure_mode = !libcrtx_secure_mode;
+	}
+	
+	if( !libcrtx_secure_mode ) {
+		onoff = "OFF";
+	}
+	
+	libcrtx_write(PlayerGroupSingle(EventPlayer()), "Cortex Secure Mode is now " + onoff + ". When Secure Mode is disabled, players can use potentially dangerous commands that can disrupt gameplay easily and without warning. Only disable secure mode with players you trust, or promote those whom you do trust.");
+	return true;
+}
+
