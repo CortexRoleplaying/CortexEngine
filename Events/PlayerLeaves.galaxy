@@ -12,6 +12,7 @@
 
 bool libcrtx_event_playerleaves(bool runConditions, bool runActions)
 {
+	playergroup actives = PlayerGroupActive();
 	int i = 1;
 	libcrtx_write_text(PlayerGroupAll(), libcrtx_colored_player_name(EventPlayer())+ StringToText(" has left the game."));
 	
@@ -32,14 +33,16 @@ bool libcrtx_event_playerleaves(bool runConditions, bool runActions)
 		}
 	}
 	
+	PlayerGroupRemove(actives, libcrtx_setting_getint(libcrtx_setting_int_smarthostile));
+	
 	// If we have no one left, exit now.
-	if( PlayerGroupCount(PlayerGroupActive()) == 0 )
+	if( PlayerGroupCount(actives) == 0 )
 	{
 		return true;
 	}
 	
 	// Otherwise, just appoint someone randomly.
-	i = PlayerGroupPlayer(PlayerGroupActive(), RandomInt(1, PlayerGroupCount(PlayerGroupActive())));
+	i = PlayerGroupPlayer(actives, RandomInt(1, PlayerGroupCount(actives)));
 	libcrtx_admin_setpermission(i, libcrtx_admin_permissionlevel_admin);
 	libcrtx_write_text(PlayerGroupAll(), libcrtx_colored_player_name(i) + StringToText(" has been promoted to admin by ") + libcrtx_colored_player_name(EventPlayer()));
 	return true;
