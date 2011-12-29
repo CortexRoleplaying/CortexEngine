@@ -60,6 +60,7 @@ static void libcrtx_log_event_global(int player, string message)
 	while(currentLevel < c_cortexMaxLoggedCommands)
 	{
 		libcrtx_log_globallog[currentLevel - 1] = libcrtx_log_globallog[currentLevel]; 
+		libcrtx_log_globallogplayers[c_currentLevel - 1] = libcrtx_log_globallogplayers[currentLevel];
 		currentLevel += 1;
 	}
 	libcrtx_log_globallog[c_cortexMaxLoggedCommands - 1] = message;
