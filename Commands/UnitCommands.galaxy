@@ -2201,6 +2201,8 @@ bool libcrtx_command_label(bool testConds, bool runActions)
 			TextTagAttachToUnit(tagId, UnitGroupLoopCurrent(), 1.0);
 		
 			UnitSetCustomValue(UnitGroupLoopCurrent(), libcrtx_unit_custom_value_texttag, IntToFixed(tagId));
+			
+			libcrtx_labelmgr_addlabel(tagId, UnitGroupLoopCurrent());
 		}
 		UnitGroupLoopStep();
 	}

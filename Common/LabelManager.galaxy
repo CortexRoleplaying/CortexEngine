@@ -1,0 +1,48 @@
+// Cortex SC2 Roleplaying Engine
+// Copyright (C) 2009-2011 <http://www.cortexrp.com/>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; version 2 of the License.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// This entire file's purpose would be useless if Blizzard
+// left us a viable way to detect when a unit died in a transport
+// ><
+// Bug report filed and ignored: http://us.battle.net/sc2/en/forum/topic/3811454102
+
+string libcrtx_labelmgr_prefix = "labelmgr_id_";
+int libcrtx_labelmgr_highId = -1;
+
+// Adds entry in dataTable for labelId -> unitHandle
+void libcrtx_labelmgr_addlabel(int labelId, unit unitHandle)
+{
+	if( labelId > libcrtx_labelmgr_highId ) {
+		libcrtx_labelmgr_highId = labelId;
+	}
+	
+	DataTableSetUnit(true, libcrtx_labelmgr_prefix + IntToString(labelId), unitHandle);
+}
+
+// Removes labels not tied to active units.
+void libcrtx_labelmgr_update()
+{
+	int i = -1;
+	unit linkedUnit;
+	
+	while( i <= libcrtx_labelmgr_highId )
+	{
+		linkedUnit = DataTableGetUnit(true, libcrtx_labelmgr_prefix + IntToString(i));
+		if( linkedUnit == null || !UnitIsAlive(linkedUnit) ) {
+			DataTableValueRemove(true, libcrtx_labelmgr_prefix + IntToString(i));
+			if( TextTagVisible(i, 1) ) {
+				TextTagDestroy(i);
+			}
+		}
+		i += 1;
+	}
+}
