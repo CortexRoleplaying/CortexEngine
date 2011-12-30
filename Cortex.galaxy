@@ -16,6 +16,11 @@ include "Cortex/Chat/Chat.galaxy"
 include "Cortex/Events/Events.galaxy"
 include "Cortex/Commands/Commands.galaxy"
 
+void libcrtx_Welcome()
+{
+	libcrtx_write(PlayerGroupActive(), "Welcome to Cortex " + IntToString(libcrtx_version_major) + "." + IntToString(libcrtx_version_minor) + "." + IntToString(libcrtx_version_bugfix) + libcrtx_version_hotfix + ". Learn more about Cortex on the web at CortexRP.com, or join our Starcraft II channel, \"Roleplaying\".");
+}
+
 bool libcrtx_MapCheck()
 {
 	bool r = true;
@@ -69,4 +74,6 @@ void libcrtx_InitLib()
 		libcrtx_admin_init();
 		libcrtx_events_init();
 	}
+	
+	libcrtx_Welcome();
 }
