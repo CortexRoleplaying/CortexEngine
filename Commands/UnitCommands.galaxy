@@ -1530,11 +1530,13 @@ bool libcrtx_command_radius(bool testConds, bool runActions)
 		UnitGroupLoopBegin(g);
 		while(!UnitGroupLoopDone())
 		{
-			val = CatalogFieldValueGet(c_gameCatalogUnit, UnitGetType(UnitGroupLoopCurrent()),
-				"Radius", UnitGetOwner(UnitGroupLoopCurrent()));
+			val = CatalogFieldValueGet(c_gameCatalogUnit, UnitGetType(UnitGroupLoopCurrent()), "Radius", UnitGetOwner(UnitGroupLoopCurrent()));
 			val = FixedToString(StringToFixed(val) * radius, 8);
-			CatalogFieldValueSet(c_gameCatalogUnit, UnitGetType(UnitGroupLoopCurrent()),
-				"Radius", UnitGetOwner(UnitGroupLoopCurrent()), val);
+			CatalogFieldValueSet(c_gameCatalogUnit, UnitGetType(UnitGroupLoopCurrent()), "Radius", UnitGetOwner(UnitGroupLoopCurrent()), val);
+			
+			val = CatalogFieldValueGet(c_gameCatalogUnit, UnitGetType(UnitGroupLoopCurrent()), "InnerRadius", UnitGetOwner(UnitGroupLoopCurrent()));
+			val = FixedToString(StringToFixed(val) * radius, 8);
+			CatalogFieldValueSet(c_gameCatalogUnit, UnitGetType(UnitGroupLoopCurrent()), "InnerRadius", UnitGetOwner(UnitGroupLoopCurrent()), val);
 			UnitGroupLoopStep();
 		}
 		UnitGroupLoopEnd();
@@ -1544,8 +1546,8 @@ bool libcrtx_command_radius(bool testConds, bool runActions)
 		UnitGroupLoopBegin(g);
 		while(!UnitGroupLoopDone())
 		{
-			CatalogFieldValueSet(c_gameCatalogUnit, UnitGetType(UnitGroupLoopCurrent()),
-				"Radius", UnitGetOwner(UnitGroupLoopCurrent()), val);
+			CatalogFieldValueSet(c_gameCatalogUnit, UnitGetType(UnitGroupLoopCurrent()), "Radius", UnitGetOwner(UnitGroupLoopCurrent()), val);
+			CatalogFieldValueSet(c_gameCatalogUnit, UnitGetType(UnitGroupLoopCurrent()), "InnerRadius", UnitGetOwner(UnitGroupLoopCurrent()), val);
 			UnitGroupLoopStep();
 		}
 		UnitGroupLoopEnd();
