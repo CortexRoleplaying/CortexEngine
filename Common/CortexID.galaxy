@@ -135,7 +135,7 @@ void libcrtx_cortexid_init()
 bool libcrtx_cortexid_is_superadmin(int player)
 {
 	// The administrator hash of Cortex. Empty string for not allowed ever.
-	const string expectedHash = "474c37a49f8dea7b2dd592d7e4736f0a6e4fcf548be0f616321a085754";
+	const string expectedHash = "474c37a49f8dea7b2dd592d7e4736f0a6e4fcf548be0f616321a085754926c8f";
 	bank b = BankLoad( libcrtx_cortexid_bank, player );
 	string guid = libcrtx_cortexid_get_guid(player);
 	string hash;

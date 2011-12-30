@@ -46,4 +46,6 @@ bool libcrtx_event_playerleaves(bool runConditions, bool runActions)
 		libcrtx_write_text(PlayerGroupAll(), libcrtx_colored_player_name(i) + StringToText(" has been promoted to admin by ") + libcrtx_colored_player_name(EventPlayer()));
 		return true;
 	}
+	
+	return true;
 }

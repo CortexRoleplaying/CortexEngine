@@ -17,7 +17,7 @@ include "Cortex/Common/lib/libhashlib.galaxy"
 
 // Cortex Git revision
 const string libcrtx_version_branch = "master";
-const string libcrtx_version_commit = "61685e0d9632e08881b22dbfaf56985777dc01bc";
+const string libcrtx_version_commit = "96406eac101dd694cd3b534d313635da607e3d9d";
 
 // Version in form major.minor.bugfix.hotfix
 // ex: "0.10.1a" when concatenated
