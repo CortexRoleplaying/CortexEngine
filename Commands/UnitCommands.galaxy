@@ -59,12 +59,27 @@ bool libcrtx_command_removearea(bool testConds, bool runActions) {
 
 bool libcrtx_command_scale(bool testConds, bool runActions) {
 	fixed scale;
-	fixed scaleY;
-	fixed scaleZ;
+	fixed scaleY = 0;
+	fixed scaleZ = 0;
+	string x;
+	string y;
+	string z;
 	unitgroup g = libcrtx_chat_get_context(EventPlayer());
-	scale = StringToFixed(StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2));
-	scaleY = StringToFixed(StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 3));
-	scaleZ = StringToFixed(StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 4));
+	x = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 2);
+	y = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 3);
+	z = StringWord(libcrtx_chat_get_parse_line(EventPlayer()), 4);
+	
+	if( libcrtx_is_float(x) ) {
+		scale = StringToFixed(x);
+	}
+	
+	if( libcrtx_is_float(y) ) {
+		scaleY = StringToFixed(y);
+	}
+	
+	if( libcrtx_is_float(z) ) {
+		scaleZ = StringToFixed(z);
+	}
 	
 	if(scaleZ == 0.0) {
 		scaleZ = scale;

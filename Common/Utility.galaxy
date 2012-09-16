@@ -352,3 +352,43 @@ string libcrtx_replace_word(string s, string word, string replace, int maxCount,
 	}
 	return result;
 }
+
+// Blizzard made StringTo<X> functions throw exceptions rather than fail gracefully
+// but in their genius, did not add test functions. So we have to write our own. ><
+bool libcrtx_is_integer(string s)
+{
+	int x = 1;
+	string c1 = "";
+	while( x != StringLength(s) )
+	{
+		c1 = StringSub(s, x, x);
+	
+		if( !(c1 == "0" || c1 == "1" || c1 == "2" || c1 == "3" || c1 == "4" || c1 == "5" || c1 == "6" || c1 == "7" || c1 == "8" || c1 == "9") ) {
+			return false;
+		}
+			
+		x += 1;
+	}
+	
+	return true;
+}
+
+// Blizzard made StringTo<X> functions throw exceptions rather than fail gracefully
+// but in their genius, did not add test functions. So we have to write our own. ><
+bool libcrtx_is_float(string s)
+{
+	int x = 1;
+	string c1 = "";
+	while( x != StringLength(s) )
+	{
+		c1 = StringSub(s, x, x);
+	
+		if( !(c1 == "." || c1 == "0" || c1 == "1" || c1 == "2" || c1 == "3" || c1 == "4" || c1 == "5" || c1 == "6" || c1 == "7" || c1 == "8" || c1 == "9") ) {
+			return false;
+		}
+			
+		x += 1;
+	}
+	
+	return true;
+}

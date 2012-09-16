@@ -37,7 +37,7 @@ bool libcrtx_command_spawn_parse(string lp_message)
 		}
 
 		val = StringWord(lp_message, currentParameter);
-		if( StringToInt(val) != 0 ) // integer - spawncount only
+		if( libcrtx_is_integer(val) && StringToInt(val) != 0 ) // integer - spawncount only
 		{
 			// reset when we have a new integer!
 			libcrtx_command_spawn_instances[EventPlayer()].count = libcrtx_boundsInt(StringToInt(val), 0, libcrtx_setting_getint(libcrtx_setting_int_maxspawncount));

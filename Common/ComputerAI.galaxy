@@ -37,128 +37,17 @@ bool libcrtx_ai_is_enabled()
 
 void libcrtx_ai_start()
 {
-	int player;
-	point targDPoint;
-     	point targOPoint;
-   	wavetarget targD;
-    	wavetarget targO;
-	player = libcrtx_setting_getint(libcrtx_setting_int_smarthostile);
-	if( libcrtx_ai_setup ) { 
-		libcrtx_ai_enabled = true;
-		return;
-	}
 
-	libcrtx_ai_enabled = true;
-	libcrtx_ai_setup = true;
-
-	// Get 'em started on minerals.
-	PlayerModifyPropertyInt( player, c_playerPropMinerals, c_playerPropOperAdd, 500000 );
-	PlayerModifyPropertyInt( player, c_playerPropVespene, c_playerPropOperAdd, 500000 );
-
-	AIStart(player, false, 400);
-
-	AISetDifficulty(player, c_diffNormalVision, false);
-    	AISetDifficulty(player, c_diffLimitAPM,     false);
-
-    	AISetDifficulty(player, c_diffSpotChangelings,   false);
-    	AISetDifficulty(player, c_diffWaveAvoidDanger,   true);
-    	AISetDifficulty(player, c_diffFleeDamage,        true);
-    	AISetDifficulty(player, c_diffEarlyDefenseScout, true);
-    	AISetDifficulty(player, c_diffUseExtraScouts,    true);
-    	AISetDifficulty(player, c_diffHoldAtIdleChokes,  true);
-    	AISetDifficulty(player, c_diffPressForward,      true);
-    	AISetDifficulty(player, c_diffFleeWorkers,       true);
-    	AISetDifficulty(player, c_diffFleeDanger,        true);
-
-    	AISetDifficulty(player, c_diffRepairDamage, true);
-    	AISetDifficulty(player, c_diffOptimizeGas, true);
-    	AISetDifficulty(player, c_diffDefendWithPeons, true);
-    	AISetDifficulty(player, c_diffEnableDangerMap, true);
-    	AISetDifficulty(player, c_diffNormalTargetPrio, true);
-    	AISetDifficulty(player, c_diffAllowResourceReq, true);
-
-    	AISetDifficulty(player, c_diffAutoLoadBunkers, false);
-    	AISetDifficulty(player, c_diffEarlyGameRepair, false);
-
-    	//AISetFlag(player, e_flagsRunScared, AIDiffThreshold(player, false, c_skirVeryHard, true));
-    	AISetFlag(player, e_flagsRunScared, false); // TODO fix scared and re-add this
-
-    	AISetFlag(player, e_flagsLateScout, false);
-    	AISetFlag(player, e_flagsClearObs, false);
-
-    	//AIDeclareTown(player, c_townOne, p);
-    	//AISetMainTown(player, c_townOne);
-    	AIHarvest(player, c_townOne);
-    	AISetNumScouts(player, 1);
-    	AIScout(player);
-    	AISetAllStates(player, 1);
-    
-    	targDPoint = AIWaveTargetGatherDPoint(player, c_townMain);
-    	targOPoint = AIWaveTargetGatherOPoint(player, c_townMain);
-    	targD = AIWaveTargetGatherD(player, c_townMain);
-    	targO = AIWaveTargetGatherO(player, c_townMain);
-
-    	AIWaveSet(player, c_waveMain,       AIWaveCreate(AIWaveInfoCreate(), player, targOPoint));
-    	AIWaveSet(player, c_waveAttack,     AIWaveCreate(AIWaveInfoCreate(), player, targOPoint));
-    	AIWaveSet(player, c_waveDivert1,    AIWaveCreate(AIWaveInfoCreate(), player, targOPoint));
-    	AIWaveSet(player, c_waveDivert2,    AIWaveCreate(AIWaveInfoCreate(), player, targOPoint));
-    	AIWaveSet(player, c_waveClearObs,   AIWaveCreate(AIWaveInfoCreate(), player, targOPoint));
-    	AIWaveSet(player, c_waveHome,       AIWaveCreate(AIWaveInfoCreate(), player, targDPoint));
-    	AIWaveSet(player, c_waveDefend,     AIWaveCreate(AIWaveInfoCreate(), player, targDPoint));
-
-    	AIWaveSetType(AIWaveGet(player, c_waveMain),     c_waveStateIdle, targO);
-    	AIWaveSetType(AIWaveGet(player, c_waveAttack),   c_waveStateIdle, targO);
-    	AIWaveSetType(AIWaveGet(player, c_waveDivert1),  c_waveStateIdle, targO);
-    	AIWaveSetType(AIWaveGet(player, c_waveDivert2),  c_waveStateIdle, targO);
-    	AIWaveSetType(AIWaveGet(player, c_waveClearObs), c_waveStateIdle, targO);
-    	AIWaveSetType(AIWaveGet(player, c_waveHome),     c_waveStateIdle, targD);
-    	AIWaveSetType(AIWaveGet(player, c_waveDefend),   c_waveStateIdle, targD);
-
-    	AISetMaxBestAttackersLimit(player, 8);
-
-    	AITransportIgnore(player, "VikingAssault");
-    	AITransportSetPanic(player, 0.6);
-    	AITransportSetReturn(player, targDPoint);
-   
-    	AISpecifiedMakers();
-    	AISpecifiedHealers(player);
-    	AISetDefaultCombatFlags(player, true);
-    	AIAddDetectionDangerUnits(player);
-
-    	AISetNukeConstants(player);
-
-	AISetSpecificState(player, e_mainState, e_mainState_Init);
 }
 
 void libcrtx_ai_createtown(point p, bool makeCapital)
 {
-	int player = libcrtx_setting_getint(libcrtx_setting_int_smarthostile);
-	libNtve_gf_DeclareNextTown( player, p );
-	if( !libcrtx_ai_maintownsetup || makeCapital ) {
-		AIDeclareTown(player, c_townOne, p);
-		AISetMainTown(player, c_townOne);
-		libcrtx_ai_start();
-		libcrtx_ai_maintownsetup = true;
 
-		AISetSpecificState(player, e_mainState, e_mainState_Init);
-	}
 }
 
 void libcrtx_ai_update()
 {
-	int player = libcrtx_setting_getint(libcrtx_setting_int_smarthostile);
-	
-	if( !libcrtx_ai_maintownsetup ) {
-		return;
-	}
 
-	if( libcrtx_ai_race == libcrtx_race_zerg ) {
-		AIMeleeZerg(player);
-	} else if( libcrtx_ai_race == libcrtx_race_protoss ) {
-		AIMeleeProt(player);
-	} else if( libcrtx_ai_race == libcrtx_race_terran ) {
-		AIMeleeTerr(player);
-	}
 }
 
 void libcrtx_ai_stop()
